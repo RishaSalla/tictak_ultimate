@@ -1,0 +1,50 @@
+/* إخفاء شاشة اللعب حتى يتم الضغط على زر البدء */
+.hidden {
+    display: none;
+}
+
+/* تنسيق شاشة الإعداد */
+#setup-screen {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    text-align: right; /* محاذاة النص لليمين للغة العربية */
+}
+
+/* تنسيق لوحة الحالة */
+#status-panel {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #ddd;
+}
+
+.team-status {
+    width: 45%;
+    padding: 10px;
+    border: 3px solid transparent;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+/* التنسيق الذي يبرز الدور النشط */
+.active-turn {
+    border-color: #007bff; /* إطار أزرق ساطع */
+    background-color: #e9f7ff;
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5); /* تأثير الإضاءة */
+}
+
+/* تنسيق شبكة اللعب (Meta-Board) */
+#meta-board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    width: 600px; /* يمكن تعديل الحجم حسب الرغبة */
+    height: 600px;
+    margin: 0 auto;
+    border: 5px solid #333; /* إطار اللوحة الكبرى */
+}
+
+/* ملاحظة: تنسيق اللوحات المحلية (local-board) سيتم إضافته لاحقاً */
