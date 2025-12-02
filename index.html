@@ -3,52 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultimate Tic-Tac-Toe</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Ultimate Tic-Tac-Toe - تيك تاك تو المطلقة</title>
+    <link rel="stylesheet" href="style.css"> 
 </head>
 <body>
 
     <div id="setup-screen" class="screen">
-        <h2>اعدادات اللعبة</h2>
+        <h2>إعدادات لعبة تيك تاك تو المطلقة</h2>
         
         <div class="mode-selection">
             <h3>اختر نمط اللعب:</h3>
-            <label><input type="radio" name="gameMode" value="PVP"> لاعبون / فرق (Human vs. Human)</label>
+            <label><input type="radio" name="gameMode" value="PVP"> لاعبون / فرق (Human vs. Human)</label><br>
             <label><input type="radio" name="gameMode" value="PVA"> فردي ضد الذكاء الاصطناعي (vs. AI)</label>
         </div>
 
         <hr>
 
         <div id="team-setup" style="display: none;"> 
-            <h3>بيانات الفرق</h3>
+            <h3>بيانات الفرق المتناوبة</h3>
+            
             <fieldset>
                 <legend>الفريق X</legend>
-                <label for="teamXName">اسم الفريق:</label>
-                <input type="text" id="teamXName" placeholder="صقور الجزيرة"><br><br>
+                <label for="teamXName">اسم الفريق (X):</label>
+                <input type="text" id="teamXName" placeholder="صقور الجزيرة"><br>
                 <label for="playersX">أسماء اللاعبين (افصل بينها بفاصلة ,):</label>
                 <input type="text" id="playersX" placeholder="فهد, عمر, يوسف">
             </fieldset>
 
             <fieldset>
                 <legend>الفريق O</legend>
-                <label for="teamOName">اسم الفريق:</label>
-                <input type="text" id="teamOName" placeholder="نمور الرمال"><br><br>
+                <label for="teamOName">اسم الفريق (O):</label>
+                <input type="text" id="teamOName" placeholder="نمور الرمال"><br>
                 <label for="playersO">أسماء اللاعبين (افصل بينها بفاصلة ,):</label>
                 <input type="text" id="playersO" placeholder="علي, خالد, سارة">
             </fieldset>
         </div>
 
         <div id="ai-setup" style="display: none;">
-            <h3>اعدادات الذكاء الاصطناعي</h3>
+            <h3>إعدادات الذكاء الاصطناعي</h3>
             <label for="difficulty">مستوى الصعوبة:</label>
             <select id="difficulty">
-                <option value="easy">سهل</option>
-                <option value="medium">متوسط</option>
-                <option value="hard">صعب</option>
+                <option value="easy">سهل (حركات عشوائية)</option>
+                <option value="medium">متوسط (منع وفوز وشيك)</option>
+                <option value="hard">صعب (استراتيجية متقدمة)</option>
             </select><br><br>
             <label>دورك:</label>
             <label><input type="radio" name="playerRole" value="X" checked> X</label>
             <label><input type="radio" name="playerRole" value="O"> O</label>
+            <p style="font-size: 0.9em; color: gray;">* يتم استخدام حقل اسم الفريق X لتسمية اللاعب البشري.</p>
         </div>
 
         <button id="startGameButton" disabled>ابدأ اللعبة</button>
@@ -57,7 +59,7 @@
     <div id="game-screen" class="screen hidden">
         
         <div id="status-panel">
-            <div id="teamX-status" class="team-status active-turn">
+            <div id="teamX-status" class="team-status">
                 <h3>الفريق X: <span id="displayTeamXName"></span></h3>
                 <p>الدور الآن على: <strong id="currentPlayerXName"></strong></p>
                 <p>نقاط اللوحات: <span id="teamXScore">0</span></p>
@@ -71,7 +73,7 @@
         </div>
 
         <div id="meta-board">
-            </div>
+        </div>
 
         <div id="game-message" class="message"></div>
     </div>
