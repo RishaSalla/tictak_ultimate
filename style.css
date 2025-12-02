@@ -48,3 +48,84 @@
 }
 
 /* ملاحظة: تنسيق اللوحات المحلية (local-board) سيتم إضافته لاحقاً */
+
+/* #meta-board تنسيقها موجود مسبقاً */
+
+.local-board {
+    display: grid; /* استخدام شبكة لتنظيم 9 خلايا */
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    border: 3px solid #ccc; /* إطار رمادي خفيف لكل لوحة محلية */
+    transition: all 0.3s ease-in-out; /* لجعل تأثير التكبير/الإضاءة سلساً */
+    opacity: 0.5; /* تعتيم طفيف للوحات غير النشطة */
+    position: relative; /* مهم لطبقة winner-overlay */
+}
+
+/* تنسيق الخلايا الفردية داخل اللوحات المحلية */
+.cell {
+    border: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5em; /* حجم رمز X/O */
+    cursor: pointer;
+    user-select: none; /* لمنع تحديد النص */
+    height: 100%; /* ضمان ملء مساحة الخلية */
+}
+
+.cell:hover {
+    background-color: #f0f0f0; /* تغيير لون عند المرور لجذب الانتباه */
+}
+
+/* ألوان رموز اللاعبين */
+.cell.X {
+    color: #e74c3c; /* أحمر لـ X */
+}
+
+.cell.O {
+    color: #3498db; /* أزرق لـ O */
+}
+/* اللوحة النشطة (يتم تطبيق فئة .active عليها في JS) */
+.local-board.active {
+    opacity: 1; /* وضوح كامل */
+    border-color: #2ecc71; /* إطار أخضر ساطع */
+    transform: scale(1.05); /* تكبير طفيف جداً لإبرازها */
+    box-shadow: 0 0 15px rgba(46, 204, 113, 0.7); /* تأثير الإضاءة حول اللوحة */
+}
+
+/* اللوحات غير القابلة للعب (مثل التي تم الفوز بها بالفعل) */
+.local-board.disabled-board {
+    opacity: 0.3; /* تعتيم إضافي */
+    cursor: not-allowed;
+    border-color: #6c757d;
+}
+.local-board.won {
+    cursor: default;
+    /* إزالة تأثير التكبير إذا تم الفوز بها */
+    transform: scale(1);
+}
+
+/* طبقة التغطية لإظهار الفائز في اللوحة الكبرى */
+.winner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4em; /* حجم كبير للعلامة */
+    font-weight: bold;
+    background-color: rgba(255, 255, 255, 0.7); /* خلفية بيضاء شفافة */
+    z-index: 5;
+}
+
+/* ألوان طبقة التغطية بناءً على الفائز */
+.local-board.won.X .winner-overlay {
+    color: #e74c3c; /* أحمر */
+}
+
+.local-board.won.O .winner-overlay {
+    color: #3498db; /* أزرق */
+}
