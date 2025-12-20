@@ -1,272 +1,196 @@
 /* =========================================
-   1. المتغيرات والأساسيات (Global Variables)
+   1. المتغيرات والسمات (Glassmorphism & Neon)
    ========================================= */
 :root {
-    --bg-color: #0f172a;
-    --card-bg: #1e293b;
-    --text-color: #f8fafc;
+    --bg-dark: #0a0f1d;
+    --glass-bg: rgba(30, 41, 59, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --text-main: #f8fafc;
     --accent-x: #ff4757;
     --accent-o: #2e86de;
-    --active-color: #2ecc71;
-    --timer-color: #ffd32a;
+    --neon-green: #2ecc71;
+    --gold: #ffd32a;
+    --panel-w: 220px; /* عرض لوحة الفرق في اللابتوب */
 }
 
-/* الوضع الفاتح */
 .light-mode {
-    --bg-color: #f1f5f9;
-    --card-bg: #ffffff;
-    --text-color: #1e293b;
+    --bg-dark: #f1f5f9;
+    --glass-bg: rgba(255, 255, 255, 0.8);
+    --text-main: #0f172a;
+    --glass-border: rgba(0, 0, 0, 0.1);
 }
-
-* {
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
-}
-
-body {
-    margin: 0;
-    padding: 0;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    height: 100vh;
-    width: 100vw;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden; /* يمنع السكرول نهائياً */
-    direction: rtl;
-}
-
-.hidden { display: none !important; }
 
 /* =========================================
-   2. شاشات البداية واللعب (Screens)
+   2. التنسيق العام والتحريك (Matrix Background)
+   ========================================= */
+body {
+    margin: 0; padding: 0;
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    height: 100vh; width: 100vw;
+    overflow: hidden; direction: rtl;
+    display: flex; flex-direction: column;
+}
+
+#bg-animation-container {
+    position: fixed; inset: 0; z-index: -1;
+    opacity: 0.15; pointer-events: none;
+    font-family: monospace; font-size: 14px;
+    overflow: hidden;
+}
+
+.matrix-column {
+    position: absolute; top: -100px;
+    animation: fall linear infinite;
+}
+
+@keyframes fall { to { transform: translateY(110vh); } }
+
+/* =========================================
+   3. شاشات العرض والبطاقات الزجاجية
    ========================================= */
 .screen {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 10px;
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 10px; transition: opacity 0.5s ease;
 }
 
-#setup-screen {
-    justify-content: center;
-    overflow-y: auto;
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(15px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    padding: 30px; width: 90%; max-width: 500px;
 }
 
-.setup-container {
-    background: var(--card-bg);
-    padding: 25px;
-    border-radius: 20px;
-    width: 90%;
-    max-width: 450px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+.neon-title {
+    font-size: 2.5rem; text-align: center; margin: 0 0 20px;
+    background: linear-gradient(45deg, var(--accent-o), var(--neon-green));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
 }
 
-.glow-text {
-    font-size: 2.2rem;
-    color: var(--accent-o);
-    text-shadow: 0 0 10px rgba(46, 134, 222, 0.5);
-    margin-bottom: 20px;
-    text-align: center;
+.instructions-box {
+    background: rgba(0,0,0,0.2); border-radius: 12px;
+    padding: 15px; margin-bottom: 20px; font-size: 0.9rem; line-height: 1.6;
 }
 
 /* =========================================
-   3. لوحة الحالة (Header / Status Panel)
+   4. توزيع شاشة اللعب (Smart Layout)
    ========================================= */
-.game-header {
-    width: 100%;
-    height: 120px; /* ارتفاع ثابت للهيدر لمنع التداخل */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    padding: 10px;
-    z-index: 10;
+.top-nav {
+    width: 100%; display: flex; justify-content: space-between;
+    align-items: center; padding: 10px 20px;
 }
 
-.team-card {
-    background: var(--card-bg);
-    padding: 10px 15px;
-    border-radius: 12px;
-    text-align: center;
-    flex: 1;
-    max-width: 180px;
-    border: 2px solid transparent;
-    transition: 0.3s ease;
+.players-bar {
+    display: flex; gap: 15px; width: 95%; max-width: 900px;
+    margin-bottom: 10px;
 }
 
-.team-card h2 { margin: 0; font-size: 1.1rem; }
-.team-card p { margin: 5px 0 0; font-size: 0.8rem; }
-
-.x-side { border-bottom: 4px solid var(--accent-x); }
-.o-side { border-bottom: 4px solid var(--accent-o); }
-
-.team-card.active-turn {
-    border-color: var(--active-color);
-    box-shadow: 0 0 15px rgba(46, 204, 113, 0.3);
-    transform: translateY(-3px);
+.player-card {
+    flex: 1; padding: 10px 20px; border-radius: 15px;
+    background: var(--glass-bg); border-bottom: 4px solid transparent;
+    transition: 0.3s;
 }
 
-.timer-center {
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: var(--timer-color);
-    min-width: 60px;
-    text-align: center;
+.x-theme.active-turn { border-color: var(--accent-x); box-shadow: 0 0 15px var(--accent-x); }
+.o-theme.active-turn { border-color: var(--accent-o); box-shadow: 0 0 15px var(--accent-o); }
+
+.board-container {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    width: 100%; max-height: 70vh;
 }
 
 /* =========================================
-   4. اللوحة الكبرى (Meta Board)
+   5. لوحة الـ 81 وتأثيرات الفوز
    ========================================= */
 #meta-board {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    width: 85vh; /* يعتمد على ارتفاع الشاشة لضمان عدم الخروج */
-    height: 85vh;
-    max-width: 95vw; /* لضمان التوافق مع الشاشات النحيفة */
-    max-height: 95vw;
-    margin: auto; /* يتوسط المساحة المتبقية تلقائياً */
-    background: #334155;
-    padding: 10px;
-    border-radius: 12px;
-    z-index: 5;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+    width: 85vh; height: 85vh; max-width: 95vw; max-height: 95vw;
+    background: rgba(255,255,255,0.05); padding: 12px; border-radius: 15px;
 }
 
 .local-board {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 3px;
-    background: #475569;
-    padding: 3px;
-    border-radius: 6px;
-    transition: transform 0.3s ease;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px;
+    background: rgba(255,255,255,0.1); border-radius: 8px;
+    transition: 0.4s; position: relative;
 }
 
 .local-board.active {
-    outline: 3px solid var(--active-color);
-    box-shadow: 0 0 20px rgba(46, 204, 113, 0.5);
-    z-index: 6;
+    outline: 3px solid var(--neon-green);
+    box-shadow: 0 0 20px var(--neon-green);
+    animation: pulseGlow 2s infinite;
 }
+
+@keyframes pulseGlow { 
+    0%, 100% { transform: scale(1); } 
+    50% { transform: scale(1.02); box-shadow: 0 0 30px var(--neon-green); } 
+}
+
+/* علامة الفوز الكبيرة */
+.big-winner-mark {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 6rem; font-weight: 900; z-index: 20;
+    background: var(--glass-bg); border-radius: 8px;
+    animation: zoomIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes zoomIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
 .cell {
-    background: var(--card-bg);
-    aspect-ratio: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: min(1.8rem, 5vh);
-    cursor: pointer;
-    font-weight: bold;
-    border-radius: 3px;
-    transition: background 0.2s;
+    background: var(--glass-bg); aspect-ratio: 1;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; cursor: pointer; border-radius: 4px;
 }
 
-.cell.X { color: var(--accent-x); text-shadow: 0 0 5px var(--accent-x); }
-.cell.O { color: var(--accent-o); text-shadow: 0 0 5px var(--accent-o); }
+.cell.X { color: var(--accent-x); text-shadow: 0 0 8px var(--accent-x); }
+.cell.O { color: var(--accent-o); text-shadow: 0 0 8px var(--accent-o); }
 
 /* =========================================
-   5. النافذة المنبثقة (Math Popup)
+   6. نافذة التحدي (The Advanced Popup)
    ========================================= */
 .popup {
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.96);
-    backdrop-filter: blur(8px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000; /* فوق كل شيء */
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(10px); display: flex; justify-content: center;
+    align-items: center; z-index: 1000;
 }
 
-.popup-box {
-    background: var(--card-bg);
-    width: 90%;
-    max-width: 340px;
-    padding: 25px;
-    border-radius: 20px;
-    border: 2px solid var(--accent-o);
-    text-align: center;
+.popup-glass-card {
+    background: var(--card-dark); border: 2px solid var(--glass-border);
+    width: 320px; padding: 25px; border-radius: 30px; text-align: center;
 }
 
-#popup-progress {
-    height: 4px;
-    background: var(--active-color);
-    width: 100%;
-    margin-bottom: 15px;
+#answer-input-display {
+    font-size: 3.5rem; height: 4.5rem; display: flex;
+    justify-content: center; align-items: center;
+    color: var(--neon-green); margin: 15px 0;
 }
 
-#math-question { font-size: 2.2rem; margin: 0 0 10px; }
-#answer-display { 
-    font-size: 3rem; 
-    color: var(--active-color); 
-    min-height: 3.5rem; 
-    margin-bottom: 15px;
+.feedback-success { color: var(--neon-green); animation: bounce 0.5s; }
+
+.numpad-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
 }
 
-.numpad {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
+.num-btn {
+    padding: 15px; font-size: 1.4rem; border: none; border-radius: 12px;
+    background: rgba(255,255,255,0.1); color: white; cursor: pointer;
 }
 
-.numpad button {
-    background: #334155;
-    color: white;
-    border: none;
-    padding: 15px;
-    font-size: 1.3rem;
-    border-radius: 10px;
-    cursor: pointer;
-}
-
-.numpad button:active { background: #475569; }
-.numpad button.c-btn { color: var(--accent-x); }
+.num-btn:active { background: var(--accent-o); transform: translateY(2px); }
 
 /* =========================================
-   6. العناصر التفاعلية الإضافية
+   7. الاستجابة لشاشات اللابتوب (Desktop Side Panels)
    ========================================= */
-.main-btn {
-    width: 100%;
-    padding: 15px;
-    background: var(--active-color);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 1.1rem;
-    font-weight: bold;
-    cursor: pointer;
-    margin-top: 15px;
+@media (min-width: 1024px) {
+    .game-screen { flex-direction: row; justify-content: center; gap: 40px; }
+    .players-bar {
+        flex-direction: column; width: var(--panel-w);
+        position: absolute; right: 40px; top: 50%; transform: translateY(-50%);
+    }
 }
 
-.sub-btn {
-    width: 100%;
-    background: transparent;
-    color: var(--text-color);
-    border: 1px solid #475569;
-    padding: 10px;
-    margin-top: 10px;
-    border-radius: 8px;
-    cursor: pointer;
-}
-
-.banner {
-    position: fixed;
-    bottom: 20px;
-    background: #f59e0b;
-    color: black;
-    padding: 8px 25px;
-    border-radius: 50px;
-    font-weight: bold;
-    z-index: 100;
-}
-
-/* تحسينات للشاشات الصغيرة جداً */
-@media (max-height: 600px) {
-    .game-header { height: 90px; }
-    #meta-board { width: 70vh; height: 70vh; }
-    .team-card h2 { font-size: 0.9rem; }
-}
+.hidden { display: none !important; }
