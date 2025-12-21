@@ -1,163 +1,61 @@
 /* =========================================
-   1. المتغيرات والأساسيات (Root & Reset)
+   تنسيق المظهر (Light & Dark)
    ========================================= */
 :root {
-    --bg-color: #0b0e14;
-    --card-bg: #161b22;
-    --text-color: #e6edf3;
-    --x-neon: #ff4d6d;
-    --o-neon: #00d4ff;
-    --win-green: #2ecc71;
-    --timer-gold: #ffcc00;
+    --bg: #f0f2f5; --card: #ffffff; --text: #1c1e21;
+    --x-color: #e91e63; --o-color: #007bff; --accent: #28a745;
+}
+
+body.dark-mode {
+    --bg: #0b0e14; --card: #161b22; --text: #e6edf3;
+    --x-color: #ff4d6d; --o-color: #00d4ff;
 }
 
 body {
-    margin: 0; padding: 0; background: var(--bg-color); color: var(--text-color);
-    font-family: 'Segoe UI', sans-serif; height: 100vh; width: 100vw;
-    overflow: hidden; direction: rtl;
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: 'Segoe UI', sans-serif; height: 100vh; overflow: hidden;
+    transition: all 0.4s ease; direction: rtl;
 }
 
-/* طبقة الخلفية المعزولة (Layer 0) */
-#matrix-bg-layer {
-    position: fixed; inset: 0; z-index: -1; opacity: 0.1; pointer-events: none;
-}
-
-.screen-layer {
-    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-}
+.screen-layer { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
 .hidden { display: none !important; }
 
-/* =========================================
-   2. شاشة الإعدادات (Setup Screen)
-   ========================================= */
+/* شاشة الإعدادات */
 .glass-card {
-    background: var(--card-bg); padding: 40px; border-radius: 25px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.5); width: 90%; max-width: 480px; text-align: center;
-    border: 1px solid rgba(255,255,255,0.05);
+    background: var(--card); padding: 30px; border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 90%; max-width: 450px; text-align: center;
+}
+.setup-body input, .setup-body select {
+    width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px;
+    border: 1px solid #ddd; background: var(--bg); color: var(--text); box-sizing: border-box;
 }
 
-.glow-title {
-    font-size: 2.5rem; margin-bottom: 20px;
-    background: linear-gradient(to left, var(--x-neon), var(--o-neon));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-}
-
-.instr-trigger-btn {
-    background: transparent; color: var(--o-neon); border: 1px solid var(--o-neon);
-    padding: 8px 15px; border-radius: 20px; cursor: pointer; margin-bottom: 20px;
-}
-
-.setup-body input {
-    width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 10px;
-    background: #0d1117; border: 1px solid #30363d; color: white; box-sizing: border-box;
-}
-
-.config-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
-.config-item { text-align: right; }
-.config-item label { font-size: 0.8rem; opacity: 0.7; display: block; margin-bottom: 5px; }
-.config-item select { width: 100%; padding: 8px; border-radius: 5px; background: #0d1117; color: white; border: none; }
-
-.main-play-btn {
-    width: 100%; padding: 15px; border-radius: 12px; background: var(--o-neon);
-    color: #000; font-weight: bold; font-size: 1.2rem; border: none; cursor: pointer;
-}
-
-/* =========================================
-   3. ساحة اللعب (The Grid Fortress)
-   ========================================= */
-.game-ui-wrapper {
-    display: flex; flex-direction: column; width: 100%; height: 100%;
-    max-width: 1200px; padding: 10px; box-sizing: border-box;
-}
-
-/* الهيدر (15%) */
-.game-header { height: 15vh; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
-.team-panel { background: var(--card-bg); padding: 10px 20px; border-radius: 12px; min-width: 150px; text-align: center; }
-.x-border { border-bottom: 4px solid var(--x-neon); }
-.o-border { border-bottom: 4px solid var(--o-neon); }
-.timer-display { font-size: 2.5rem; font-weight: bold; color: var(--timer-gold); }
-
-/* اللوحة المركزية (70%) - الحل الجذري للزحف */
-.board-arena {
-    height: 70vh; display: flex; align-items: center; justify-content: center;
-}
-
+/* اللوحة (Fortress - لا زحف) */
 #main-81-board {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
-    height: 65vh; width: 65vh; max-width: 90vw; max-height: 90vw;
-    background: rgba(255,255,255,0.03); padding: 10px; border-radius: 15px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+    height: 60vh; width: 60vh; max-width: 90vw; max-height: 90vw;
+    background: rgba(0,0,0,0.05); padding: 10px; border-radius: 12px;
 }
-
-.local-board {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;
-    background: rgba(0,0,0,0.2); border-radius: 8px; position: relative;
-}
-
-.local-board.active { outline: 3px solid var(--win-green); box-shadow: 0 0 15px var(--win-green); }
-
-/* الخلايا - هندسة الصناديق المحبوسة */
+.local-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; position: relative; }
 .cell {
-    background: var(--card-bg); border-radius: 4px;
-    position: relative; /* ضروري لتثبيت ما بداخله */
-    aspect-ratio: 1 / 1; /* حجز مساحة مربعة ثابتة */
-    cursor: pointer; overflow: hidden;
+    background: var(--card); aspect-ratio: 1; border-radius: 4px;
+    position: relative; cursor: pointer; border: 1px solid rgba(0,0,0,0.05);
 }
-
 .cell::before {
-    /* هذا هو المكان الذي يظهر فيه الـ X أو O دون تحريك الصندوق */
-    content: attr(data-content);
-    position: absolute;
-    inset: 0;
+    content: attr(data-content); position: absolute; inset: 0;
     display: flex; align-items: center; justify-content: center;
-    font-size: 1.5rem; font-weight: bold;
+    font-size: 1.4rem; font-weight: bold;
 }
-
-.cell[data-content="X"]::before { color: var(--x-neon); text-shadow: 0 0 8px var(--x-neon); }
-.cell[data-content="O"]::before { color: var(--o-neon); text-shadow: 0 0 8px var(--o-neon); }
-
-/* توهج الفوز الكبير */
-.win-overlay {
-    position: absolute; inset: 0; z-index: 10;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 5rem; font-weight: 900; border-radius: 8px;
-    animation: zoomIn 0.3s ease-out;
-}
-.win-X { background: rgba(255, 77, 109, 0.2); color: var(--x-neon); }
-.win-O { background: rgba(0, 212, 255, 0.2); color: var(--o-neon); }
-
-@keyframes zoomIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-/* الفوتر (15%) */
-.game-footer { height: 15vh; display: flex; justify-content: center; align-items: center; gap: 15px; }
-.footer-btn { padding: 10px 20px; border-radius: 8px; border: 1px solid #30363d; background: var(--card-bg); color: white; cursor: pointer; }
-
-/* =========================================
-   4. النوافذ (Modals & Popups)
-   ========================================= */
-.modal-layer, .popup-layer {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.8);
-    display: flex; align-items: center; justify-content: center; z-index: 1000;
-}
-
-.modal-content, .math-card {
-    background: var(--card-bg); padding: 25px; border-radius: 20px;
-    width: 90%; max-width: 380px; text-align: center; border: 2px solid var(--o-neon);
-}
-
-.instr-scroll-area { max-height: 300px; overflow-y: auto; text-align: right; padding: 10px; font-size: 0.9rem; }
+.cell[data-content="X"]::before { color: var(--x-color); }
+.cell[data-content="O"]::before { color: var(--o-color); }
 
 /* بوب آب السؤال */
-.math-timer-track { width: 100%; height: 5px; background: #0d1117; margin-bottom: 15px; border-radius: 5px; overflow: hidden; }
-#math-timer-fill { height: 100%; width: 100%; background: var(--timer-gold); transition: width linear; }
-
-#equation-display { font-size: 2.2rem; margin: 15px 0; color: var(--o-neon); direction: ltr; }
-.ans-zone { font-size: 3rem; height: 3.5rem; color: var(--win-green); font-weight: bold; margin-bottom: 15px; }
-
-.numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.numpad button { padding: 12px; font-size: 1.2rem; border-radius: 8px; border: none; background: #0d1117; color: white; cursor: pointer; }
-.c-btn { color: var(--x-neon); }
-
-.free-banner {
-    position: absolute; top: 10%; background: var(--timer-gold); color: black;
-    padding: 10px 20px; border-radius: 20px; font-weight: bold;
+.math-card {
+    background: var(--card); padding: 25px; border-radius: 15px;
+    border: 3px solid var(--o-color); width: 340px; text-align: center;
 }
+#equation-display { font-size: 2.5rem; margin-bottom: 10px; direction: ltr; }
+.numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.numpad button { padding: 15px; border-radius: 10px; border: none; background: var(--bg); color: var(--text); font-size: 1.2rem; cursor: pointer; }
+
+.footer-btn { background: var(--card); color: var(--text); border: 1px solid #ddd; padding: 10px; cursor: pointer; border-radius: 5px; }
