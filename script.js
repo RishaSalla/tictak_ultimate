@@ -11,7 +11,7 @@ let diffLevel, timeLimit, countdown, targetCell, currentAns;
 let playerAnswer = "";
 
 /* =========================================
-   2. محرك توليد الأسئلة (قاعدة الـ 9 والـ 1%)
+   2. محرك توليد الأسئلة (قواعد 1-9 والـ 1%)
    ========================================= */
 function generateQuestion() {
     let a, b, op, ans, qText;
@@ -19,38 +19,40 @@ function generateQuestion() {
 
     // دالة اختيار رقم بين 1 و 9 مع قاعدة الـ 1%
     const getNum = (allowOne) => {
+        // إذا كان مسموحاً بالرقم 1 (جمع/طرح) تظهر بنسبة 1%
         if (allowOne) {
             return (Math.random() < 0.01) ? 1 : Math.floor(Math.random() * 8) + 2;
         }
-        return Math.floor(Math.random() * 8) + 2; // من 2 لـ 9
+        // في الضرب والقسمة: من 2 لـ 9 دائماً
+        return Math.floor(Math.random() * 8) + 2; 
     };
 
-    const types = ['+', '-', '*', '/'];
-    const type = types[Math.floor(Math.random() * types.length)];
+    const ops = ['+', '-', '*', '/'];
+    const type = ops[Math.floor(Math.random() * ops.length)];
 
     if (type === '+') {
         a = getNum(true); b = getNum(true); ans = a + b; op = '+';
     } else if (type === '-') {
         a = Math.floor(Math.random() * 8) + 2; 
-        b = Math.floor(Math.random() * (a - 1)) + 1; // لضمان ناتج موجب
+        b = Math.floor(Math.random() * (a - 1)) + 1; // لضمان ناتج موجب وأرقام 1-9
         ans = a - b; op = '-';
     } else if (type === '*') {
         a = getNum(false); b = getNum(false); ans = a * b; op = '×';
     } else if (type === '/') {
-        // في المستوى الأول: قسمة بسيطة جداً نتاجها صغير
+        // المستوى الأول: قسمة بسيطة (نواتج صغيرة)
         if (level === 1) {
             ans = Math.floor(Math.random() * 3) + 2; 
             b = Math.floor(Math.random() * 3) + 2;
         } else {
-            // في المستويات الأخرى: يمكن أن يكون الطرف الأول كبيراً طالما الفراغ 1-9
+            // المستويات المتقدمة: الطرف الأول قد يكون كبيراً لكن الفراغ دائماً 1-9
             ans = getNum(false); b = getNum(false);
         }
         a = ans * b; op = '÷';
     }
 
-    // تشكيل السؤال حسب المستوى (الاتجاه من اليسار لليمين)
+    // تشكيل السؤال بناءً على المستوى (الاتجاه من اليسار لليمين)
     switch(level) {
-        case 1: // كلاسيك
+        case 1: // كلاسيك (مباشر)
             qText = `${a} ${op} ${b} = ?`;
             currentAns = ans;
             break;
@@ -63,12 +65,12 @@ function generateQuestion() {
                 currentAns = b;
             }
             break;
-        case 3: // فراغين (بدون 1) - هنا نطلب رقم واحد مفقود لتسهيل اللعب من 1-9
-            qText = `? ${op} ? = ${ans} (بدون 1)`;
-            currentAns = a; // نبرمجها برقم واحد حالياً لضمان استقرار النمباد
+        case 3: // فراغ مزدوج (بدون رقم 1)
+            qText = `? ${op} ? = ${ans}`;
+            currentAns = a; // نطلب الرقم الأول كإجابة
             break;
-        case 4: // الميزان
-            let offset = 1;
+        case 4: // الميزان الحسابي
+            let offset = Math.floor(Math.random() * 2) + 1;
             qText = `${a} ${op} ${b} = ? + ${offset}`;
             currentAns = ans - offset;
             break;
@@ -78,21 +80,21 @@ function generateQuestion() {
 }
 
 /* =========================================
-   3. التحكم في سير اللعبة
+   3. إدارة اللعب والتحكم
    ========================================= */
 function startGame() {
     diffLevel = document.getElementById('levelSelect').value;
     timeLimit = parseInt(document.getElementById('timerSelect').value);
     
-    // تصفير البيانات
+    // تصفير البيانات للبدء من جديد
     metaBoard.fill(null);
     localBoards = Array(9).fill(null).map(() => Array(9).fill(null));
     currentTeam = 'X';
     activeBoardIdx = null;
     gameActive = true;
 
-    // بناء اللوحة
-    const container = document.getElementById('ultimate-board');
+    // بناء اللوحة برمجياً لضمان النظافة
+    const container = document.getElementById('ultimate-grid');
     container.innerHTML = '';
     for (let i = 0; i < 9; i++) {
         let lb = document.createElement('div');
@@ -110,7 +112,7 @@ function startGame() {
 
     document.getElementById('setup-screen').classList.add('hidden');
     document.getElementById('game-screen').classList.remove('hidden');
-    updateStatus();
+    updateUI();
 }
 
 function handleCellClick(cell) {
@@ -120,25 +122,28 @@ function handleCellClick(cell) {
 
     targetCell = cell;
     playerAnswer = "";
-    document.getElementById('ans-display').textContent = "_";
+    document.getElementById('player-ans-view').textContent = "_";
+    document.getElementById('feedback-tick').classList.add('hidden');
     document.getElementById('math-popup').classList.remove('hidden');
+    
     generateQuestion();
     startTimer();
 }
 
-function inputNum(n) {
+function pressNum(n) {
     playerAnswer += n;
-    document.getElementById('ans-display').textContent = playerAnswer;
+    document.getElementById('player-ans-view').textContent = playerAnswer;
     
     if (parseInt(playerAnswer) === currentAns) {
         clearInterval(countdown);
-        setTimeout(executeMove, 300);
+        document.getElementById('feedback-tick').classList.remove('hidden');
+        setTimeout(finalizeMove, 600);
     } else if (playerAnswer.length >= currentAns.toString().length + 1) {
-        clearInput();
+        clearAns();
     }
 }
 
-function executeMove() {
+function finalizeMove() {
     document.getElementById('math-popup').classList.add('hidden');
     const bIdx = parseInt(targetCell.parentElement.dataset.board);
     const cIdx = parseInt(targetCell.dataset.cell);
@@ -147,43 +152,46 @@ function executeMove() {
     targetCell.classList.add(currentTeam);
     localBoards[bIdx][cIdx] = currentTeam;
 
-    // منطق الفوز والتوجيه
+    // تحديد المربع القادم (التوجيه)
     activeBoardIdx = (metaBoard[cIdx] === null) ? cIdx : null;
     currentTeam = (currentTeam === 'X') ? 'O' : 'X';
-    updateStatus();
+    updateUI();
 }
 
 /* =========================================
-   4. الوظائف المساعدة
+   4. الوظائف المساعدة والواجهة
    ========================================= */
-function toggleTheme() {
-    document.body.classList.toggle('dark-mode');
-}
-
-function openHelp() { document.getElementById('help-modal').classList.remove('hidden'); }
-function closeHelp() { document.getElementById('help-modal').classList.add('hidden'); }
-function clearInput() { playerAnswer = ""; document.getElementById('ans-display').textContent = "_"; }
-function delInput() { playerAnswer = playerAnswer.slice(0, -1); document.getElementById('ans-display').textContent = playerAnswer || "_"; }
-
 function startTimer() {
     if (timeLimit === 0) return;
     let time = timeLimit;
-    document.getElementById('timerNum').textContent = time;
+    document.getElementById('countdown-display').textContent = time;
     clearInterval(countdown);
     countdown = setInterval(() => {
         time--;
-        document.getElementById('timerNum').textContent = time;
+        document.getElementById('countdown-display').textContent = time;
         if (time <= 0) {
             clearInterval(countdown);
             document.getElementById('math-popup').classList.add('hidden');
+            activeBoardIdx = null; // فشل يعني لعب حر للخصم
             currentTeam = (currentTeam === 'X') ? 'O' : 'X';
-            updateStatus();
+            updateUI();
         }
     }, 1000);
 }
 
-function updateStatus() {
-    document.getElementById('cardX').classList.toggle('active', currentTeam === 'X');
-    document.getElementById('cardO').classList.toggle('active', currentTeam === 'O');
-    document.getElementById('free-play-alert').classList.toggle('hidden', activeBoardIdx !== null);
+function updateUI() {
+    document.getElementById('panelX').classList.toggle('active', currentTeam === 'X');
+    document.getElementById('panelO').classList.toggle('active', currentTeam === 'O');
+    
+    document.querySelectorAll('.local-board').forEach((b, i) => {
+        b.style.opacity = (activeBoardIdx === null || activeBoardIdx === i) ? "1" : "0.3";
+    });
+
+    document.getElementById('free-move-banner').classList.toggle('hidden', activeBoardIdx !== null);
 }
+
+function toggleTheme() { document.body.classList.toggle('dark-mode'); }
+function openHelp() { document.getElementById('help-modal').classList.remove('hidden'); }
+function closeHelp() { document.getElementById('help-modal').classList.add('hidden'); }
+function clearAns() { playerAnswer = ""; document.getElementById('player-ans-view').textContent = "_"; }
+function delAns() { playerAnswer = playerAnswer.slice(0, -1); document.getElementById('player-ans-view').textContent = playerAnswer || "_"; }
