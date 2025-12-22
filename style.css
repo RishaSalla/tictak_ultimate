@@ -1,140 +1,136 @@
 /* =========================================
-   1. الألوان والتبديل (Light & Dark)
+   1. تعريف الألوان والتبديل (Light & Dark)
    ========================================= */
 :root {
-    /* الوضع الفاتح (الأساسي) */
-    --bg-main: #f8f9fa;
+    /* ألوان الوضع الفاتح (الأساسي) */
+    --bg-main: #f0f2f5;
     --card-bg: #ffffff;
-    --text-main: #2d3436;
-    --input-border: #dfe6e9;
-    --x-neon: #d63031;
-    --o-neon: #0984e3;
-    --accent: #00b894;
+    --text-primary: #1c1e21;
+    --text-secondary: #606770;
+    --border-color: #dddfe2;
+    --x-color: #d63031;
+    --o-color: #0984e3;
+    --accent-color: #00b894;
     --shadow: rgba(0, 0, 0, 0.1);
 }
 
 body.dark-mode {
-    --bg-main: #0f1218;
+    /* ألوان الوضع الداكن */
+    --bg-main: #0b0e14;
     --card-bg: #1c2128;
-    --text-main: #f8f9fa;
-    --input-border: #30363d;
+    --text-primary: #f8f9fa;
+    --text-secondary: #adbac7;
+    --border-color: #30363d;
+    --x-color: #ff4d6d;
+    --o-color: #00d4ff;
     --shadow: rgba(0, 0, 0, 0.5);
 }
 
+/* =========================================
+   2. التنسيق العام (Layout)
+   ========================================= */
 body {
-    margin: 0; padding: 0; 
+    margin: 0; padding: 0;
     background-color: var(--bg-main);
-    color: var(--text-main);
+    color: var(--text-primary);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     height: 100vh; width: 100vw;
     display: flex; align-items: center; justify-content: center;
     overflow: hidden; direction: rtl;
-    transition: background 0.3s ease, color 0.3s ease;
+    transition: background 0.3s ease;
 }
 
-/* الحاوية الكبرى لضمان التمركز المطلق */
-#app-container {
-    position: relative;
-    width: 100%; height: 100%;
+#app-wrapper {
+    position: relative; width: 100%; height: 100%;
     display: flex; align-items: center; justify-content: center;
 }
 
-/* =========================================
-   2. الشاشات والنوافذ (Screens & Modals)
-   ========================================= */
-.screen, .modal-overlay {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* الشاشات (الإعدادات واللعب) */
+.screen {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
     z-index: 10;
 }
-
 .hidden { display: none !important; }
 
-/* الكرت المركزي (شاشة الإعدادات) */
-.central-card, .modal-content, .math-card {
-    background: var(--card-bg);
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 10px 40px var(--shadow);
-    width: 90%;
-    max-width: 420px;
-    text-align: center;
-    animation: fadeIn 0.4s ease-out;
-}
-
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
 /* =========================================
-   3. ساحة اللعب (The Grid Arena)
+   3. العناصر والبطاقات (Cards & UI)
    ========================================= */
-.game-layout {
-    display: flex; flex-direction: column;
-    width: 100%; height: 100%;
-    max-width: 1000px; padding: 20px; box-sizing: border-box;
-}
-
-.game-header {
-    display: flex; justify-content: space-between; align-items: center;
-    height: 15vh;
-}
-
-.board-arena {
-    flex: 1;
-    display: flex; align-items: center; justify-content: center;
-}
-
-/* تثبيت اللوحة (الحل الجذري للزحف) */
-#ultimate-board {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
-    width: min(70vh, 90vw); height: min(70vh, 90vw);
-    background: rgba(0,0,0,0.05); padding: 10px; border-radius: 15px;
-}
-
-.local-board {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;
-}
-
-/* المربعات الصغيرة (ثابتة الحجم) */
-.cell {
+.glass-card, .modal-card {
     background: var(--card-bg);
-    aspect-ratio: 1/1; border-radius: 6px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.5rem; font-weight: bold; cursor: pointer;
-    box-shadow: inset 0 0 0 1px var(--input-border);
-    transition: transform 0.2s;
+    padding: 30px; border-radius: 20px;
+    box-shadow: 0 12px 40px var(--shadow);
+    width: 90%; max-width: 450px; text-align: center;
+    border: 1px solid var(--border-color);
 }
 
-.cell:hover { transform: scale(1.02); }
-.cell.X { color: var(--x-neon); }
-.cell.O { color: var(--o-neon); }
+.main-title { font-size: 2.2rem; margin-bottom: 20px; color: var(--o-color); }
 
-/* =========================================
-   4. العناصر التفاعلية (Inputs & Buttons)
-   ========================================= */
-.inputs-section input, .inputs-section select {
+.setup-form input, .setup-form select {
     width: 100%; padding: 12px; margin: 8px 0;
-    border-radius: 10px; border: 1px solid var(--input-border);
-    background: var(--card-bg); color: var(--text-main); font-size: 1rem;
+    border-radius: 10px; border: 1px solid var(--border-color);
+    background: var(--bg-main); color: var(--text-primary);
+    font-size: 1rem; box-sizing: border-box;
 }
 
-.start-btn, .close-modal {
-    width: 100%; padding: 15px; margin-top: 15px; border-radius: 12px;
-    border: none; background: var(--accent); color: white;
+.start-game-btn {
+    width: 100%; padding: 15px; margin-top: 15px;
+    border-radius: 12px; border: none;
+    background: var(--accent-color); color: white;
     font-size: 1.2rem; font-weight: bold; cursor: pointer;
 }
 
-/* بوب آب السؤال */
-.math-card { border: 3px solid var(--o-neon); }
-#equation-text { font-size: 2.2rem; margin: 15px 0; direction: ltr; }
-.answer-box { font-size: 3rem; color: var(--accent); min-height: 1.2em; margin-bottom: 10px; }
-
-.numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.numpad button {
-    padding: 15px; border-radius: 8px; border: 1px solid var(--input-border);
-    background: var(--bg-main); color: var(--text-main); font-size: 1.2rem; cursor: pointer;
+/* =========================================
+   4. ساحة اللعب واللوحة (The Grid)
+   ========================================= */
+.game-container {
+    width: 100%; height: 100%; max-width: 1000px;
+    display: flex; flex-direction: column; padding: 20px; box-sizing: border-box;
 }
 
-.c-btn { color: var(--x-neon) !important; }
+.game-header { height: 15vh; display: flex; justify-content: space-between; align-items: center; }
+
+.player-panel { background: var(--card-bg); padding: 10px 25px; border-radius: 12px; min-width: 140px; box-shadow: 0 4px 10px var(--shadow); }
+.x-side { border-bottom: 5px solid var(--x-color); }
+.o-side { border-bottom: 5px solid var(--o-color); }
+
+.timer-hub { font-size: 2.5rem; font-weight: bold; color: var(--accent-color); }
+
+.board-area { flex: 1; display: flex; align-items: center; justify-content: center; }
+
+#ultimate-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+    width: min(65vh, 90vw); height: min(65vh, 90vw);
+    background: var(--border-color); padding: 10px; border-radius: 15px;
+}
+
+.local-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+
+.cell {
+    background: var(--card-bg); aspect-ratio: 1/1; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem; font-weight: bold; cursor: pointer;
+}
+.cell.X { color: var(--x-color); }
+.cell.O { color: var(--o-color); }
+
+/* =========================================
+   5. النوافذ المنبثقة (Popups)
+   ========================================= */
+.modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+    display: flex; align-items: center; justify-content: center; z-index: 1000;
+}
+
+.help-scroll-area { max-height: 300px; overflow-y: auto; text-align: right; padding: 10px; }
+
+.math-card { border: 3px solid var(--o-color); }
+#equation-text { font-size: 2.2rem; margin: 15px 0; direction: ltr; }
+.answer-zone { font-size: 3rem; color: var(--accent-color); min-height: 1.2em; margin-bottom: 15px; }
+
+.numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.numpad button {
+    padding: 15px; border-radius: 8px; border: 1px solid var(--border-color);
+    background: var(--bg-main); color: var(--text-primary); font-size: 1.2rem; cursor: pointer;
+}
+.clr-btn { color: var(--x-color) !important; }
