@@ -2,173 +2,189 @@
    1. المتغيرات والبيانات الأساسية
    ========================================= */
 let currentTurn = 'X';
-let isGameActive = false;
-let activeBigIdx = null; // يحدد المربع الكبير المسموح اللعب فيه
+let gameActive = false;
+let activeBigIdx = null; 
 let bigBoardStatus = Array(9).fill(null); 
 let internalLogic = Array(9).fill(null).map(() => Array(9).fill(null));
 
-let selectedLevel = 1, timerLimit, countdown, targetCell, mathAns;
-let inputBuffer = "";
+let selectedLvl = 1, timerLimit = 10, countdown, targetCell, correctAns;
+let playerInput = "";
 
-// ربط العناصر الرئيسية لضمان الوصول السريع وعدم تعطل الأزرار
+// ربط العناصر الرئيسية
 const setupView = document.getElementById('setup-view');
 const gameView = document.getElementById('game-view');
-const mathModal = document.getElementById('modalMathChallenge');
-const helpModal = document.getElementById('modalInstructions');
+const modalLayer = document.getElementById('modal-layer');
+const mathPane = document.getElementById('math-pane');
+const helpPane = document.getElementById('help-pane');
 
 /* =========================================
-   2. تهيئة الواجهة عند التشغيل
+   2. التهيئة وضوابط البداية
    ========================================= */
-document.querySelectorAll('.level-box').forEach(box => {
-    box.addEventListener('click', () => {
-        document.querySelectorAll('.level-box').forEach(b => b.classList.remove('active'));
-        box.classList.add('active');
-        selectedLevel = parseInt(box.dataset.lvl);
+document.querySelectorAll('.lvl-card').forEach(card => {
+    card.addEventListener('click', () => {
+        document.querySelectorAll('.lvl-card').forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+        selectedLvl = parseInt(card.dataset.lvl);
     });
 });
 
-// تفعيل زر البدء بشكل مباشر وصارم
-document.getElementById('btnStartGame').addEventListener('click', launchTheGame);
+document.getElementById('btnLaunchGame').addEventListener('click', startGame);
 
-function launchTheGame() {
-    // جلب الإعدادات
-    timerLimit = parseInt(document.getElementById('timerConfig').value);
-    const pX = document.getElementById('nameX').value || "TEAM X";
-    const pO = document.getElementById('nameO').value || "TEAM O";
-    
-    document.getElementById('displayNameX').textContent = pX;
-    document.getElementById('displayNameO').textContent = pO;
+function startGame() {
+    timerLimit = parseInt(document.getElementById('configTimer').value);
+    document.getElementById('viewNameX').textContent = document.getElementById('nameInputX').value || "TEAM X";
+    document.getElementById('viewNameO').textContent = document.getElementById('nameInputO').value || "TEAM O";
 
-    // تصفير بيانات اللعبة
+    // تصفير شامل
     bigBoardStatus.fill(null);
     internalLogic = Array(9).fill(null).map(() => Array(9).fill(null));
-    currentTurn = 'X'; activeBigIdx = null; isGameActive = true;
+    currentTurn = 'X'; activeBigIdx = null; gameActive = true;
 
-    // بناء اللوحة هندسياً برمجياً لضمان التمركز
-    const grid = document.getElementById('grid-ultimate-81');
+    // بناء اللوحة برمجياً لضمان سلامة الروابط
+    const grid = document.getElementById('main-grid-ultimate');
     grid.innerHTML = '';
     for (let i = 0; i < 9; i++) {
         const lb = document.createElement('div');
         lb.className = 'local-board';
-        lb.dataset.board = i;
+        lb.id = `big-${i}`;
         for (let j = 0; j < 9; j++) {
             const c = document.createElement('div');
             c.className = 'cell';
-            c.dataset.cell = j;
-            c.onclick = () => onCellInteraction(c);
+            c.dataset.b = i; c.dataset.c = j;
+            c.onclick = () => onCellSelection(c);
             lb.appendChild(c);
         }
         grid.appendChild(lb);
     }
 
-    // الانتقال بين الشاشات
     setupView.classList.remove('active');
     gameView.classList.add('active');
-    syncArenaState();
+    updateArenaUI();
 }
 
 /* =========================================
-   3. منطق التحدي الرياضي (المستويات 1-4)
+   3. محرك التحدي الرياضي الذكي
    ========================================= */
-function generateChallenge() {
-    let a, b, op, ans, text;
-    const getRnd = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+function generateMath() {
+    let a, b, op, ans, display;
+    const getR = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+    const type = ['+', '-', '*', '/'][Math.floor(Math.random() * 4)];
 
-    // محرك العمليات الأساسية
-    const types = ['+', '-', '*', '/'];
-    const type = types[Math.floor(Math.random() * types.length)];
+    if (type === '+') { a = getR(2, 9); b = getR(2, 9); ans = a + b; op = '+'; }
+    else if (type === '-') { a = getR(10, 18); b = getR(2, 9); ans = a - b; op = '-'; }
+    else if (type === '*') { a = getR(2, 9); b = getR(2, 9); ans = a * b; op = '×'; }
+    else { ans = getR(2, 9); b = getR(2, 9); a = ans * b; op = '÷'; }
 
-    if (type === '+') { a = getRnd(1, 9); b = getRnd(1, 9); ans = a + b; op = '+'; }
-    else if (type === '-') { a = getRnd(10, 18); b = getRnd(1, 9); ans = a - b; op = '-'; }
-    else if (type === '*') { a = getRnd(2, 9); b = getRnd(2, 9); ans = a * b; op = '×'; }
-    else { ans = getRnd(2, 9); b = getRnd(2, 9); a = ans * b; op = '÷'; }
-
-    // تشكيل السؤال حسب المستوى المختار
-    switch(selectedLevel) {
-        case 1: text = `${a} ${op} ${b} = ?`; mathAns = ans; break;
-        case 2: text = `? ${op} ${b} = ${ans}`; mathAns = a; break;
-        case 3: text = `? ${op} ? = ${ans}`; mathAns = a; break; // يمنع 1 من getRnd
-        case 4: let offset = getRnd(1, 3); text = `${a} ${op} ${b} = ? + ${offset}`; mathAns = ans - offset; break;
+    switch(selectedLvl) {
+        case 1: display = `${a} ${op} ${b} = ?`; correctAns = ans; break;
+        case 2: display = `? ${op} ${b} = ${ans}`; correctAns = a; break;
+        case 3: display = `? ${op} ? = ${ans}`; correctAns = a; break; 
+        case 4: let off = getR(1, 4); display = `${a} ${op} ${b} = ? + ${off}`; correctAns = ans - off; break;
     }
-
-    document.getElementById('math-equation-text').textContent = text;
-    document.getElementById('math-lvl-tag').textContent = `تحدي المستوى 0${selectedLevel}`;
+    document.getElementById('mathEq').textContent = display;
+    document.getElementById('mathTag').textContent = `تحدي المستوى 0${selectedLvl}`;
 }
 
 /* =========================================
-   4. إدارة اللعب والحركة
+   4. إدارة الحركة ومنع الانهيار
    ========================================= */
-function onCellInteraction(cell) {
-    const bIdx = parseInt(cell.parentElement.dataset.board);
-    if (!isGameActive || cell.textContent || bigBoardStatus[bIdx]) return;
+function onCellSelection(cell) {
+    const bIdx = parseInt(cell.dataset.b);
+    if (!gameActive || cell.textContent || bigBoardStatus[bIdx]) return;
     if (activeBigIdx !== null && activeBigIdx !== bIdx) return;
 
     targetCell = cell;
-    inputBuffer = "";
-    document.getElementById('math-input-preview').textContent = "_";
+    playerInput = "";
+    document.getElementById('mathInput').textContent = "_";
     
-    mathModal.style.display = "flex";
-    generateChallenge();
-    initTimer();
+    modalLayer.style.display = "flex";
+    mathPane.style.display = "block";
+    helpPane.style.display = "none";
+    
+    generateMath();
+    startTimer();
 }
 
-function handleKeyPress(num) {
-    inputBuffer += num;
-    document.getElementById('math-input-preview').textContent = inputBuffer;
-    if (parseInt(inputBuffer) === mathAns) {
+function nPress(n) {
+    playerInput += n;
+    document.getElementById('mathInput').textContent = playerInput;
+    if (parseInt(playerInput) === correctAns) {
         clearInterval(countdown);
-        setTimeout(finalizeMove, 300);
-    } else if (inputBuffer.length >= 4) { handleClear(); }
+        setTimeout(processSuccess, 200);
+    } else if (playerInput.length >= 4) { nClear(); }
 }
 
-function finalizeMove() {
-    mathModal.style.display = "none";
-    const bIdx = parseInt(targetCell.parentElement.dataset.board);
-    const cIdx = parseInt(targetCell.dataset.cell);
+function processSuccess() {
+    hideAllModals();
+    if (!targetCell) return; // حماية ضد الانهيار
 
+    const bIdx = parseInt(targetCell.dataset.b);
+    const cIdx = parseInt(targetCell.dataset.c);
+
+    // تسجيل الحركة في المنطق والواجهة
     targetCell.textContent = currentTurn;
     targetCell.classList.add(currentTurn);
     internalLogic[bIdx][cIdx] = currentTurn;
 
-    // تحديد المربع التالي (قوة التوجيه)
+    // التحقق من فوز المربع الكبير (بدون مسح المكونات)
+    if (checkSmallWin(internalLogic[bIdx])) {
+        bigBoardStatus[bIdx] = currentTurn;
+        applyWinOverlay(bIdx, currentTurn);
+    }
+
+    // تحديد التوجيه القادم (قوة اللعب الحر)
     activeBigIdx = (bigBoardStatus[cIdx] === null) ? cIdx : null;
     currentTurn = (currentTurn === 'X') ? 'O' : 'X';
-    syncArenaState();
+    updateArenaUI();
+}
+
+function applyWinOverlay(bIdx, winner) {
+    const bigBox = document.getElementById(`big-${bIdx}`);
+    const overlay = document.createElement('div');
+    overlay.className = 'board-win-overlay';
+    overlay.textContent = winner;
+    overlay.style.color = (winner === 'X') ? 'var(--accent-x)' : 'var(--accent-o)';
+    bigBox.appendChild(overlay);
 }
 
 /* =========================================
-   5. المساعدات والواجهة
+   5. المساعدات والتحقق
    ========================================= */
-function initTimer() {
+function checkSmallWin(board) {
+    const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+    return lines.some(l => board[l[0]] && board[l[0]] === board[l[1]] && board[l[0]] === board[l[2]]);
+}
+
+function startTimer() {
     if (timerLimit === 0) return;
     let s = timerLimit;
-    const prog = document.getElementById('timer-progress');
-    const txt = document.getElementById('timer-countdown');
+    const prog = document.getElementById('orb-prog');
+    const txt = document.getElementById('orb-text');
     clearInterval(countdown);
     countdown = setInterval(() => {
         s--;
         txt.textContent = s;
         prog.style.strokeDashoffset = 283 - (s / timerLimit * 283);
         if (s <= 0) {
-            clearInterval(countdown);
-            mathModal.style.display = "none";
-            activeBigIdx = null; 
-            currentTurn = (currentTurn === 'X') ? 'O' : 'X';
-            syncArenaState();
+            clearInterval(countdown); hideAllModals();
+            activeBigIdx = null; currentTurn = (currentTurn === 'X') ? 'O' : 'X';
+            updateArenaUI();
         }
     }, 1000);
 }
 
-function syncArenaState() {
-    document.getElementById('p-stats-X').style.opacity = (currentTurn === 'X') ? "1" : "0.3";
-    document.getElementById('p-stats-O').style.opacity = (currentTurn === 'O') ? "1" : "0.3";
+function updateArenaUI() {
+    document.getElementById('card-X').style.opacity = (currentTurn === 'X') ? "1" : "0.3";
+    document.getElementById('card-O').style.opacity = (currentTurn === 'O') ? "1" : "0.3";
     document.querySelectorAll('.local-board').forEach((lb, i) => {
         lb.style.opacity = (activeBigIdx === null || activeBigIdx === i) ? "1" : "0.1";
+        lb.style.pointerEvents = (activeBigIdx === null || activeBigIdx === i) ? "all" : "none";
     });
-    document.getElementById('free-play-msg').classList.toggle('hidden', activeBigIdx !== null);
+    document.getElementById('logicBanner').classList.toggle('hidden', activeBigIdx !== null);
 }
 
-function toggleInstructionModal(show) { helpModal.style.display = show ? "flex" : "none"; }
-function toggleVisualMode() { document.body.classList.toggle('dark-mode'); }
-function handleClear() { inputBuffer = ""; document.getElementById('math-input-preview').textContent = "_"; }
-function handleDelete() { inputBuffer = inputBuffer.slice(0, -1); document.getElementById('math-input-preview').textContent = inputBuffer || "_"; }
+function showHelpModal() { modalLayer.style.display = "flex"; helpPane.style.display = "block"; mathPane.style.display = "none"; }
+function hideAllModals() { modalLayer.style.display = "none"; }
+function nClear() { playerInput = ""; document.getElementById('mathInput').textContent = "_"; }
+function nDel() { playerInput = playerInput.slice(0,-1); document.getElementById('mathInput').textContent = playerInput || "_"; }
+function toggleTheme() { document.body.classList.toggle('dark-mode'); }
