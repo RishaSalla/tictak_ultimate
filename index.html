@@ -3,87 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PLATFORM X - MATH CHALLENGE</title>
+    <title>منصة التحدي الرياضي الاحترافية | X-MATH</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <section id="setup-screen" class="screen">
-        <div class="glass-container">
-            <h1 class="glitch-text">تحدي الميزان الرياضي</h1>
+        <div class="glass-panel">
+            <h1 class="neon-title">X-MATH CHALLENGE</h1>
             
-            <div class="identity-section">
-                <div class="input-box">
-                    <input type="text" id="team-a" required>
-                    <label>اسم الفريق الأول</label>
+            <div class="identity-grid">
+                <div class="input-field">
+                    <input type="text" id="team-a" placeholder="اسم الفريق الأول" spellcheck="false">
                 </div>
-                <div class="vs-badge">VS</div>
-                <div class="input-box">
-                    <input type="text" id="team-b" required>
-                    <label>اسم الفريق الثاني</label>
+                <div class="vs-glow">VS</div>
+                <div class="input-field">
+                    <input type="text" id="team-b" placeholder="اسم الفريق الثاني" spellcheck="false">
                 </div>
             </div>
 
-            <div class="config-section">
+            <div class="config-row">
+                <label>تحديد مستوى المهمة:</label>
                 <select id="level-select">
-                    <option value="level1">LEVEL 01: CLASSIC</option>
-                    <option value="level2">LEVEL 02: UNKNOWN</option>
-                    <option value="level3">LEVEL 03: DOUBLE</option>
-                    <option value="level4">LEVEL 04: BALANCE</option>
+                    <option value="level1">LEVEL 01: الكلاسيكي</option>
+                    <option value="level2">LEVEL 02: المجهول الشامل</option>
+                    <option value="level3">LEVEL 03: المزدوج الشامل</option>
+                    <option value="level4">LEVEL 04: الميزان الاحترافي</option>
                 </select>
             </div>
 
-            <div class="manual-section">
-                <h3 class="manual-title">الدليل التشغيلي للمنصة</h3>
-                <div class="manual-body">
-                    <h4>أولاً: الميكانيكا العامة</h4>
-                    <p>تعتمد المنصة نظام المصفوفة الحسابية المتقدمة (9x9). الهدف هو تحقيق استقرار رياضي كامل في 81 خلية عبر حل العمليات الحسابية المتغيرة.</p>
-                    
-                    <h4>ثانياً: بروتوكول المستويات</h4>
-                    <p><strong>المستوى الأول:</strong> معالجة نواتج العمليات المباشرة بدقة متناهية.</p>
-                    <p><strong>المستوى الثاني:</strong> استنتاج المتغير المجهول (X) في قلب المعادلة الرياضية.</p>
-                    <p><strong>المستوى الثالث:</strong> نظام الحلول المتعددة؛ يتطلب إدخال رقمين متتاليين يحققان الناتج المستهدف في خلية واحدة.</p>
-                    <p><strong>المستوى الرابع:</strong> تحقيق التكافؤ؛ يجب موازنة طرفي المعادلة لضمان تساوي الكفتين برقم واحد مفقود.</p>
-                    
-                    <h4>ثالثاً: معايير الفوز والنزاهة</h4>
-                    <p>يتم إعلان الفوز عند الوصول لنسبة إكمال 100% (81/81). النظام لا يعيد تكرار أي عملية حسابية تم فك شفرتها سابقاً لضمان تجربة فريدة في كل مرة.</p>
+            <div class="manual-dashboard">
+                <h3 class="manual-header">الدليل التشغيلي للمنصة</h3>
+                <div class="manual-content">
+                    <div class="manual-section">
+                        <h4>1. ميكانيكا التحدي</h4>
+                        <p>تعتمد المنصة مصفوفة رياضية مكونة من 81 خلية نشطة. الهدف هو فك شفرة جميع الخلايا بنسبة دقة 100%.</p>
+                    </div>
+                    <div class="manual-section">
+                        <h4>2. بروتوكول المستويات</h4>
+                        <p><strong>• الكلاسيكي:</strong> معالجة نواتج العمليات الحسابية المباشرة.</p>
+                        <p><strong>• المجهول:</strong> استنتاج قيمة المتغير (؟) المفقود في قلب المعادلة.</p>
+                        <p><strong>• المزدوج:</strong> نظام الحل المزدوج؛ يتطلب إدخال رقمين متتاليين لتحقيق الناتج المستهدف.</p>
+                        <p><strong>• الميزان:</strong> تحقيق التكافؤ؛ الرقم المدخل يجب أن يجعل قيمة الطرف الأيسر تساوي الطرف الأيمن.</p>
+                    </div>
+                    <div class="manual-section">
+                        <h4>3. قواعد النزاهة والفوز</h4>
+                        <p>يتم إعلان الفوز عند اكتمال 81/81 خلية. النظام يضمن تجربة فريدة في كل جولة عبر خوارزمية سحب عشوائي غير مكرر.</p>
+                    </div>
                 </div>
             </div>
 
-            <button id="launch-btn" class="main-btn">تفعيل التحدي</button>
+            <button id="launch-btn" class="main-action-btn">تفعيل التحدي</button>
         </div>
     </section>
 
     <section id="game-screen" class="screen hidden">
-        <div class="game-ui-layout">
-            <header class="top-bar">
-                <div class="team-info left" id="display-team-a">TEAM 01</div>
-                <div class="central-stats">
-                    <div class="score-display"><span id="score-a">0</span> : <span id="score-b">0</span></div>
-                    <div id="timer">00:00</div>
+        <div class="game-container">
+            <header class="status-bar">
+                <div class="team-label" id="label-a">TEAM 01</div>
+                <div class="central-info">
+                    <div class="live-score"><span id="score-a">0</span> : <span id="score-b">0</span></div>
+                    <div id="game-timer">00:00</div>
                 </div>
-                <div class="team-info right" id="display-team-b">TEAM 02</div>
+                <div class="team-label" id="label-b">TEAM 02</div>
             </header>
 
-            <main id="game-board" class="neon-grid"></main>
+            <main id="game-board" class="precision-grid"></main>
 
-            <footer class="bottom-bar">
-                <div id="numpad" class="digital-numpad"></div>
-                <div class="action-panel">
-                    <button id="help-btn" class="icon-btn">التعليمات</button>
-                    <button id="clear-btn" class="icon-btn">مسح</button>
-                    <button id="exit-btn" class="icon-btn logout">إنهاء</button>
+            <footer class="input-controls">
+                <div id="numpad" class="cyber-keys"></div>
+                <div class="utility-btns">
+                    <button id="help-trigger" class="u-btn">التعليمات</button>
+                    <button id="clear-cell" class="u-btn">مسح</button>
+                    <button id="terminate-game" class="u-btn danger">إنهاء</button>
                 </div>
             </footer>
         </div>
 
-        <div id="side-manual" class="side-panel hidden">
+        <div id="quick-manual" class="side-panel hidden">
             <div class="panel-header">
-                <h3>دليل المساعدة السريع</h3>
-                <button id="close-manual">X</button>
+                <h3>دليل المساعدة</h3>
+                <button id="close-manual">×</button>
             </div>
-            <div id="dynamic-manual-content" class="panel-body">
-                </div>
+            <div id="manual-text-dynamic" class="panel-body"></div>
         </div>
     </section>
 
