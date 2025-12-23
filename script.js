@@ -1,204 +1,173 @@
 /**
- * X-MATH CHALLENGE ENGINE v4.0
- * المحرك البرمجي المتكامل للتعامل مع ملفات JSON الأربعة
+ * ULTIMATE X-O MATH ENGINE
+ * المحرك النهائي: خلايا مخفية، حاسبة منبثقة، ومنطق فوز مزدوج
  */
 
-let gameData = {
-    level: null,
-    pool: [],
-    selectedCells: [],
+let gameState = {
+    levelData: null,
+    currentPlayer: 'X', // X يبدأ دائماً
+    scores: { X: 0, O: 0 },
+    bigBoard: Array(9).fill(null), // تتبع المربعات الـ 9 الكبرى
+    activeCell: null,
     timer: null,
-    seconds: 0,
-    activeCellIndex: null,
-    teamA: "الفريق الأول",
-    teamB: "الفريق الثاني",
-    scoreA: 0,
-    scoreB: 0,
-    currentPlayer: 'A' // التبديل التلقائي بين الفريقين
+    seconds: 0
 };
 
-// 1. إدارة الشاشات والبدء
+// 1. بدء اللعبة وتحميل البيانات
 document.getElementById('launch-btn').addEventListener('click', async () => {
     const level = document.getElementById('level-select').value;
-    const teamA = document.getElementById('team-a').value.trim() || "الفريق الأول";
-    const teamB = document.getElementById('team-b').value.trim() || "الفريق الثاني";
+    const teamA = document.getElementById('team-a').value.trim() || "فريق X";
+    const teamB = document.getElementById('team-b').value.trim() || "فريق O";
 
     try {
         const response = await fetch(`data/${level}.json`);
         const data = await response.json();
+        gameState.levelData = preparePool(data.pool, level);
         
-        gameData.level = level;
-        gameData.teamA = teamA;
-        gameData.teamB = teamB;
-        
-        preparePool(data.pool);
-        setupGameUI();
+        document.getElementById('name-a').textContent = teamA;
+        document.getElementById('name-b').textContent = teamB;
+        document.getElementById('current-turn-display').textContent = teamA;
+
+        initUltimateBoard();
         startTimer();
         
         document.getElementById('setup-screen').classList.add('hidden');
         document.getElementById('game-screen').classList.remove('hidden');
-    } catch (error) {
-        alert("فشل تحميل ملف المستوى. تأكد من وجود المجلد data والملفات بداخله.");
+    } catch (e) {
+        alert("خطأ في تحميل ملف المستوى!");
     }
 });
 
-// 2. معالجة مصفوفة البيانات (تحويلها لـ 81 خلية)
-function preparePool(pool) {
-    let easy = [];
-    let hard = [];
-
-    // التكيف مع مسميات ملفاتك المختلفة
-    if (gameData.level === 'level4') {
+// 2. تجهيز مصفوفة العمليات (81 عملية عشوائية)
+function preparePool(pool, level) {
+    let easy = [], hard = [];
+    if (level === 'level4') {
         easy = pool.ones_group_10_percent;
         hard = pool.strict_challenges_90_percent;
-    } else if (gameData.level === 'level3') {
+    } else if (level === 'level3') {
         easy = pool.only_ones_group;
         hard = pool.strict_challenges_2_to_9;
     } else {
         easy = pool.ones_group || [];
         hard = pool.core_challenges || pool.all_challenges || [];
     }
-
-    // سحب 8 عمليات سهلة (10%) و 73 عملية صعبة (90%)
-    const selectedEasy = shuffle(easy).slice(0, 8);
-    const selectedHard = shuffle(hard).slice(0, 73);
-    
-    gameData.selectedCells = shuffle([...selectedEasy, ...selectedHard]);
+    return [...shuffle(easy).slice(0, 8), ...shuffle(hard).slice(0, 73)].sort(() => Math.random() - 0.5);
 }
 
-// 3. بناء لوحة اللعب
-function setupGameUI() {
-    const board = document.getElementById('game-board');
-    const numpad = document.getElementById('numpad');
-    
-    document.getElementById('label-a').textContent = gameData.teamA;
-    document.getElementById('label-b').textContent = gameData.teamB;
-
+// 3. بناء اللوحة الكبرى (9 مربعات كبرى)
+function initUltimateBoard() {
+    const board = document.getElementById('ultimate-board');
     board.innerHTML = '';
-    gameData.selectedCells.forEach((item, index) => {
-        const cell = document.createElement('div');
-        cell.className = 'cell';
-        cell.id = `cell-${index}`;
-        cell.innerHTML = `<span class="q-text">${item.q}</span><span class="a-val"></span>`;
-        cell.onclick = () => selectCell(index);
-        board.appendChild(cell);
-    });
+    
+    for (let i = 0; i < 9; i++) {
+        const subGrid = document.createElement('div');
+        subGrid.className = 'sub-grid';
+        subGrid.id = `grid-${i}`;
+        
+        // بناء 9 خلايا داخل كل مربع كبير
+        for (let j = 0; j < 9; j++) {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            cell.dataset.grid = i;
+            cell.dataset.index = j;
+            cell.onclick = () => openMathModal(i, j);
+            subGrid.appendChild(cell);
+        }
+        board.appendChild(subGrid);
+    }
+    initModalNumpad();
+}
 
-    // بناء لوحة الأرقام 1-9 مع الصفر
-    numpad.innerHTML = '';
-    [1, 2, 3, 4, 5, 6, 7, 8, 9, 0].forEach(num => {
+// 4. نظام الـ Modal (الحاسبة المنبثقة)
+function openMathModal(gridIdx, cellIdx) {
+    const subGrid = document.getElementById(`grid-${gridIdx}`);
+    if (subGrid.classList.contains('won-x') || subGrid.classList.contains('won-o')) return;
+    
+    const cell = subGrid.children[cellIdx];
+    if (cell.textContent !== '') return;
+
+    gameState.activeCell = { gridIdx, cellIdx, cell };
+    const op = gameState.levelData[(gridIdx * 9) + cellIdx];
+    
+    // تصحيح العلامات برمجياً للعرض فقط
+    let displayQ = op.q.replace(/\*/g, '×').replace(/\//g, '÷');
+    document.getElementById('modal-op-display').textContent = displayQ;
+    document.getElementById('modal-input-display').textContent = '';
+    document.getElementById('math-modal').classList.remove('hidden');
+}
+
+function initModalNumpad() {
+    const pad = document.querySelector('.modal-numpad');
+    pad.innerHTML = '';
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 0].forEach(n => {
         const btn = document.createElement('button');
-        btn.textContent = num;
-        btn.onclick = () => handleInput(num);
-        numpad.appendChild(btn);
+        btn.className = 'numpad-btn';
+        btn.textContent = n;
+        btn.onclick = () => document.getElementById('modal-input-display').textContent += n;
+        pad.appendChild(btn);
     });
 }
 
-// 4. منطق الإدخال والتحقق
-function selectCell(index) {
-    if (document.getElementById(`cell-${index}`).classList.contains('correct')) return;
+// 5. التحقق من الإجابة والسيطرة
+document.getElementById('confirm-ans').onclick = () => {
+    const input = document.getElementById('modal-input-display').textContent;
+    const op = gameState.levelData[(gameState.activeCell.gridIdx * 9) + gameState.activeCell.cellIdx];
     
-    if (gameData.activeCellIndex !== null) {
-        document.getElementById(`cell-${gameData.activeCellIndex}`).classList.remove('active');
-    }
-    gameData.activeCellIndex = index;
-    document.getElementById(`cell-${index}`).classList.add('active');
-}
-
-function handleInput(num) {
-    if (gameData.activeCellIndex === null) return;
-    
-    const cell = document.getElementById(`cell-${gameData.activeCellIndex}`);
-    const item = gameData.selectedCells[gameData.activeCellIndex];
-    const display = cell.querySelector('.a-val');
-
-    // منطق المستوى الثالث (الأرقام المزدوجة)
-    if (gameData.level === 'level3') {
-        if (!display.textContent) {
-            display.textContent = num; // الرقم الأول
-        } else if (display.textContent.length === 1) {
-            const firstNum = parseInt(display.textContent);
-            const secondNum = num;
-            display.textContent += ` , ${secondNum}`;
-            
-            // التحقق من مصفوفة الـ pairs
-            const isValid = item.pairs.some(p => 
-                (p[0] === firstNum && p[1] === secondNum) || 
-                (p[0] === secondNum && p[1] === firstNum)
-            );
-
-            if (isValid) {
-                finalizeCell(cell);
-            } else {
-                failCell(cell, display);
-            }
-        }
+    if (parseInt(input) === op.a) {
+        applyMark();
+        document.getElementById('math-modal').classList.add('hidden');
     } else {
-        // التحقق للمستويات 1, 2, 4 (رقم واحد)
-        display.textContent = num;
-        if (parseInt(item.a) === num) {
-            finalizeCell(cell);
-        } else {
-            failCell(cell, display);
+        alert("إجابة خاطئة! حاول مجدداً.");
+        document.getElementById('modal-input-display').textContent = '';
+    }
+};
+
+function applyMark() {
+    const { cell, gridIdx } = gameState.activeCell;
+    const mark = gameState.currentPlayer;
+    cell.textContent = mark;
+    cell.classList.add(mark === 'X' ? 'x-mark' : 'o-mark');
+
+    // فحص فوز المربع الصغير
+    if (checkWinner(Array.from(cell.parentElement.children).map(c => c.textContent))) {
+        const subGrid = cell.parentElement;
+        subGrid.classList.add(mark === 'X' ? 'won-x' : 'won-o');
+        subGrid.setAttribute('data-winner', mark);
+        gameState.bigBoard[gridIdx] = mark;
+        
+        // فحص فوز اللوحة الكبرى
+        if (checkWinner(gameState.bigBoard)) {
+            alert(`مبروك! فاز الفريق ${mark === 'X' ? gameState.currentPlayer : gameState.currentPlayer} بالبطولة!`);
+            location.reload(); 
         }
     }
-}
-
-function finalizeCell(cell) {
-    cell.classList.remove('active');
-    cell.classList.add('correct');
     
-    // إضافة النقاط للفريق الحالي
-    if (gameData.currentPlayer === 'A') {
-        gameData.scoreA++;
-        document.getElementById('score-a').textContent = gameData.scoreA;
-        gameData.currentPlayer = 'B'; // تبديل الدور
-    } else {
-        gameData.scoreB++;
-        document.getElementById('score-b').textContent = gameData.scoreB;
-        gameData.currentPlayer = 'A';
-    }
-    gameData.activeCellIndex = null;
-    checkWin();
+    // تبديل الدور
+    gameState.currentPlayer = gameState.currentPlayer === 'X' ? 'O' : 'X';
+    document.getElementById('current-turn-display').textContent = 
+        gameState.currentPlayer === 'X' ? document.getElementById('name-a').textContent : document.getElementById('name-b').textContent;
 }
 
-function failCell(cell, display) {
-    cell.classList.add('shake');
-    setTimeout(() => {
-        cell.classList.remove('shake');
-        display.textContent = '';
-    }, 500);
+// 6. منطق الفوز (XO التقليدي)
+function checkWinner(board) {
+    const lines = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8], // أفقي
+        [0, 3, 6], [1, 4, 7], [2, 5, 8], // عمودي
+        [0, 4, 8], [2, 4, 6]             // قطري
+    ];
+    return lines.some(line => board[line[0]] && board[line[0]] === board[line[1]] && board[line[0]] === board[line[2]]);
 }
 
-// 5. وظائف مساعدة
-function shuffle(array) {
-    return array.sort(() => Math.random() - 0.5);
-}
+function shuffle(array) { return array.sort(() => Math.random() - 0.5); }
 
 function startTimer() {
-    if (gameData.timer) clearInterval(gameData.timer);
-    gameData.seconds = 0;
-    gameData.timer = setInterval(() => {
-        gameData.seconds++;
-        let m = Math.floor(gameData.seconds / 60).toString().padStart(2, '0');
-        let s = (gameData.seconds % 60).toString().padStart(2, '0');
+    gameState.timer = setInterval(() => {
+        gameState.seconds++;
+        let m = Math.floor(gameState.seconds / 60).toString().padStart(2, '0');
+        let s = (gameState.seconds % 60).toString().padStart(2, '0');
         document.getElementById('game-timer').textContent = `${m}:${s}`;
     }, 1000);
 }
 
-function checkWin() {
-    const corrects = document.querySelectorAll('.cell.correct').length;
-    if (corrects === 81) {
-        clearInterval(gameData.timer);
-        alert(`تهانينا! اكتمل التحدي.\nالنتيجة النهائية:\n${gameData.teamA}: ${gameData.scoreA}\n${gameData.teamB}: ${gameData.scoreB}`);
-    }
-}
-
-// أزرار التحكم الإضافية
-document.getElementById('clear-cell').onclick = () => {
-    if (gameData.activeCellIndex !== null) {
-        document.getElementById(`cell-${gameData.activeCellIndex}`).querySelector('.a-val').textContent = '';
-    }
-};
-
-document.getElementById('terminate-game').onclick = () => location.reload();
+document.getElementById('close-modal').onclick = () => document.getElementById('math-modal').classList.add('hidden');
+document.getElementById('restart-game').onclick = () => location.reload();
