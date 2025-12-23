@@ -3,148 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>XO - Professional Edition</title>
+    <title>منصة التحدي الرياضي المحترف</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div id="digital-background"></div>
-    <div id="glow-overlay"></div>
 
-    <div id="main-app-container">
-        
-        <div id="setup-screen" class="screen-layer active">
-            <div class="pro-card">
-                <div class="brand-zone">
-                    <h1 class="glitch-logo" data-text="XO">XO</h1>
-                    <p class="tagline">التحدي الرياضي الاستراتيجي</p>
-                </div>
+    <section id="setup-screen" class="screen">
+        <div class="setup-panel">
+            <h1>إعدادات المباراة</h1>
+            
+            <div class="input-group">
+                <input type="text" id="team-a" placeholder="اسم الفريق الأول / اللاعب 1">
+                <span class="vs">ضد</span>
+                <input type="text" id="team-b" placeholder="اسم الفريق الثاني / اللاعب 2">
+            </div>
 
-                <div class="setup-grid">
-                    <div class="player-inputs">
-                        <div class="input-wrapper">
-                            <span>قائد الفريق X</span>
-                            <input type="text" id="nameX" placeholder="الاسم..." maxlength="12">
-                        </div>
-                        <div class="vs-badge">VS</div>
-                        <div class="input-wrapper">
-                            <span>قائد الفريق O</span>
-                            <input type="text" id="nameO" placeholder="الاسم..." maxlength="12">
-                        </div>
-                    </div>
+            <div class="selection-group">
+                <label for="level-select">اختر مستوى التحدي:</label>
+                <select id="level-select">
+                    <option value="level1">المستوى الأول: كلاسيك</option>
+                    <option value="level2">المستوى الثاني: المجهول</option>
+                    <option value="level3">المستوى الثالث: المزدوج</option>
+                    <option value="level4">المستوى الرابع: الميزان</option>
+                </select>
+            </div>
 
-                    <div class="level-box">
-                        <p class="section-label">اختر مستوى التحدي</p>
-                        <div class="levels-flex">
-                            <button class="lvl-item active" data-lvl="1">1<span>كلاسيك</span></button>
-                            <button class="lvl-item" data-lvl="2">2<span>المجهول</span></button>
-                            <button class="lvl-item" data-lvl="3">3<span>المضاعف</span></button>
-                            <button class="lvl-item" data-lvl="4">4<span>الميزان</span></button>
-                        </div>
-                    </div>
-
-                    <div class="timer-box">
-                        <p class="section-label">مؤقت التفكير</p>
-                        <div class="timer-options">
-                            <label><input type="radio" name="timer" value="0"> <span>بلا</span></label>
-                            <label><input type="radio" name="timer" value="10" checked> <span>10 ث</span></label>
-                            <label><input type="radio" name="timer" value="20"> <span>20 ث</span></label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="action-zone">
-                    <button class="btn-help-main" onclick="showHelp()">دليل الاحتراف</button>
-                    <button class="btn-primary-start" onclick="startGame()">ابدأ المعركة</button>
+            <div class="rules-area">
+                <h3>قوانين اللعبة</h3>
+                <div class="rules-content">
+                    <p><strong>1. الهدف العام:</strong> إتمام شبكة التحدي المكونة من 81 خلية حسابية بدقة وسرعة.</p>
+                    <p><strong>2. آلية اللعب:</strong> اختر الخلية ثم أدخل الرقم الصحيح (1-9) عبر لوحة الأرقام المدمجة.</p>
+                    <p><strong>3. شرح المستويات:</strong></p>
+                    <ul>
+                        <li><strong>الكلاسيك:</strong> إيجاد الناتج المباشر للعملية.</li>
+                        <li><strong>المجهول:</strong> إيجاد الرقم المفقود في منتصف المعادلة.</li>
+                        <li><strong>المزدوج:</strong> إدخال رقمين داخل الخلية يحققان الناتج المطلوب.</li>
+                        <li><strong>الميزان:</strong> موازنة طرفي المعادلة لجعل الكفة اليمنى تساوي اليسرى.</li>
+                    </ul>
+                    <p><strong>4. الفوز والتعادل:</strong> يفوز من يتم 81 خلية أولاً. يُحتسب التعادل عند اتفاق الطرفين وتساوي النقاط.</p>
+                    <p><strong>5. ملاحظات:</strong> الأرقام المسموحة من 1 إلى 9 فقط.</p>
                 </div>
             </div>
+
+            <button id="start-game-btn">بدء التحدي</button>
         </div>
+    </section>
 
-        <div id="game-screen" class="screen-layer">
-            <div class="arena-layout">
-                <div class="top-bar">
-                    <div id="p-card-x" class="player-status x-side">
-                        <div class="avatar">X</div>
-                        <div class="p-meta">
-                            <span id="labelX">لاعب 1</span>
-                            <small>المربعات: <b id="scoreX">0</b></small>
-                        </div>
-                    </div>
-
-                    <div class="game-timer">
-                        <div class="timer-ring">
-                            <svg><circle cx="35" cy="35" r="32"></circle></svg>
-                            <span id="timer-num">10</span>
-                        </div>
-                    </div>
-
-                    <div id="p-card-o" class="player-status o-side">
-                        <div class="p-meta">
-                            <span id="labelO">لاعب 2</span>
-                            <small>المربعات: <b id="scoreO">0</b></small>
-                        </div>
-                        <div class="avatar">O</div>
-                    </div>
-                </div>
-
-                <div id="board-holder">
-                    </div>
-
-                <div class="bottom-controls">
-                    <div id="status-update" class="status-msg">انتظر دورك...</div>
-                    <button class="btn-quit" onclick="location.reload()">الانسحاب للرئيسية</button>
-                </div>
+    <section id="game-screen" class="screen hidden">
+        <header class="game-header">
+            <div class="teams-display">
+                <span id="display-team-a">الفريق 1</span>
+                <span class="score-board"><b id="score-a">0</b> : <b id="score-b">0</b></span>
+                <span id="display-team-b">الفريق 2</span>
             </div>
-        </div>
+            <div class="timer-area">الزمن: <span id="timer">00:00</span></div>
+        </header>
 
-        <div id="help-modal" class="modal-overlay">
-            <div class="help-box">
-                <div class="modal-header">
-                    <h2>مركز المساعدة والقوانين</h2>
-                    <button class="close-x" onclick="hideHelp()">×</button>
+        <main id="game-board" class="grid-9x9"></main>
+
+        <footer class="controls">
+            <div class="num-pad" id="numpad">
                 </div>
-                <div class="modal-body">
-                    <div class="help-section">
-                        <h4><i class="icon"></i> قانون التوجيه الاستراتيجي</h4>
-                        <p>هذه ليست XO عادية. موقع اختيارك في المربع الصغير (مثلاً الركن الأيمن) هو الذي "يجبر" خصمك على اللعب في المربع الكبير المقابل (الركن الأيمن في اللوحة الكبرى).</p>
-                    </div>
-                    <div class="help-section">
-                        <h4><i class="icon"></i> مستويات التحدي الرياضي</h4>
-                        <ul class="help-list">
-                            <li><strong>المستوى 1:</strong> عمليات مباشرة بين (1-9) تضمن دقة وسرعة البديهة.</li>
-                            <li><strong>المستوى 2:</strong> إيجاد الرقم الناقص المكمل للمعادلة بشكل صحيح.</li>
-                            <li><strong>المستوى 3:</strong> "التحدي المزدوج" يتطلب إدخال رقمين ناتجهما يساوي الرقم المعروض (يُمنع استخدام رقم 1).</li>
-                            <li><strong>المستوى 4:</strong> "الميزان" يجب أن تجعل طرفي المعادلة متساويين تماماً.</li>
-                        </ul>
-                    </div>
-                    <div class="help-section">
-                        <h4><i class="icon"></i> اللعب الحر والتعادل</h4>
-                        <p>يُفعل اللعب الحر إذا تم توجيهك لمربع مكتمل. تنتهي اللعبة عند فوز أحد اللاعبين بـ 3 مربعات كبرى متتالية أو عند تعادل كافة المربعات.</p>
-                    </div>
-                </div>
+            <div class="action-buttons">
+                <button id="clear-btn">مسح</button>
+                <button id="finish-btn">إنهاء المباراة</button>
             </div>
-        </div>
+        </footer>
+    </section>
 
-        <div id="math-modal" class="modal-overlay">
-            <div class="math-card">
-                <div id="math-header" class="math-title">تحدي المستوى 1</div>
-                <div id="equation-display" class="equation-text">5 × ? = 25</div>
-                
-                <div class="input-zone">
-                    <div id="input-wrap-1" class="val-box active">_</div>
-                    <div id="math-operator-visual" class="op-v">×</div>
-                    <div id="input-wrap-2" class="val-box hidden">_</div>
-                </div>
-
-                <div class="pro-numpad">
-                    <button onclick="inputDigit(1)">1</button><button onclick="inputDigit(2)">2</button><button onclick="inputDigit(3)">3</button>
-                    <button onclick="inputDigit(4)">4</button><button onclick="inputDigit(5)">5</button><button onclick="inputDigit(6)">6</button>
-                    <button onclick="inputDigit(7)">7</button><button onclick="inputDigit(8)">8</button><button onclick="inputDigit(9)">9</button>
-                    <button class="btn-clear" onclick="clearInput()">C</button>
-                    <button onclick="inputDigit(0)">0</button>
-                    <button class="btn-del" onclick="delDigit()">⌫</button>
-                </div>
-            </div>
+    <div id="overlay" class="hidden">
+        <div class="modal">
+            <h2 id="result-title">النتيجة النهائية</h2>
+            <div id="result-body"></div>
+            <button id="new-round-btn">جولة جديدة</button>
+            <button id="back-to-menu-btn">الرجوع للإعدادات</button>
         </div>
     </div>
 
