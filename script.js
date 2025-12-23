@@ -1,189 +1,204 @@
-// الكيان المركزي للعبة (Game Engine Object)
-const GameEngine = {
-    currentPool: [],
-    selectedLevel: 'level1',
-    activeCell: null,
-    teams: { a: "TEAM A", b: "TEAM B" },
-    scores: { a: 0, b: 0 },
-    
-    // 1. تشغيل النظام وتحميل البيانات
-    async init() {
-        this.bindEvents();
-    },
+/**
+ * X-MATH CHALLENGE ENGINE v4.0
+ * المحرك البرمجي المتكامل للتعامل مع ملفات JSON الأربعة
+ */
 
-    bindEvents() {
-        // زر بدء التحدي
-        document.getElementById('launch-btn').onclick = () => this.launchGame();
+let gameData = {
+    level: null,
+    pool: [],
+    selectedCells: [],
+    timer: null,
+    seconds: 0,
+    activeCellIndex: null,
+    teamA: "الفريق الأول",
+    teamB: "الفريق الثاني",
+    scoreA: 0,
+    scoreB: 0,
+    currentPlayer: 'A' // التبديل التلقائي بين الفريقين
+};
+
+// 1. إدارة الشاشات والبدء
+document.getElementById('launch-btn').addEventListener('click', async () => {
+    const level = document.getElementById('level-select').value;
+    const teamA = document.getElementById('team-a').value.trim() || "الفريق الأول";
+    const teamB = document.getElementById('team-b').value.trim() || "الفريق الثاني";
+
+    try {
+        const response = await fetch(`data/${level}.json`);
+        const data = await response.json();
         
-        // أزرار التحكم في التعليمات الجانبية
-        document.getElementById('help-btn').onclick = () => this.toggleManual(true);
-        document.getElementById('close-manual').onclick = () => this.toggleManual(false);
+        gameData.level = level;
+        gameData.teamA = teamA;
+        gameData.teamB = teamB;
         
-        // أزرار العمليات
-        document.getElementById('clear-btn').onclick = () => this.clearActiveCell();
-        document.getElementById('exit-btn').onclick = () => location.reload();
-    },
-
-    async launchGame() {
-        const nameA = document.getElementById('team-a').value;
-        const nameB = document.getElementById('team-b').value;
-        if (nameA) this.teams.a = nameA.toUpperCase();
-        if (nameB) this.teams.b = nameB.toUpperCase();
-
-        this.selectedLevel = document.getElementById('level-select').value;
+        preparePool(data.pool);
+        setupGameUI();
+        startTimer();
         
-        // جلب البيانات مع معالجة خطأ المسار
-        try {
-            const response = await fetch(`./data/${this.selectedLevel}.json`);
-            if (!response.ok) throw new Error('File not found');
-            const data = await response.json();
-            
-            this.preparePool(data.pool);
-            this.setupUI();
-        } catch (err) {
-            alert("خطأ تقني: تأكد من تشغيل المشروع عبر (Live Server) أو خادم محلي لقراءة ملفات JSON.");
-            console.error(err);
-        }
-    },
-
-    // 2. تطبيق منطق الشمولية ومنع التكرار (81 خلية)
-    preparePool(pool) {
-        let g1 = [], g2 = [];
-        if (this.selectedLevel === 'level3') {
-            g1 = pool.ones_group;
-            g2 = [...pool.multi_solution_group, ...pool.unique_challenges];
-        } else {
-            g1 = pool.ones_group_10_percent || pool.only_ones_group;
-            g2 = pool.strict_challenges_90_percent || pool.strict_challenges_2_to_9 || pool.challenges;
-        }
-
-        // خلط البيانات (Shuffle) واختيار 81 عملية
-        const s1 = g1.sort(() => Math.random() - 0.5).slice(0, 8);
-        const s2 = g2.sort(() => Math.random() - 0.5).slice(0, 73);
-        
-        this.currentPool = [...s1, ...s2].sort(() => Math.random() - 0.5);
-    },
-
-    // 3. تهيئة واجهة اللعب وتوزيع المهام
-    setupUI() {
         document.getElementById('setup-screen').classList.add('hidden');
         document.getElementById('game-screen').classList.remove('hidden');
-        
-        document.getElementById('display-team-a').textContent = this.teams.a;
-        document.getElementById('display-team-b').textContent = this.teams.b;
-        
-        this.renderBoard();
-        this.renderNumpad();
-        this.updateManualContent();
-    },
+    } catch (error) {
+        alert("فشل تحميل ملف المستوى. تأكد من وجود المجلد data والملفات بداخله.");
+    }
+});
 
-    renderBoard() {
-        const board = document.getElementById('game-board');
-        board.innerHTML = '';
-        
-        this.currentPool.forEach((item, idx) => {
-            const cell = document.createElement('div');
-            cell.className = 'cell';
-            cell.dataset.idx = idx;
+// 2. معالجة مصفوفة البيانات (تحويلها لـ 81 خلية)
+function preparePool(pool) {
+    let easy = [];
+    let hard = [];
+
+    // التكيف مع مسميات ملفاتك المختلفة
+    if (gameData.level === 'level4') {
+        easy = pool.ones_group_10_percent;
+        hard = pool.strict_challenges_90_percent;
+    } else if (gameData.level === 'level3') {
+        easy = pool.only_ones_group;
+        hard = pool.strict_challenges_2_to_9;
+    } else {
+        easy = pool.ones_group || [];
+        hard = pool.core_challenges || pool.all_challenges || [];
+    }
+
+    // سحب 8 عمليات سهلة (10%) و 73 عملية صعبة (90%)
+    const selectedEasy = shuffle(easy).slice(0, 8);
+    const selectedHard = shuffle(hard).slice(0, 73);
+    
+    gameData.selectedCells = shuffle([...selectedEasy, ...selectedHard]);
+}
+
+// 3. بناء لوحة اللعب
+function setupGameUI() {
+    const board = document.getElementById('game-board');
+    const numpad = document.getElementById('numpad');
+    
+    document.getElementById('label-a').textContent = gameData.teamA;
+    document.getElementById('label-b').textContent = gameData.teamB;
+
+    board.innerHTML = '';
+    gameData.selectedCells.forEach((item, index) => {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.id = `cell-${index}`;
+        cell.innerHTML = `<span class="q-text">${item.q}</span><span class="a-val"></span>`;
+        cell.onclick = () => selectCell(index);
+        board.appendChild(cell);
+    });
+
+    // بناء لوحة الأرقام 1-9 مع الصفر
+    numpad.innerHTML = '';
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 0].forEach(num => {
+        const btn = document.createElement('button');
+        btn.textContent = num;
+        btn.onclick = () => handleInput(num);
+        numpad.appendChild(btn);
+    });
+}
+
+// 4. منطق الإدخال والتحقق
+function selectCell(index) {
+    if (document.getElementById(`cell-${index}`).classList.contains('correct')) return;
+    
+    if (gameData.activeCellIndex !== null) {
+        document.getElementById(`cell-${gameData.activeCellIndex}`).classList.remove('active');
+    }
+    gameData.activeCellIndex = index;
+    document.getElementById(`cell-${index}`).classList.add('active');
+}
+
+function handleInput(num) {
+    if (gameData.activeCellIndex === null) return;
+    
+    const cell = document.getElementById(`cell-${gameData.activeCellIndex}`);
+    const item = gameData.selectedCells[gameData.activeCellIndex];
+    const display = cell.querySelector('.a-val');
+
+    // منطق المستوى الثالث (الأرقام المزدوجة)
+    if (gameData.level === 'level3') {
+        if (!display.textContent) {
+            display.textContent = num; // الرقم الأول
+        } else if (display.textContent.length === 1) {
+            const firstNum = parseInt(display.textContent);
+            const secondNum = num;
+            display.textContent += ` , ${secondNum}`;
             
-            if (this.selectedLevel === 'level3') {
-                cell.innerHTML = `<small>${item.op}</small><span>${item.target}</span>`;
+            // التحقق من مصفوفة الـ pairs
+            const isValid = item.pairs.some(p => 
+                (p[0] === firstNum && p[1] === secondNum) || 
+                (p[0] === secondNum && p[1] === firstNum)
+            );
+
+            if (isValid) {
+                finalizeCell(cell);
             } else {
-                cell.textContent = item.q;
+                failCell(cell, display);
             }
-
-            cell.onclick = () => {
-                document.querySelectorAll('.cell').forEach(c => c.classList.remove('active'));
-                cell.classList.add('active');
-                this.activeCell = cell;
-            };
-            board.appendChild(cell);
-        });
-    },
-
-    renderNumpad() {
-        const pad = document.getElementById('numpad');
-        pad.innerHTML = '';
-        for (let i = 1; i <= 9; i++) {
-            const btn = document.createElement('button');
-            btn.textContent = i;
-            btn.onclick = () => this.processInput(i);
-            pad.appendChild(btn);
         }
-    },
-
-    // 4. منطق التحقق المتقدم (Validation Engine)
-    processInput(num) {
-        if (!this.activeCell) return;
-        const idx = this.activeCell.dataset.idx;
-        const data = this.currentPool[idx];
-        let correct = false;
-
-        if (this.selectedLevel === 'level3') {
-            if (!this.activeCell.dataset.val1) {
-                this.activeCell.dataset.val1 = num;
-                this.activeCell.textContent = `${num}, ?`;
-                return;
-            } else {
-                const v1 = parseInt(this.activeCell.dataset.val1);
-                correct = data.pairs.some(p => (p[0] === v1 && p[1] === num) || (p[0] === num && p[1] === v1));
-                if (correct) this.markCorrect(this.activeCell, `${v1},${num}`);
-                else this.flashError(this.activeCell);
-            }
+    } else {
+        // التحقق للمستويات 1, 2, 4 (رقم واحد)
+        display.textContent = num;
+        if (parseInt(item.a) === num) {
+            finalizeCell(cell);
         } else {
-            if (num === data.a) {
-                this.markCorrect(this.activeCell, num);
-                correct = true;
-            } else {
-                this.flashError(this.activeCell);
-            }
+            failCell(cell, display);
         }
-    },
+    }
+}
 
-    markCorrect(cell, val) {
-        cell.classList.add('correct');
-        cell.textContent = val;
-        cell.onclick = null;
-        this.activeCell = null;
-        this.scores.a++; // نظام نقاط افتراضي
-        document.getElementById('score-a').textContent = this.scores.a;
-        this.checkVictory();
-    },
+function finalizeCell(cell) {
+    cell.classList.remove('active');
+    cell.classList.add('correct');
+    
+    // إضافة النقاط للفريق الحالي
+    if (gameData.currentPlayer === 'A') {
+        gameData.scoreA++;
+        document.getElementById('score-a').textContent = gameData.scoreA;
+        gameData.currentPlayer = 'B'; // تبديل الدور
+    } else {
+        gameData.scoreB++;
+        document.getElementById('score-b').textContent = gameData.scoreB;
+        gameData.currentPlayer = 'A';
+    }
+    gameData.activeCellIndex = null;
+    checkWin();
+}
 
-    flashError(cell) {
-        cell.classList.add('error-shake');
-        setTimeout(() => {
-            cell.classList.remove('error-shake');
-            if(this.selectedLevel === 'level3') {
-                delete cell.dataset.val1;
-                cell.textContent = this.currentPool[cell.dataset.idx].target;
-            }
-        }, 400);
-    },
+function failCell(cell, display) {
+    cell.classList.add('shake');
+    setTimeout(() => {
+        cell.classList.remove('shake');
+        display.textContent = '';
+    }, 500);
+}
 
-    // 5. إدارة التعليمات الجانبية والنتائج
-    toggleManual(show) {
-        const panel = document.getElementById('side-manual');
-        show ? panel.classList.remove('hidden') : panel.classList.add('hidden');
-    },
+// 5. وظائف مساعدة
+function shuffle(array) {
+    return array.sort(() => Math.random() - 0.5);
+}
 
-    updateManualContent() {
-        const content = {
-            level1: "المستوى الكلاسيكي: أدخل الناتج المباشر للعملية الظاهرة في الخلية.",
-            level2: "مستوى المجهول: ابحث عن الرقم الذي يكمل المعادلة (المجهول في المنتصف).",
-            level3: "المستوى المزدوج: أدخل رقمين بالتوالي يحققان الناتج المستهدف عبر العملية الموضحة.",
-            level4: "مستوى الميزان: أوجد الرقم الذي يحقق التساوي بين الطرف الأيمن والأيسر للمعادلة."
-        };
-        document.getElementById('dynamic-manual-content').textContent = content[this.selectedLevel];
-    },
+function startTimer() {
+    if (gameData.timer) clearInterval(gameData.timer);
+    gameData.seconds = 0;
+    gameData.timer = setInterval(() => {
+        gameData.seconds++;
+        let m = Math.floor(gameData.seconds / 60).toString().padStart(2, '0');
+        let s = (gameData.seconds % 60).toString().padStart(2, '0');
+        document.getElementById('game-timer').textContent = `${m}:${s}`;
+    }, 1000);
+}
 
-    checkVictory() {
-        const correctCount = document.querySelectorAll('.correct').length;
-        if (correctCount === 81) {
-            alert(`تهانينا لفريق ${this.teams.a}! تم إكمال المهمة بنجاح.`);
-        }
+function checkWin() {
+    const corrects = document.querySelectorAll('.cell.correct').length;
+    if (corrects === 81) {
+        clearInterval(gameData.timer);
+        alert(`تهانينا! اكتمل التحدي.\nالنتيجة النهائية:\n${gameData.teamA}: ${gameData.scoreA}\n${gameData.teamB}: ${gameData.scoreB}`);
+    }
+}
+
+// أزرار التحكم الإضافية
+document.getElementById('clear-cell').onclick = () => {
+    if (gameData.activeCellIndex !== null) {
+        document.getElementById(`cell-${gameData.activeCellIndex}`).querySelector('.a-val').textContent = '';
     }
 };
 
-// تشغيل المحرك عند تحميل الصفحة
-window.onload = () => GameEngine.init();
+document.getElementById('terminate-game').onclick = () => location.reload();
