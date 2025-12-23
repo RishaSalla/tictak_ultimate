@@ -1,200 +1,129 @@
-/* الهوية البصرية والنيون */
 :root {
     --neon-blue: #00f3ff;
     --neon-purple: #bc13fe;
-    --dark-space: #05070a;
-    --glass: rgba(255, 255, 255, 0.03);
-    --grid-dim: 520px; /* بعد ثابت صارم للوحة 9x9 */
+    --dark-bg: #030508;
+    --glass-effect: rgba(255, 255, 255, 0.03);
+    --x-color: #00f3ff;
+    --o-color: #bc13fe;
 }
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-    background: radial-gradient(circle at center, #11172b 0%, var(--dark-space) 100%);
+    background: var(--dark-bg);
     color: #fff;
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-family: 'Segoe UI', sans-serif;
     height: 100vh;
+    overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
 }
 
 .screen {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    animation: fadeIn 0.6s ease-out;
+    width: 100%; height: 100%;
+    display: flex; justify-content: center; align-items: center;
 }
 
 .hidden { display: none !important; }
 
-/* تأثير Glassmorphism للوحة الإعدادات */
-.glass-panel {
-    background: var(--glass);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
-    border: 1px solid rgba(0, 243, 255, 0.2);
-    padding: 40px;
-    border-radius: 30px;
-    width: 95%;
-    max-width: 750px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-    text-align: center;
-}
-
-.neon-title {
-    font-size: 2.8rem;
-    color: var(--neon-blue);
-    text-shadow: 0 0 20px var(--neon-blue), 0 0 40px var(--neon-blue);
-    margin-bottom: 30px;
-    letter-spacing: 3px;
-}
-
-/* حقول إدخال الفرق بأسلوب متوهج */
-.identity-grid {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 25px;
-}
-
-.input-field { flex: 1; }
-
-.input-field input {
-    width: 100%;
+/* تصميم لوحة Ultimate X-O الكبرى */
+.master-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 15px; /* مسافة بين المربعات الكبرى */
     padding: 15px;
     background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(188, 19, 254, 0.5);
-    border-radius: 12px;
-    color: #fff;
-    text-align: center;
-    font-size: 1.1rem;
+    border-radius: 15px;
+    border: 2px solid rgba(0, 243, 255, 0.2);
+}
+
+/* المربع الصغير (3x3) */
+.sub-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 45px); /* حجم خلية ثابت لمنع الزحف */
+    grid-template-rows: repeat(3, 45px);
+    gap: 4px;
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
     transition: 0.3s;
 }
 
-.input-field input:focus {
-    border-color: var(--neon-purple);
-    box-shadow: 0 0 15px var(--neon-purple);
-    outline: none;
-}
-
-/* لوحة الدليل الشامل (UI الاحترافية) */
-.manual-dashboard {
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 15px;
-    margin: 25px 0;
-    text-align: right;
-}
-
-.manual-content {
-    max-height: 200px;
-    overflow-y: auto;
-    padding: 20px;
-}
-
-.manual-section h4 {
-    color: var(--neon-blue);
-    margin-bottom: 8px;
-    border-right: 3px solid var(--neon-blue);
-    padding-right: 10px;
-}
-
-.manual-section p {
-    font-size: 0.9rem;
-    color: #a0aec0;
-    line-height: 1.6;
-    margin-bottom: 15px;
-}
-
-/* لوحة اللعب النيون (منع الزحف الصارم) */
-.precision-grid {
-    display: grid;
-    grid-template-columns: repeat(9, 1fr);
-    grid-template-rows: repeat(9, 1fr);
-    width: var(--grid-dim);
-    height: var(--grid-dim);
-    gap: 3px;
-    background: rgba(0, 243, 255, 0.15);
-    border: 4px solid var(--neon-blue);
-    box-shadow: 0 0 30px rgba(0, 243, 255, 0.3);
-}
-
+/* الخلايا الصماء (المخفية) */
 .cell {
-    background: rgba(10, 15, 25, 0.8);
+    background: rgba(255, 255, 255, 0.05);
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
+    font-size: 1.5rem;
+    font-weight: bold;
     cursor: pointer;
-    font-size: 0.85rem;
-    transition: all 0.2s;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    user-select: none;
-    overflow: hidden; /* لمنع تمدد الخلية عند العمليات الطويلة */
+    border-radius: 4px;
+    transition: 0.2s;
 }
 
 .cell:hover { background: rgba(0, 243, 255, 0.1); }
-.cell.active { 
-    background: rgba(188, 19, 254, 0.2); 
-    border: 1.5px solid var(--neon-purple);
+.cell.x-mark { color: var(--x-color); text-shadow: 0 0 10px var(--x-color); }
+.cell.o-mark { color: var(--o-color); text-shadow: 0 0 10px var(--o-color); }
+
+/* قفل المربع الكبير عند الفوز */
+.sub-grid.won-x::after, .sub-grid.won-o::after {
+    content: attr(data-winner);
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex; justify-content: center; align-items: center;
+    font-size: 4rem; z-index: 10;
+    border-radius: 5px;
+    animation: zoomIn 0.3s ease-out;
 }
-.cell.correct { 
-    color: var(--neon-blue); 
-    text-shadow: 0 0 8px var(--neon-blue);
-    background: rgba(0, 243, 255, 0.05);
+.sub-grid.won-x::after { color: var(--x-color); text-shadow: 0 0 20px var(--x-color); border: 2px solid var(--x-color); }
+.sub-grid.won-o::after { color: var(--o-color); text-shadow: 0 0 20px var(--o-color); border: 2px solid var(--o-color); }
+
+/* النافذة المنبثقة (Modal) - الحاسبة */
+.modal {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 1000;
 }
 
-/* الأزرار الرقمية */
-.cyber-keys {
-    display: grid;
-    grid-template-columns: repeat(9, 1fr);
-    gap: 8px;
-    width: var(--grid-dim);
-    margin-top: 20px;
+.modal-content {
+    width: 320px;
+    padding: 30px;
+    border: 2px solid var(--neon-blue);
+    box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);
+    text-align: center;
 }
 
-.cyber-keys button {
-    padding: 15px 0;
-    background: transparent;
-    border: 1px solid var(--neon-blue);
-    color: var(--neon-blue);
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: 0.3s;
+.math-question { font-size: 1.8rem; margin-bottom: 15px; color: var(--neon-blue); }
+.math-answer-box { 
+    font-size: 2rem; background: rgba(255, 255, 255, 0.05); 
+    margin-bottom: 20px; border-radius: 8px; padding: 10px;
+    border-bottom: 2px solid var(--neon-purple);
 }
 
-.cyber-keys button:hover {
-    background: var(--neon-blue);
-    color: #000;
-    box-shadow: 0 0 20px var(--neon-blue);
+.modal-numpad {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;
 }
 
-/* زر البدء الضخم */
-.main-action-btn {
-    background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
-    border: none;
-    padding: 18px 50px;
-    color: #fff;
-    font-size: 1.3rem;
-    font-weight: bold;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: 0.4s;
-    box-shadow: 0 0 20px rgba(188, 19, 254, 0.4);
+.numpad-btn {
+    padding: 15px; background: var(--glass-effect); border: 1px solid rgba(255,255,255,0.1);
+    color: white; font-weight: bold; border-radius: 5px; cursor: pointer;
 }
 
-.main-action-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 40px var(--neon-blue);
-}
+.numpad-btn:hover { background: var(--neon-blue); color: black; }
 
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+/* أزرار الإجراءات */
+.modal-btn {
+    width: 100%; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;
+    margin-top: 10px;
+}
+.modal-btn { background: var(--neon-blue); color: black; }
+.modal-btn.cancel { background: transparent; border: 1px solid #ff4b2b; color: #ff4b2b; }
+
+@keyframes zoomIn { from { transform: scale(0); } to { transform: scale(1); } }
