@@ -3,82 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>منصة التحدي الرياضي المحترف</title>
+    <title>PLATFORM X - MATH CHALLENGE</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <section id="setup-screen" class="screen">
-        <div class="setup-panel">
-            <h1>إعدادات المباراة</h1>
+        <div class="glass-container">
+            <h1 class="glitch-text">تحدي الميزان الرياضي</h1>
             
-            <div class="input-group">
-                <input type="text" id="team-a" placeholder="اسم الفريق الأول / اللاعب 1">
-                <span class="vs">ضد</span>
-                <input type="text" id="team-b" placeholder="اسم الفريق الثاني / اللاعب 2">
-            </div>
-
-            <div class="selection-group">
-                <label for="level-select">اختر مستوى التحدي:</label>
-                <select id="level-select">
-                    <option value="level1">المستوى الأول: كلاسيك</option>
-                    <option value="level2">المستوى الثاني: المجهول</option>
-                    <option value="level3">المستوى الثالث: المزدوج</option>
-                    <option value="level4">المستوى الرابع: الميزان</option>
-                </select>
-            </div>
-
-            <div class="rules-area">
-                <h3>قوانين اللعبة</h3>
-                <div class="rules-content">
-                    <p><strong>1. الهدف العام:</strong> إتمام شبكة التحدي المكونة من 81 خلية حسابية بدقة وسرعة.</p>
-                    <p><strong>2. آلية اللعب:</strong> اختر الخلية ثم أدخل الرقم الصحيح (1-9) عبر لوحة الأرقام المدمجة.</p>
-                    <p><strong>3. شرح المستويات:</strong></p>
-                    <ul>
-                        <li><strong>الكلاسيك:</strong> إيجاد الناتج المباشر للعملية.</li>
-                        <li><strong>المجهول:</strong> إيجاد الرقم المفقود في منتصف المعادلة.</li>
-                        <li><strong>المزدوج:</strong> إدخال رقمين داخل الخلية يحققان الناتج المطلوب.</li>
-                        <li><strong>الميزان:</strong> موازنة طرفي المعادلة لجعل الكفة اليمنى تساوي اليسرى.</li>
-                    </ul>
-                    <p><strong>4. الفوز والتعادل:</strong> يفوز من يتم 81 خلية أولاً. يُحتسب التعادل عند اتفاق الطرفين وتساوي النقاط.</p>
-                    <p><strong>5. ملاحظات:</strong> الأرقام المسموحة من 1 إلى 9 فقط.</p>
+            <div class="identity-section">
+                <div class="input-box">
+                    <input type="text" id="team-a" required>
+                    <label>اسم الفريق الأول</label>
+                </div>
+                <div class="vs-badge">VS</div>
+                <div class="input-box">
+                    <input type="text" id="team-b" required>
+                    <label>اسم الفريق الثاني</label>
                 </div>
             </div>
 
-            <button id="start-game-btn">بدء التحدي</button>
+            <div class="config-section">
+                <select id="level-select">
+                    <option value="level1">LEVEL 01: CLASSIC</option>
+                    <option value="level2">LEVEL 02: UNKNOWN</option>
+                    <option value="level3">LEVEL 03: DOUBLE</option>
+                    <option value="level4">LEVEL 04: BALANCE</option>
+                </select>
+            </div>
+
+            <div class="manual-section">
+                <h3 class="manual-title">الدليل التشغيلي للمنصة</h3>
+                <div class="manual-body">
+                    <h4>أولاً: الميكانيكا العامة</h4>
+                    <p>تعتمد المنصة نظام المصفوفة الحسابية المتقدمة (9x9). الهدف هو تحقيق استقرار رياضي كامل في 81 خلية عبر حل العمليات الحسابية المتغيرة.</p>
+                    
+                    <h4>ثانياً: بروتوكول المستويات</h4>
+                    <p><strong>المستوى الأول:</strong> معالجة نواتج العمليات المباشرة بدقة متناهية.</p>
+                    <p><strong>المستوى الثاني:</strong> استنتاج المتغير المجهول (X) في قلب المعادلة الرياضية.</p>
+                    <p><strong>المستوى الثالث:</strong> نظام الحلول المتعددة؛ يتطلب إدخال رقمين متتاليين يحققان الناتج المستهدف في خلية واحدة.</p>
+                    <p><strong>المستوى الرابع:</strong> تحقيق التكافؤ؛ يجب موازنة طرفي المعادلة لضمان تساوي الكفتين برقم واحد مفقود.</p>
+                    
+                    <h4>ثالثاً: معايير الفوز والنزاهة</h4>
+                    <p>يتم إعلان الفوز عند الوصول لنسبة إكمال 100% (81/81). النظام لا يعيد تكرار أي عملية حسابية تم فك شفرتها سابقاً لضمان تجربة فريدة في كل مرة.</p>
+                </div>
+            </div>
+
+            <button id="launch-btn" class="main-btn">تفعيل التحدي</button>
         </div>
     </section>
 
     <section id="game-screen" class="screen hidden">
-        <header class="game-header">
-            <div class="teams-display">
-                <span id="display-team-a">الفريق 1</span>
-                <span class="score-board"><b id="score-a">0</b> : <b id="score-b">0</b></span>
-                <span id="display-team-b">الفريق 2</span>
-            </div>
-            <div class="timer-area">الزمن: <span id="timer">00:00</span></div>
-        </header>
-
-        <main id="game-board" class="grid-9x9"></main>
-
-        <footer class="controls">
-            <div class="num-pad" id="numpad">
+        <div class="game-ui-layout">
+            <header class="top-bar">
+                <div class="team-info left" id="display-team-a">TEAM 01</div>
+                <div class="central-stats">
+                    <div class="score-display"><span id="score-a">0</span> : <span id="score-b">0</span></div>
+                    <div id="timer">00:00</div>
                 </div>
-            <div class="action-buttons">
-                <button id="clear-btn">مسح</button>
-                <button id="finish-btn">إنهاء المباراة</button>
-            </div>
-        </footer>
-    </section>
+                <div class="team-info right" id="display-team-b">TEAM 02</div>
+            </header>
 
-    <div id="overlay" class="hidden">
-        <div class="modal">
-            <h2 id="result-title">النتيجة النهائية</h2>
-            <div id="result-body"></div>
-            <button id="new-round-btn">جولة جديدة</button>
-            <button id="back-to-menu-btn">الرجوع للإعدادات</button>
+            <main id="game-board" class="neon-grid"></main>
+
+            <footer class="bottom-bar">
+                <div id="numpad" class="digital-numpad"></div>
+                <div class="action-panel">
+                    <button id="help-btn" class="icon-btn">التعليمات</button>
+                    <button id="clear-btn" class="icon-btn">مسح</button>
+                    <button id="exit-btn" class="icon-btn logout">إنهاء</button>
+                </div>
+            </footer>
         </div>
-    </div>
+
+        <div id="side-manual" class="side-panel hidden">
+            <div class="panel-header">
+                <h3>دليل المساعدة السريع</h3>
+                <button id="close-manual">X</button>
+            </div>
+            <div id="dynamic-manual-content" class="panel-body">
+                </div>
+        </div>
+    </section>
 
     <script src="script.js"></script>
 </body>
