@@ -1,129 +1,102 @@
 :root {
-    --neon-blue: #00f3ff;
-    --neon-purple: #bc13fe;
-    --dark-bg: #030508;
-    --glass-effect: rgba(255, 255, 255, 0.03);
-    --x-color: #00f3ff;
-    --o-color: #bc13fe;
+    --x-neon: #00f3ff;
+    --o-neon: #bc13fe;
+    --bg-dark: #05070a;
+    --glass: rgba(255, 255, 255, 0.03);
+    --border-glow: rgba(255, 255, 255, 0.1);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-    background: var(--dark-bg);
-    color: #fff;
-    font-family: 'Segoe UI', sans-serif;
-    height: 100vh;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    background: radial-gradient(circle at center, #0a0f1a 0%, var(--bg-dark) 100%);
+    color: #fff; font-family: 'Segoe UI', system-ui, sans-serif;
+    height: 100vh; overflow: hidden; display: flex; justify-content: center; align-items: center;
 }
 
-.screen {
-    width: 100%; height: 100%;
-    display: flex; justify-content: center; align-items: center;
-}
-
+.screen { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
 .hidden { display: none !important; }
 
-/* تصميم لوحة Ultimate X-O الكبرى */
+/* --- شاشة الدخول (بطاقات اللاعبين) --- */
+.entry-card {
+    padding: 50px; border-radius: 40px; background: var(--glass);
+    backdrop-filter: blur(20px); border: 1px solid var(--border-glow); text-align: center;
+}
+
+.pro-title { font-size: 3rem; margin-bottom: 40px; text-shadow: 0 0 20px var(--x-neon); }
+.pro-title span { color: var(--x-neon); }
+
+.identity-layout { display: flex; align-items: center; gap: 30px; margin-bottom: 40px; }
+
+.player-card {
+    background: rgba(0,0,0,0.3); padding: 25px; border-radius: 20px;
+    border: 2px solid transparent; transition: 0.4s; width: 220px;
+}
+.player-card.x-theme { border-color: var(--x-neon); box-shadow: 0 0 20px rgba(0, 243, 255, 0.2); }
+.player-card.o-theme { border-color: var(--o-neon); box-shadow: 0 0 20px rgba(188, 19, 254, 0.2); }
+
+.avatar { font-size: 2.5rem; margin-bottom: 15px; font-weight: 900; }
+.player-card input {
+    width: 100%; background: transparent; border: none; border-bottom: 1px solid #444;
+    color: #fff; text-align: center; font-size: 1rem; padding: 5px;
+}
+
+/* --- اللوحة الكبرى (المقاسات الذهبية) --- */
 .master-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    gap: 15px; /* مسافة بين المربعات الكبرى */
-    padding: 15px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 15px;
-    border: 2px solid rgba(0, 243, 255, 0.2);
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px;
+    padding: 20px; background: rgba(255,255,255,0.02); border-radius: 20px;
 }
 
-/* المربع الصغير (3x3) */
 .sub-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 45px); /* حجم خلية ثابت لمنع الزحف */
-    grid-template-rows: repeat(3, 45px);
-    gap: 4px;
-    padding: 8px;
-    background: rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    position: relative;
-    transition: 0.3s;
+    display: grid; grid-template-columns: repeat(3, 45px); grid-template-rows: repeat(3, 45px);
+    gap: 5px; padding: 10px; background: rgba(0,0,0,0.4); border: 2px solid #222;
+    position: relative; transition: 0.5s;
 }
 
-/* الخلايا الصماء (المخفية) */
+/* تمييز المربع المتاح للعب (منطق الإجبار) */
+.sub-grid.active-target {
+    border-color: #fff; box-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
+    background: rgba(255,255,255,0.05); animation: pulse-active 1.5s infinite;
+}
+
+@keyframes pulse-active { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+
 .cell {
-    background: rgba(255, 255, 255, 0.05);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.5rem;
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: 0.2s;
+    background: #0d1117; border-radius: 4px; cursor: pointer;
+    display: flex; justify-content: center; align-items: center; font-size: 1.4rem;
 }
 
-.cell:hover { background: rgba(0, 243, 255, 0.1); }
-.cell.x-mark { color: var(--x-color); text-shadow: 0 0 10px var(--x-color); }
-.cell.o-mark { color: var(--o-color); text-shadow: 0 0 10px var(--o-color); }
+/* --- الـ HUD السفلي المرتب --- */
+.game-hud { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+.hud-header { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
 
-/* قفل المربع الكبير عند الفوز */
-.sub-grid.won-x::after, .sub-grid.won-o::after {
-    content: attr(data-winner);
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    display: flex; justify-content: center; align-items: center;
-    font-size: 4rem; z-index: 10;
-    border-radius: 5px;
-    animation: zoomIn 0.3s ease-out;
+.hud-footer {
+    width: 100%; display: flex; justify-content: space-between; align-items: center;
+    background: var(--glass); padding: 15px 30px; border-radius: 50px; border: 1px solid var(--border-glow);
 }
-.sub-grid.won-x::after { color: var(--x-color); text-shadow: 0 0 20px var(--x-color); border: 2px solid var(--x-color); }
-.sub-grid.won-o::after { color: var(--o-color); text-shadow: 0 0 20px var(--o-color); border: 2px solid var(--o-color); }
 
-/* النافذة المنبثقة (Modal) - الحاسبة */
+.indicator-box { display: flex; align-items: center; gap: 10px; font-weight: bold; }
+.pulse-dot { width: 10px; height: 10px; background: var(--x-neon); border-radius: 50%; box-shadow: 0 0 10px var(--x-neon); }
+
+/* --- النوافذ المنبثقة (Modals) --- */
 .modal {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.9);
-    display: flex; justify-content: center; align-items: center;
-    z-index: 1000;
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+    display: flex; justify-content: center; align-items: center; z-index: 2000;
 }
 
-.modal-content {
-    width: 320px;
-    padding: 30px;
-    border: 2px solid var(--neon-blue);
-    box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);
-    text-align: center;
+.settings-card, .math-card {
+    width: 400px; background: #0f172a; border: 2px solid var(--x-neon);
+    padding: 30px; border-radius: 25px; position: relative;
 }
 
-.math-question { font-size: 1.8rem; margin-bottom: 15px; color: var(--neon-blue); }
-.math-answer-box { 
-    font-size: 2rem; background: rgba(255, 255, 255, 0.05); 
-    margin-bottom: 20px; border-radius: 8px; padding: 10px;
-    border-bottom: 2px solid var(--neon-purple);
+.numpad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
+.numpad-grid button {
+    padding: 15px; background: var(--glass); border: 1px solid var(--border-glow);
+    color: #fff; border-radius: 10px; font-weight: bold; cursor: pointer;
 }
 
-.modal-numpad {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;
+.primary-glow-btn {
+    background: linear-gradient(45deg, var(--x-neon), var(--o-neon));
+    border: none; padding: 15px 40px; border-radius: 30px; color: #fff;
+    font-weight: bold; font-size: 1.2rem; cursor: pointer; transition: 0.3s;
 }
-
-.numpad-btn {
-    padding: 15px; background: var(--glass-effect); border: 1px solid rgba(255,255,255,0.1);
-    color: white; font-weight: bold; border-radius: 5px; cursor: pointer;
-}
-
-.numpad-btn:hover { background: var(--neon-blue); color: black; }
-
-/* أزرار الإجراءات */
-.modal-btn {
-    width: 100%; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;
-    margin-top: 10px;
-}
-.modal-btn { background: var(--neon-blue); color: black; }
-.modal-btn.cancel { background: transparent; border: 1px solid #ff4b2b; color: #ff4b2b; }
-
-@keyframes zoomIn { from { transform: scale(0); } to { transform: scale(1); } }
