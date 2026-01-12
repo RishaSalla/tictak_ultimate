@@ -1,176 +1,78 @@
 :root {
     --x-neon: #00f3ff;
     --o-neon: #bc13fe;
-    --bg-deep: #020408;
-    --glass: rgba(255, 255, 255, 0.05);
+    --bg-dark: #020408;
     --safe-top: env(safe-area-inset-top, 0px);
-    --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-/* 1. الأساسيات وكلاس الإخفاء (الحل الجذري للمشكلة) */
+/* 1. تصفير النظام ومنع التداخل */
 * { 
     box-sizing: border-box; 
     margin: 0; padding: 0; 
-    -webkit-tap-highlight-color: transparent;
 }
 
+/* صمام الأمان للإخفاء - بدونه ستظهر كل الشاشات فوق بعضها */
 .hidden { 
     display: none !important; 
 }
 
 body {
-    background: var(--bg-deep);
+    background: var(--bg-dark);
     color: #fff;
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    overflow: hidden; 
-    height: 100dvh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    height: 100dvh; /* استخدام الطول الديناميكي للجوال */
+    overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-/* 2. تنظيم الشاشات والطبقات */
+/* 2. تنظيم الشاشات الرئيسية (app-screen) */
 .app-screen {
-    position: absolute;
+    position: fixed; /* تثبيت كل شاشة لتأخذ كامل المساحة */
     inset: 0;
     width: 100%;
     height: 100%;
     display: flex;
     flex-direction: column;
-    padding-top: var(--safe-top);
-    padding-bottom: var(--safe-bottom);
-    background: var(--bg-deep);
+    justify-content: center; /* تمركز المحتوى عمودياً */
+    align-items: center;     /* تمركز المحتوى أفقياً */
+    padding: 20px;
     z-index: 10;
+    background: var(--bg-dark);
 }
 
-/* 3. نافذة التعليمات والحاسبة (Overlays) */
+/* 3. حاوية الطبقات المنبثقة (Overlays) */
 .overlay {
     position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.92);
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100dvh;
+    background: rgba(0, 0, 0, 0.95); /* تعتيم كامل لعزل ما خلفها */
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 9999; /* أعلى طبقة لضمان الظهور فوق اللعبة */
-    padding: 20px;
-    backdrop-filter: blur(5px);
+    z-index: 9999; /* أعلى طبقة ظهور في النظام */
 }
 
-.modal-manual, .modal-calculator {
-    width: min(100%, 450px);
+/* 4. تنسيق البطاقات (Cards) لمنع التداخل العلوي */
+.main-card, .modal-calculator, .modal-manual {
+    width: 100%;
+    max-width: 400px;
     background: #0f172a;
     border: 2px solid var(--x-neon);
     border-radius: 20px;
     padding: 25px;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);
-}
-
-/* 4. تنسيق شاشة الدخول (اختيار المستوى) */
-.setup-container {
-    flex: 1;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    gap: 30px;
-    overflow-y: auto;
+    gap: 20px;
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.1);
 }
 
+/* تحسين شكل أزرار اختيار المستوى */
 .level-selector {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
+    gap: 10px;
     width: 100%;
-    max-width: 500px;
-}
-
-.lvl-card {
-    background: var(--glass);
-    border: 1px solid rgba(255,255,255,0.1);
-    padding: 15px;
-    border-radius: 15px;
-    cursor: pointer;
-    transition: 0.3s;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-}
-
-.lvl-card.active {
-    border-color: var(--x-neon);
-    background: rgba(0, 243, 255, 0.1);
-    box-shadow: 0 0 15px var(--x-neon);
-}
-
-/* 5. حاوية اللعبة والتحجيم */
-#game-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    transform-origin: center center;
-    width: 100%;
-    height: 100%;
-}
-
-.ultimate-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    padding: 15px;
-    background: var(--glass);
-    border-radius: 15px;
-    will-change: transform; /* تحسين أداء التحجيم */
-}
-
-.sub-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 45px);
-    grid-template-rows: repeat(3, 45px);
-    gap: 5px;
-    background: #000;
-    border: 2px solid #333;
-    transition: 0.3s;
-}
-
-.sub-grid.active-target {
-    border-color: #fff;
-    box-shadow: 0 0 20px rgba(255,255,255,0.4);
-}
-
-.cell {
-    background: #0d1117;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: #fff;
-}
-
-/* 6. أزرار الإجراءات */
-.btn-launch, .got-it-btn {
-    width: 100%;
-    max-width: 300px;
-    padding: 15px;
-    background: var(--x-neon);
-    color: #000;
-    border: none;
-    border-radius: 50px;
-    font-weight: bold;
-    font-size: 1.1rem;
-    cursor: pointer;
-    box-shadow: 0 0 15px var(--x-neon);
-}
-
-.btn-info {
-    background: transparent;
-    color: #aaa;
-    border: 1px solid #444;
-    padding: 10px 20px;
-    border-radius: 50px;
-    cursor: pointer;
 }
