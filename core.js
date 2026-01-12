@@ -1,216 +1,151 @@
 /**
  * CORE ENGINE - ULTIMATE MATH X-O
- * المسؤول عن منطق اللعبة، التحجيم، والربط بين المستويات
+ * نظام الربط المركزي وإدارة الحالة
  */
 
-const GameCore = {
+const Game = {
+    // 1. حالة اللعبة المركزية
     state: {
-        currentLevel: 'level1',
-        dataPool: [],
+        level: 'level1',
         currentPlayer: 'X',
-        bigBoard: Array(9).fill(null),
         forcedGrid: null,
+        bigBoard: Array(9).fill(null),
+        data: [],
         activeCell: null,
-        inputBuffer: ["", ""],
-        activeSlot: 0,
-        gameActive: false
+        input: ["", ""]
     },
 
-    // 1. التحجيم الديناميكي لضمان ملاءمة كافة الشاشات (Mobile Responsive)
-    resizeBoard: function() {
-        const board = document.querySelector('.ultimate-grid');
-        if (!board) return;
-
-        const screenWidth = window.innerWidth * 0.95;
-        const screenHeight = window.innerHeight * 0.70;
-        const boardBaseSize = 520; // الحجم الافتراضي للوحة
-
-        const scale = Math.min(screenWidth / boardBaseSize, screenHeight / boardBaseSize, 1);
-        board.style.transform = `scale(${scale})`;
-    },
-
-    // 2. بدء اللعبة وجلب البيانات
+    // 2. تشغيل اللعبة (Initialization)
     init: async function() {
-        const level = document.querySelector('.lvl-card.active').dataset.lvl;
-        this.state.currentLevel = level;
+        // تحديد المستوى المختار
+        const activeBtn = document.querySelector('.lvl-card.active');
+        this.state.level = activeBtn.dataset.lvl;
 
         try {
-            const response = await fetch(`data/${level}.json`);
-            const json = await response.json();
+            const resp = await fetch(`data/${this.state.level}.json`);
+            const json = await resp.json();
             
-            // استدعاء "مفسر المستوى" المناسب
-            const processor = window[`${level.charAt(0).toUpperCase() + level.slice(1)}Processor`];
-            this.state.dataPool = processor.prepareData(json.pool);
-            
+            // استدعاء المعالج الخاص بالمستوى
+            const processor = window[`${this.state.level.charAt(0).toUpperCase() + this.state.level.slice(1)}Processor`];
+            this.state.data = processor.prepareData(json.pool);
+
             this.buildBoard();
-            this.setupUI();
-            this.state.gameActive = true;
-            this.resizeBoard();
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
         } catch (e) {
-            console.error("Data Load Error:", e);
-            alert("خطأ في تحميل ملف البيانات لهذا المستوى.");
+            console.error("فشل في تحميل البيانات:", e);
         }
     },
 
-    // 3. بناء لوحة اللعب (9x9)
+    // 3. بناء لوحة الـ 9x9 بدقة هندسية
     buildBoard: function() {
-        const arena = document.getElementById('game-screen');
-        arena.innerHTML = `
-            <div id="game-container">
-                <div class="hud-top">
-                    <div class="p-tag x-side" id="p1-display">X</div>
-                    <div id="game-timer">00:00</div>
-                    <div class="p-tag o-side" id="p2-display">O</div>
-                </div>
-                <div class="ultimate-grid"></div>
-                <div class="hud-bottom">
-                    <div class="turn-status">دور: <span id="active-p-name">-</span></div>
-                    <button onclick="location.reload()" class="btn-reset">↻</button>
-                </div>
-            </div>
-        `;
+        const container = document.getElementById('game-container');
+        container.innerHTML = '<div class="ultimate-grid"></div>';
+        const grid = container.querySelector('.ultimate-grid');
 
-        const grid = arena.querySelector('.ultimate-grid');
         for (let i = 0; i < 9; i++) {
             const subGrid = document.createElement('div');
             subGrid.className = 'sub-grid';
-            subGrid.id = `grid-${i}`;
+            subGrid.id = `sub-${i}`;
             for (let j = 0; j < 9; j++) {
                 const cell = document.createElement('div');
                 cell.className = 'cell';
-                cell.onclick = () => this.handleAction(i, j, cell);
+                cell.onclick = () => this.openTask(i, j, cell);
                 subGrid.appendChild(cell);
             }
             grid.appendChild(subGrid);
         }
-        this.updateForcedGridUI();
     },
 
-    // 4. منطق النقر وتفعيل الحاسبة المنبثقة
-    handleAction: function(gIdx, cIdx, cell) {
+    // 4. إدارة الحاسبة والتحقق
+    openTask: function(gIdx, cIdx, cell) {
+        // التحقق من قانون الإجبار
         if (this.state.forcedGrid !== null && this.state.forcedGrid !== gIdx) return;
-        if (this.state.bigBoard[gIdx] || cell.textContent !== '') return;
+        if (cell.textContent !== "" || this.state.bigBoard[gIdx]) return;
 
-        const item = this.state.dataPool[(gIdx * 9 + cIdx) % this.state.dataPool.length];
-        const processor = window[`${this.state.currentLevel.charAt(0).toUpperCase() + this.state.currentLevel.slice(1)}Processor`];
-        const uiData = processor.renderUI(item);
+        const item = this.state.data[(gIdx * 9 + cIdx) % this.state.data.length];
+        const processor = window[`${this.state.level.charAt(0).toUpperCase() + this.state.level.slice(1)}Processor`];
+        const ui = processor.renderUI(item);
 
         this.state.activeCell = { gIdx, cIdx, cell, item, processor };
-        this.showCalculator(uiData);
+        this.renderCalculator(ui);
     },
 
-    // 5. إدارة الحاسبة (Pop-up)
-    showCalculator: function(ui) {
-        const overlay = document.getElementById('math-overlay');
-        const calc = overlay.querySelector('.modal-calculator');
-        this.state.inputBuffer = ["", ""];
-        this.state.activeSlot = 0;
+    renderCalculator: function(ui) {
+        document.getElementById('question-area').innerHTML = ui.questionHtml;
+        const slots = document.getElementById('answer-slots');
+        slots.innerHTML = '';
+        this.state.input = ["", ""];
 
-        calc.innerHTML = `
-            <div class="math-q">${ui.questionHtml}</div>
-            <div class="slots-box">
-                <div class="ans-slot active" id="s0">?</div>
-                ${ui.requiredSlots > 1 ? '<div class="ans-slot" id="s1">?</div>' : ''}
-            </div>
-            <div class="numpad" id="calc-pad"></div>
-            <div class="calc-footer">
-                <button id="btn-confirm" class="btn-ok">تأكيد</button>
-                <button id="btn-close" class="btn-no">إلغاء</button>
-            </div>
-        `;
+        for (let i = 0; i < ui.requiredSlots; i++) {
+            const s = document.createElement('div');
+            s.className = `ans-slot ${i===0?'active':''}`;
+            s.id = `slot-${i}`;
+            s.textContent = '?';
+            slots.appendChild(s);
+        }
 
-        this.renderNumpad();
-        overlay.classList.remove('hidden');
+        this.buildNumpad();
+        document.getElementById('math-overlay').classList.remove('hidden');
     },
 
-    renderNumpad: function() {
-        const pad = document.getElementById('calc-pad');
+    buildNumpad: function() {
+        const pad = document.getElementById('numpad-grid');
+        pad.innerHTML = '';
         [1,2,3,4,5,6,7,8,9,0].forEach(n => {
             const b = document.createElement('button');
             b.textContent = n;
-            b.onclick = () => this.handleInput(n);
+            b.className = 'btn-info';
+            b.onclick = () => this.handleType(n);
             pad.appendChild(b);
         });
-        const c = document.createElement('button');
-        c.textContent = 'C';
-        c.className = 'btn-clear';
-        c.onclick = () => this.clearInput();
-        pad.appendChild(c);
-        
-        document.getElementById('btn-confirm').onclick = () => this.verifyAnswer();
-        document.getElementById('btn-close').onclick = () => document.getElementById('math-overlay').classList.add('hidden');
     },
 
-    handleInput: function(num) {
-        this.state.inputBuffer[this.state.activeSlot] += num;
-        this.updateSlotsUI();
-        // الانتقال التلقائي للخ خانة الثانية إذا كان المستوى يتطلب ذلك
-        if (this.state.activeSlot === 0 && this.state.inputBuffer[0].length >= 1 && document.getElementById('s1')) {
-            this.state.activeSlot = 1;
-            this.updateSlotsUI();
-        }
-    },
-
-    verifyAnswer: function() {
-        const { item, cell, gIdx, cIdx, processor } = this.state.activeCell;
-        if (processor.verify(item, this.state.inputBuffer)) {
-            cell.textContent = this.state.currentPlayer;
-            cell.classList.add(this.state.currentPlayer === 'X' ? 'x-mark' : 'o-mark');
-            this.processWin(gIdx, cIdx);
-            document.getElementById('math-overlay').classList.add('hidden');
+    handleType: function(n) {
+        let activeIdx = this.state.input[0] === "" || (document.getElementById('slot-1') && this.state.input[0] !== "" && this.state.input[1] === "" && this.state.activeSlot === 1) ? 0 : 0;
+        // منطق بسيط للتنقل بين الخانات في المستويات المزدوجة
+        if (document.getElementById('slot-1') && this.state.input[0] !== "") {
+            this.state.input[1] += n;
+            document.getElementById('slot-1').textContent = this.state.input[1];
         } else {
-            alert("إجابة خاطئة!");
-            this.clearInput();
+            this.state.input[0] += n;
+            document.getElementById('slot-0').textContent = this.state.input[0];
         }
     },
 
-    // 6. منطق الـ Ultimate X-O (الإجبار والفوز الكبير)
-    processWin: function(gIdx, cIdx) {
-        const subCells = Array.from(document.querySelectorAll(`#grid-${gIdx} .cell`)).map(c => c.textContent);
-        if (this.checkLine(subCells)) {
-            this.state.bigBoard[gIdx] = this.state.currentPlayer;
-            document.getElementById(`grid-${gIdx}`).classList.add(this.state.currentPlayer === 'X' ? 'won-x' : 'won-o');
-            if (this.checkLine(this.state.bigBoard)) alert("مبروك فوز الفريق " + this.state.currentPlayer);
+    checkAnswer: function() {
+        const { item, cell, processor, gIdx, cIdx } = this.state.activeCell;
+        if (processor.verify(item, this.state.input)) {
+            cell.textContent = this.state.currentPlayer;
+            cell.classList.add(this.state.currentPlayer.toLowerCase());
+            this.state.forcedGrid = (this.state.bigBoard[cIdx]) ? null : cIdx;
+            this.state.currentPlayer = this.state.currentPlayer === 'X' ? 'O' : 'X';
+            document.getElementById('math-overlay').classList.add('hidden');
+            // هنا تضاف وظيفة فحص الفوز لاحقاً
+        } else {
+            alert("إجابة خاطئة، ركز جيداً!");
+            this.state.input = ["", ""];
+            document.querySelectorAll('.ans-slot').forEach(s => s.textContent = '?');
         }
-        // قانون الإجبار: المربع التالي هو رقم الخلية التي لُعب فيها
-        this.state.forcedGrid = (this.state.bigBoard[cIdx] === null) ? cIdx : null;
-        this.state.currentPlayer = (this.state.currentPlayer === 'X') ? 'O' : 'X';
-        this.updateForcedGridUI();
-    },
-
-    checkLine: function(b) {
-        const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-        return wins.some(l => b[l[0]] && b[l[0]] === b[l[1]] && b[l[0]] === b[l[2]]);
-    },
-
-    updateForcedGridUI: function() {
-        document.querySelectorAll('.sub-grid').forEach((g, i) => {
-            g.classList.remove('active-target');
-            if (this.state.forcedGrid === i || (this.state.forcedGrid === null && !this.state.bigBoard[i])) {
-                g.classList.add('active-target');
-            }
-        });
-    },
-
-    updateSlotsUI: function() {
-        document.querySelectorAll('.ans-slot').forEach((s, i) => {
-            s.textContent = this.state.inputBuffer[i] || '?';
-            s.classList.toggle('active', i === this.state.activeSlot);
-        });
-    },
-
-    clearInput: function() {
-        this.state.inputBuffer = ["", ""];
-        this.state.activeSlot = 0;
-        this.updateSlotsUI();
-    },
-
-    setupUI: function() {
-        document.getElementById('setup-screen').classList.add('hidden');
-        document.getElementById('game-screen').classList.remove('hidden');
     }
 };
 
-// تشغيل المحرك عند الضغط على البدء
-document.getElementById('start-game').onclick = () => GameCore.init();
-window.addEventListener('resize', () => GameCore.resizeBoard());
+// ربط أزرار الواجهة بالمحرك
+document.getElementById('start-game').onclick = () => Game.init();
+document.getElementById('confirm-ans').onclick = () => Game.checkAnswer();
+document.getElementById('clear-ans').onclick = () => {
+    Game.state.input = ["", ""];
+    document.querySelectorAll('.ans-slot').forEach(s => s.textContent = '?');
+};
+
+// تبديل اختيار المستوى بصرياً
+document.querySelectorAll('.lvl-card').forEach(btn => {
+    btn.onclick = () => {
+        document.querySelectorAll('.lvl-card').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    };
+});
+
+function toggleManual(show) {
+    document.getElementById('manual-overlay').classList.toggle('hidden', !show);
+}
