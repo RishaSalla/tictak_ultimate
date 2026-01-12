@@ -3,64 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ULTIMATE MATH X-O</title>
+    <title>ULTIMATE MATH X-O | PRO</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <section id="setup-screen" class="screen">
-        <div class="main-card">
-            <h1 class="logo">ULTIMATE <span>MATH</span></h1>
-            
-            <div class="level-selection">
-                <button class="lvl-btn active" data-lvl="level1">المستوى 1</button>
-                <button class="lvl-btn" data-lvl="level2">المستوى 2</button>
-                <button class="lvl-btn" data-lvl="level3">المستوى 3</button>
-                <button class="lvl-btn" data-lvl="level4">المستوى 4</button>
-            </div>
+    <div id="setup-screen" class="app-screen">
+        <header class="hero-section">
+            <h1 class="logo-text">ULTIMATE <span>MATH</span></h1>
+            <p class="tagline">تحدي الذكاء الرياضي الأسمى</p>
+        </header>
 
-            <div class="names-row">
-                <input type="text" id="p1-name" placeholder="اسم الفريق X">
-                <span>VS</span>
-                <input type="text" id="p2-name" placeholder="اسم الفريق O">
-            </div>
-
-            <button id="start-btn" class="start-action">دخول التحدي</button>
-            <button id="show-guide" class="guide-link">كيفية اللعب؟</button>
-        </div>
-    </section>
-
-    <section id="game-screen" class="screen hidden">
-        <div class="hud">
-            <div id="display-p1">X</div>
-            <div class="timer" id="timer">00:00</div>
-            <div id="display-p2">O</div>
-        </div>
-
-        <div id="main-board" class="ultimate-grid"></div>
-
-        <div class="turn-bar">دور الفريق: <span id="current-player">-</span></div>
-    </section>
-
-    <div id="math-popup" class="popup-overlay hidden">
-        <div class="popup-card">
-            <div id="question-text" class="question">--</div>
-            
-            <div class="slots-container">
-                <div id="slot-1" class="slot active">?</div>
-                <div id="slot-2" class="slot hidden">?</div>
-            </div>
-
-            <div class="numpad-grid" id="numpad">
+        <main class="setup-container">
+            <section class="config-section">
+                <h2 class="section-title">إعدادات المهمة</h2>
+                <div class="level-selector" id="level-picker">
+                    <button class="lvl-card active" data-lvl="level1">
+                        <span class="lvl-num">01</span>
+                        <span class="lvl-name">الكلاسيكي</span>
+                    </button>
+                    <button class="lvl-card" data-lvl="level2">
+                        <span class="lvl-num">02</span>
+                        <span class="lvl-name">المجهول</span>
+                    </button>
+                    <button class="lvl-card" data-lvl="level3">
+                        <span class="lvl-num">03</span>
+                        <span class="lvl-name">المزدوج</span>
+                    </button>
+                    <button class="lvl-card" data-lvl="level4">
+                        <span class="lvl-num">04</span>
+                        <span class="lvl-name">الميزان</span>
+                    </button>
                 </div>
+            </section>
 
-            <div class="popup-actions">
-                <button id="submit-ans" class="ok-btn">تأكيد</button>
-                <button id="cancel-ans" class="cancel-btn">إلغاء</button>
+            <section class="teams-section">
+                <div class="team-input-group x-theme">
+                    <label>قائد فريق X</label>
+                    <input type="text" id="p1-name" placeholder="أدخل الاسم..." autocomplete="off">
+                </div>
+                <div class="vs-divider">VS</div>
+                <div class="team-input-group o-theme">
+                    <label>قائد فريق O</label>
+                    <input type="text" id="p2-name" placeholder="أدخل الاسم..." autocomplete="off">
+                </div>
+            </section>
+
+            <footer class="setup-footer">
+                <button id="view-manual" class="btn-info">📖 دليل القوانين</button>
+                <button id="start-game" class="btn-launch">تفعيل النظام</button>
+            </footer>
+        </main>
+    </div>
+
+    <div id="game-screen" class="app-screen hidden">
+        </div>
+
+    <div id="math-overlay" class="overlay hidden">
+        <div class="modal-calculator">
             </div>
+    </div>
+
+    <div id="manual-overlay" class="overlay hidden">
+        <div class="modal-manual">
+            <button class="close-manual">&times;</button>
+            <div id="manual-content"></div>
         </div>
     </div>
 
     <script src="script.js"></script>
+</body>
+</html>
+
+<script src="levels/level1.js"></script>
+    <script src="levels/level2.js"></script>
+    <script src="levels/level3.js"></script>
+    <script src="levels/level4.js"></script>
+    <script src="core.js"></script>
 </body>
 </html>
