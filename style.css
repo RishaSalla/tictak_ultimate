@@ -1,44 +1,115 @@
 :root {
-    --neon: #00f3ff;
-    --purple: #bc13fe;
+    --x-neon: #00f3ff;
+    --o-neon: #bc13fe;
+    --bg-deep: #020408;
+    --glass: rgba(255, 255, 255, 0.05);
+    /* مسافات الأمان للهواتف الحديثة */
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* { 
+    box-sizing: border-box; 
+    margin: 0; padding: 0; 
+    -webkit-tap-highlight-color: transparent; /* تحسين اللمس للجوال */
 }
 
 body {
-    background: #05070a; color: white; font-family: sans-serif;
-    margin: 0; height: 100vh; display: flex; justify-content: center; align-items: center;
+    background: var(--bg-deep);
+    color: #fff;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    /* منع الاهتزاز والتمرير لضمان تجربة تطبيق */
+    overflow: hidden; 
+    height: 100dvh; /* Dynamic Viewport لمنع التداخل مع أشرطة المتصفح */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.screen { width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-.hidden { display: none !important; }
-
-/* اللوحة والمقاسات */
-.ultimate-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; padding: 10px; }
-.sub-grid { 
-    display: grid; grid-template-columns: repeat(3, 50px); grid-template-rows: repeat(3, 50px); 
-    gap: 5px; background: rgba(255,255,255,0.05); padding: 5px; border: 2px solid #333;
-}
-.sub-grid.active-target { border-color: white; box-shadow: 0 0 15px white; }
-
-.cell { background: #111; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 1.5rem; }
-
-/* الحاسبة المنبثقة (التصحيح الحاسم) */
-.popup-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; z-index: 9999;
+.app-screen {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-top: var(--safe-top); /* حماية من النتوء العلوي */
+    padding-bottom: var(--safe-bottom); /* حماية من شريط الإيماءات السفلي */
 }
 
-.popup-card {
-    background: #0f172a; border: 2px solid var(--neon); padding: 30px; border-radius: 20px;
-    width: 320px; text-align: center; box-shadow: 0 0 30px var(--neon);
+/* حاوية اللعبة القابلة للتحجيم */
+#game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transform-origin: center center; /* نقطة الارتكاز للتحجيم الديناميكي */
+    transition: transform 0.2s ease-out;
+    width: 100%;
+    height: 100%;
 }
 
-.question { font-size: 1.8rem; margin-bottom: 20px; color: var(--neon); }
-.slots-container { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
-.slot { width: 60px; height: 60px; background: #222; border: 2px solid #444; font-size: 2rem; display: flex; justify-content: center; align-items: center; border-radius: 10px; }
-.slot.active { border-color: var(--neon); }
+/* تصميم اللوحة (المقاسات الذهبية) */
+.ultimate-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 10px;
+    background: var(--glass);
+    border-radius: 15px;
+}
 
-.numpad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-.numpad-grid button { padding: 15px; background: #1e293b; color: white; border: none; border-radius: 5px; font-size: 1.2rem; cursor: pointer; }
-.numpad-grid .clear-btn { background: #ef4444; }
+.sub-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 45px); /* مقاس ثابت للخلية */
+    grid-template-rows: repeat(3, 45px);
+    gap: 4px;
+    padding: 6px;
+    background: #000;
+    border: 2px solid #333;
+}
 
-.ok-btn { width: 100%; padding: 15px; margin-top: 20px; background: var(--neon); border: none; font-weight: bold; cursor: pointer; }
+/* --- Media Queries للتكيف مع شاشات الجوال والديسكتوب --- */
+
+/* نمط الجوال (رأسي) */
+@media (max-width: 768px) {
+    .setup-container {
+        padding: 20px;
+        flex-direction: column;
+    }
+    .teams-section {
+        flex-direction: column; /* ترتيب الفرق فوق بعضها */
+        gap: 15px;
+    }
+    .lvl-card {
+        padding: 10px;
+        font-size: 0.8rem;
+    }
+}
+
+/* نمط الديسكتوب (أفقي) */
+@media (min-width: 769px) {
+    .teams-section {
+        flex-direction: row;
+        justify-content: space-evenly;
+        width: 100%;
+    }
+}
+
+/* تثبيت الـ Pop-up في المنتصف دائماً */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    padding: 20px;
+}
+
+.modal-calculator {
+    width: min(100%, 350px); /* عرض متكيف مع الجوال */
+    background: #0f172a;
+    border: 2px solid var(--x-neon);
+    border-radius: 20px;
+    padding: 20px;
+}
