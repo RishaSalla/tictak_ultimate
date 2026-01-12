@@ -1,92 +1,44 @@
 :root {
-    --x-neon: #00f3ff;
-    --o-neon: #bc13fe;
-    --bg-deep: #020408;
-    --glass: rgba(255, 255, 255, 0.05);
-    --font-main: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --neon: #00f3ff;
+    --purple: #bc13fe;
 }
-
-* { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
 
 body {
-    background: radial-gradient(circle at center, #0a1128 0%, var(--bg-deep) 100%);
-    color: #fff; font-family: var(--font-main);
-    height: 100vh; overflow: hidden; display: flex; justify-content: center; align-items: center;
+    background: #05070a; color: white; font-family: sans-serif;
+    margin: 0; height: 100vh; display: flex; justify-content: center; align-items: center;
 }
 
-.screen { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; transition: 0.5s; }
+.screen { width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; }
 .hidden { display: none !important; }
 
-/* --- بطاقة الدخول الرئيسية --- */
-.main-card {
-    width: 90%; max-width: 600px; padding: 40px; border-radius: 30px;
-    background: var(--glass); backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.1); text-align: center;
+/* اللوحة والمقاسات */
+.ultimate-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; padding: 10px; }
+.sub-grid { 
+    display: grid; grid-template-columns: repeat(3, 50px); grid-template-rows: repeat(3, 50px); 
+    gap: 5px; background: rgba(255,255,255,0.05); padding: 5px; border: 2px solid #333;
+}
+.sub-grid.active-target { border-color: white; box-shadow: 0 0 15px white; }
+
+.cell { background: #111; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 1.5rem; }
+
+/* الحاسبة المنبثقة (التصحيح الحاسم) */
+.popup-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; z-index: 9999;
 }
 
-.main-logo { font-size: 2.5rem; letter-spacing: 4px; margin-bottom: 30px; text-shadow: 0 0 15px var(--x-neon); }
-.main-logo span { color: var(--x-neon); }
-
-/* أزرار اختيار المستوى (تصميم موحد) */
-.level-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 20px 0; }
-.level-btn {
-    padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2);
-    color: #fff; border-radius: 10px; cursor: pointer; transition: 0.3s; font-weight: bold;
+.popup-card {
+    background: #0f172a; border: 2px solid var(--neon); padding: 30px; border-radius: 20px;
+    width: 320px; text-align: center; box-shadow: 0 0 30px var(--neon);
 }
-.level-btn.active { background: var(--x-neon); color: #000; box-shadow: 0 0 15px var(--x-neon); border: none; }
-.level-info { font-size: 0.9rem; color: #aaa; margin-bottom: 25px; min-height: 40px; }
 
-/* إدخال الأسماء */
-.players-setup { display: flex; align-items: center; gap: 15px; margin-bottom: 30px; }
-.p-input { flex: 1; padding: 15px; background: rgba(0,0,0,0.4); border-radius: 12px; border: 1px solid #333; }
-.p-input.x-theme { border-color: var(--x-neon); }
-.p-input.o-theme { border-color: var(--o-neon); }
-.p-input input { background: transparent; border: none; color: #fff; text-align: center; width: 100%; font-size: 1.1rem; }
+.question { font-size: 1.8rem; margin-bottom: 20px; color: var(--neon); }
+.slots-container { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
+.slot { width: 60px; height: 60px; background: #222; border: 2px solid #444; font-size: 2rem; display: flex; justify-content: center; align-items: center; border-radius: 10px; }
+.slot.active { border-color: var(--neon); }
 
-/* --- اللوحة (المقاسات الثابتة) --- */
-.master-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;
-    padding: 15px; background: rgba(255,255,255,0.02); border-radius: 15px;
-}
-.sub-grid {
-    display: grid; grid-template-columns: repeat(3, 45px); grid-template-rows: repeat(3, 45px);
-    gap: 4px; padding: 8px; background: #000; border: 2px solid #222; position: relative;
-}
-.sub-grid.active-target { border-color: #fff; box-shadow: 0 0 15px #fff; animation: pulse 1s infinite; }
-@keyframes pulse { 50% { opacity: 0.7; } }
+.numpad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.numpad-grid button { padding: 15px; background: #1e293b; color: white; border: none; border-radius: 5px; font-size: 1.2rem; cursor: pointer; }
+.numpad-grid .clear-btn { background: #ef4444; }
 
-.cell { background: #0d1117; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 1.3rem; font-weight: bold; }
-.cell.x-mark { color: var(--x-neon); text-shadow: 0 0 8px var(--x-neon); }
-.cell.o-mark { color: var(--o-neon); text-shadow: 0 0 8px var(--o-neon); }
-
-/* --- الحاسبة المتطورة --- */
-.math-box { width: 340px; padding: 25px; background: #0a0f1a; border: 2px solid var(--x-neon); border-radius: 20px; text-align: center; }
-.q-display { font-size: 1.6rem; color: var(--x-neon); margin-bottom: 15px; direction: ltr; }
-
-.answer-container { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
-.ans-slot {
-    width: 60px; height: 60px; background: rgba(255,255,255,0.05); border: 2px solid #333;
-    display: flex; justify-content: center; align-items: center; font-size: 1.8rem; border-radius: 10px;
-}
-.ans-slot.active { border-color: var(--x-neon); box-shadow: 0 0 10px var(--x-neon); }
-
-.numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.numpad button {
-    padding: 15px; background: var(--glass); border: 1px solid rgba(255,255,255,0.1);
-    color: #fff; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1.2rem;
-}
-.numpad button.clear-btn { background: #ff4b2b; border: none; }
-.numpad button:hover { background: #fff; color: #000; }
-
-/* --- أزرار HUD --- */
-.hud-bottom { display: flex; gap: 20px; align-items: center; margin-top: 25px; }
-.btn-primary { 
-    padding: 15px 40px; background: var(--x-neon); color: #000; border: none; 
-    border-radius: 50px; font-weight: bold; cursor: pointer; font-size: 1.1rem;
-}
-.btn-icon { width: 50px; height: 50px; border-radius: 50%; background: var(--glass); border: 1px solid #444; color: #fff; cursor: pointer; font-size: 1.2rem; }
-
-/* --- التعليمات --- */
-.guide-box { width: 450px; max-height: 80vh; overflow-y: auto; background: #0f172a; padding: 30px; border-radius: 20px; border: 1px solid var(--x-neon); }
-.guide-body section { margin-bottom: 20px; border-bottom: 1px solid #222; padding-bottom: 10px; }
-.guide-body h4 { color: var(--x-neon); margin-bottom: 5px; }
+.ok-btn { width: 100%; padding: 15px; margin-top: 20px; background: var(--neon); border: none; font-weight: bold; cursor: pointer; }
