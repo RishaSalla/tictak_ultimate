@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>ULTIMATE MATH X-O | التحدي الأسمى</title>
+    <title>ULTIMATE MATH X-O | PRO EDITION</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -29,21 +29,21 @@
                         <span class="lvl-num">02</span>
                         <div class="lvl-content">
                             <span class="lvl-name">المجهول</span>
-                            <small>أوجد الرقمين المفقودين للناتج</small>
+                            <small>أوجد الرقمين المفقودين</small>
                         </div>
                     </button>
                     <button class="lvl-card" data-lvl="level3">
                         <span class="lvl-num">03</span>
                         <div class="lvl-content">
                             <span class="lvl-name">المزدوج</span>
-                            <small>استخرج أزواج الأرقام الصحيحة</small>
+                            <small>استخرج أزواج الأرقام</small>
                         </div>
                     </button>
                     <button class="lvl-card" data-lvl="level4">
                         <span class="lvl-num">04</span>
                         <div class="lvl-content">
                             <span class="lvl-name">الميزان</span>
-                            <small>تحديات احترافية موزعة بدقة</small>
+                            <small>تحديات احترافية موزعة</small>
                         </div>
                     </button>
                 </div>
@@ -62,8 +62,8 @@
             </section>
 
             <footer class="setup-footer">
-                <button id="view-manual" class="btn-info" onclick="toggleManual(true)">📖 كيف ألعب؟</button>
-                <button id="start-game" class="btn-launch">بدء المهمة</button>
+                <button type="button" class="btn-info" onclick="toggleManual(true)">📖 دليل القوانين</button>
+                <button type="button" id="start-game" class="btn-launch">بدء المهمة</button>
             </footer>
         </main>
     </div>
@@ -86,7 +86,7 @@
                 <section>
                     <h3>💡 ما هي لعبة Ultimate X-O؟</h3>
                     <p>ليست X-O عادية! هي عبارة عن لوحة كبيرة تحتوي على 9 لوحات صغيرة. للفوز باللعبة الكبرى، يجب أن تفوز بـ 3 لوحات صغيرة في صف واحد.</p>
-                </section>
+                                    </section>
                 
                 <section>
                     <h3>🎯 قانون الإجبار (The Golden Rule)</h3>
@@ -96,34 +96,28 @@
                 <section>
                     <h3>🧮 حل المسائل الرياضية</h3>
                     <ul>
-                        <li><strong>المستوى 1:</strong> حل العملية المعروضة وضع ناتجاً واحداً.</li>
-                        <li><strong>المستوى 2:</strong> ستظهر لك معادلة ناقصة أرقامها، عليك إدخال رقمين يحققان الناتج المكتوب.</li>
+                        <li><strong>المستوى 1:</strong> حل العملية المباشرة وضع ناتجاً واحداً.</li>
+                        <li><strong>المستوى 2:</strong> ستظهر معادلة مجهولة الأطراف (? + ? = 10)، أدخل الرقمين الصحيحين.</li>
                         <li><strong>المستوى 3:</strong> سنعطيك ناتجا، وعليك إدخال "الزوج" الصحيح الذي يؤدي لهذا الناتج.</li>
-                        <li><strong>المستوى 4:</strong> عمليات مركبة صعبة تتطلب تركيزاً عالياً ودقة في الإجابة.</li>
+                        <li><strong>المستوى 4:</strong> عمليات مركبة صعبة تتطلب تركيزاً ودقة.</li>
                     </ul>
-                </section>
-
-                <section>
-                    <h3>⌨️ الحاسبة</h3>
-                    <p>استخدم لوحة الأرقام لإدخال إجابتك. في حال تطلب السؤال رقمين، ستنتقل الحاسبة للخانة الثانية تلقائياً. زر <strong>C</strong> يمسح كافة مدخلاتك للبدء من جديد.</p>
                 </section>
             </div>
             <button class="got-it-btn" onclick="toggleManual(false)">فهمت القوانين!</button>
         </div>
     </div>
 
-    <script src="levels/level1.js"></script>
-    <script src="levels/level2.js"></script>
-    <script src="levels/level3.js"></script>
-    <script src="levels/level4.js"></script>
+    <script src="levels.js/level1.js"></script>
+    <script src="levels.js/level2.js"></script>
+    <script src="levels.js/level3.js"></script>
+    <script src="levels.js/level4.js"></script>
     <script src="core.js"></script>
 
     <script>
-        // دالة بسيطة للتحكم في ظهور دليل التعليمات
+        // دالة التحكم في إظهار وإخفاء نافذة القوانين
         function toggleManual(show) {
             const overlay = document.getElementById('manual-overlay');
-            if(show) overlay.classList.remove('hidden');
-            else overlay.classList.add('hidden');
+            overlay.classList.toggle('hidden', !show);
         }
     </script>
 </body>
