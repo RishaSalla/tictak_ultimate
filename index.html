@@ -2,8 +2,8 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ULTIMATE MATH X-O | PRO</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>ULTIMATE MATH X-O | التحدي الأسمى</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,47 +11,59 @@
     <div id="setup-screen" class="app-screen">
         <header class="hero-section">
             <h1 class="logo-text">ULTIMATE <span>MATH</span></h1>
-            <p class="tagline">تحدي الذكاء الرياضي الأسمى</p>
+            <p class="tagline">ادمُج ذكاء الـ X-O بقوة الرياضيات</p>
         </header>
 
         <main class="setup-container">
             <section class="config-section">
-                <h2 class="section-title">إعدادات المهمة</h2>
+                <h2 class="section-title">اختر مستوى التحدي</h2>
                 <div class="level-selector" id="level-picker">
                     <button class="lvl-card active" data-lvl="level1">
                         <span class="lvl-num">01</span>
-                        <span class="lvl-name">الكلاسيكي</span>
+                        <div class="lvl-content">
+                            <span class="lvl-name">الكلاسيكي</span>
+                            <small>عمليات ضرب وقسمة مباشرة</small>
+                        </div>
                     </button>
                     <button class="lvl-card" data-lvl="level2">
                         <span class="lvl-num">02</span>
-                        <span class="lvl-name">المجهول</span>
+                        <div class="lvl-content">
+                            <span class="lvl-name">المجهول</span>
+                            <small>أوجد الرقمين المفقودين للناتج</small>
+                        </div>
                     </button>
                     <button class="lvl-card" data-lvl="level3">
                         <span class="lvl-num">03</span>
-                        <span class="lvl-name">المزدوج</span>
+                        <div class="lvl-content">
+                            <span class="lvl-name">المزدوج</span>
+                            <small>استخرج أزواج الأرقام الصحيحة</small>
+                        </div>
                     </button>
                     <button class="lvl-card" data-lvl="level4">
                         <span class="lvl-num">04</span>
-                        <span class="lvl-name">الميزان</span>
+                        <div class="lvl-content">
+                            <span class="lvl-name">الميزان</span>
+                            <small>تحديات احترافية موزعة بدقة</small>
+                        </div>
                     </button>
                 </div>
             </section>
 
             <section class="teams-section">
                 <div class="team-input-group x-theme">
-                    <label>قائد فريق X</label>
-                    <input type="text" id="p1-name" placeholder="أدخل الاسم..." autocomplete="off">
+                    <label>فريق X</label>
+                    <input type="text" id="p1-name" placeholder="أدخل اسم البطل..." maxlength="12">
                 </div>
                 <div class="vs-divider">VS</div>
                 <div class="team-input-group o-theme">
-                    <label>قائد فريق O</label>
-                    <input type="text" id="p2-name" placeholder="أدخل الاسم..." autocomplete="off">
+                    <label>فريق O</label>
+                    <input type="text" id="p2-name" placeholder="أدخل اسم البطل..." maxlength="12">
                 </div>
             </section>
 
             <footer class="setup-footer">
-                <button id="view-manual" class="btn-info">📖 دليل القوانين</button>
-                <button id="start-game" class="btn-launch">تفعيل النظام</button>
+                <button id="view-manual" class="btn-info" onclick="toggleManual(true)">📖 كيف ألعب؟</button>
+                <button id="start-game" class="btn-launch">بدء المهمة</button>
             </footer>
         </main>
     </div>
@@ -66,19 +78,53 @@
 
     <div id="manual-overlay" class="overlay hidden">
         <div class="modal-manual">
-            <button class="close-manual">&times;</button>
-            <div id="manual-content"></div>
+            <header class="manual-header">
+                <h2>دليل اللعبة للمحترفين</h2>
+                <button class="close-btn" onclick="toggleManual(false)">&times;</button>
+            </header>
+            <div class="manual-body">
+                <section>
+                    <h3>💡 ما هي لعبة Ultimate X-O؟</h3>
+                    <p>ليست X-O عادية! هي عبارة عن لوحة كبيرة تحتوي على 9 لوحات صغيرة. للفوز باللعبة الكبرى، يجب أن تفوز بـ 3 لوحات صغيرة في صف واحد.</p>
+                </section>
+                
+                <section>
+                    <h3>🎯 قانون الإجبار (The Golden Rule)</h3>
+                    <p>حركتك داخل المربع الصغير تُحدد لخصمك في أي مربع كبير سيلعب لاحقاً. إذا لعبت في الزاوية اليمنى العليا للمربع الصغير، فسيُجبر خصمك على اللعب في المربع الكبير الموجود في الزاوية اليمنى العليا من اللوحة الكبرى.</p>
+                </section>
+
+                <section>
+                    <h3>🧮 حل المسائل الرياضية</h3>
+                    <ul>
+                        <li><strong>المستوى 1:</strong> حل العملية المعروضة وضع ناتجاً واحداً.</li>
+                        <li><strong>المستوى 2:</strong> ستظهر لك معادلة ناقصة أرقامها، عليك إدخال رقمين يحققان الناتج المكتوب.</li>
+                        <li><strong>المستوى 3:</strong> سنعطيك ناتجا، وعليك إدخال "الزوج" الصحيح الذي يؤدي لهذا الناتج.</li>
+                        <li><strong>المستوى 4:</strong> عمليات مركبة صعبة تتطلب تركيزاً عالياً ودقة في الإجابة.</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h3>⌨️ الحاسبة</h3>
+                    <p>استخدم لوحة الأرقام لإدخال إجابتك. في حال تطلب السؤال رقمين، ستنتقل الحاسبة للخانة الثانية تلقائياً. زر <strong>C</strong> يمسح كافة مدخلاتك للبدء من جديد.</p>
+                </section>
+            </div>
+            <button class="got-it-btn" onclick="toggleManual(false)">فهمت القوانين!</button>
         </div>
     </div>
 
-    <script src="script.js"></script>
-</body>
-</html>
-
-<script src="levels/level1.js"></script>
+    <script src="levels/level1.js"></script>
     <script src="levels/level2.js"></script>
     <script src="levels/level3.js"></script>
     <script src="levels/level4.js"></script>
     <script src="core.js"></script>
+
+    <script>
+        // دالة بسيطة للتحكم في ظهور دليل التعليمات
+        function toggleManual(show) {
+            const overlay = document.getElementById('manual-overlay');
+            if(show) overlay.classList.remove('hidden');
+            else overlay.classList.add('hidden');
+        }
+    </script>
 </body>
 </html>
