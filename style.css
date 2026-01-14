@@ -100,3 +100,82 @@ input:focus + .glow-bar {
 }
 
 .hidden { display: none !important; }
+
+/* تنسيق النصوص العربية */
+.logo-ar {
+    font-size: 4rem;
+    font-weight: 800;
+    margin-bottom: 5px;
+    background: linear-gradient(to bottom, #fff, #aaa);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 0 15px rgba(255,255,255,0.3));
+}
+
+.subtitle-ar {
+    color: #888;
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+    margin-bottom: 40px;
+}
+
+/* شبكة البطاقات */
+.levels-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 20px;
+    width: 90%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* بطاقة البلازما */
+.plasma-card {
+    position: relative;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 20px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-align: center;
+}
+
+.plasma-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* حالة الاختيار (Selected) */
+.plasma-card.active-card {
+    border-color: #00f3ff;
+    box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);
+    transform: scale(1.05);
+}
+
+.lvl-number {
+    font-size: 2.5rem;
+    opacity: 0.1;
+    position: absolute;
+    top: -10px;
+    left: 10px;
+}
+
+.lvl-title {
+    font-size: 1.5rem;
+    margin: 15px 0 5px;
+    color: #fff;
+}
+
+.lvl-desc {
+    font-size: 0.8rem;
+    color: #aaa;
+}
+
+/* زر البدء (يظهر فقط بعد الاختيار) */
+.action-area {
+    margin-top: 40px;
+    height: 60px; /* لحجز مساحة للزر */
+}
