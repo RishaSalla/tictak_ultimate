@@ -93,3 +93,27 @@ const App = {
 document.addEventListener('DOMContentLoaded', () => {
     App.init();
 });
+// متغير لتخزين المستوى المختار
+let selectedLevelId = null;
+
+function selectLevel(lvlId, cardElement) {
+    // 1. إزالة التحديد عن الجميع
+    document.querySelectorAll('.plasma-card').forEach(c => c.classList.remove('active-card'));
+    
+    // 2. تحديد البطاقة الجديدة
+    cardElement.classList.add('active-card');
+    selectedLevelId = lvlId;
+    
+    // 3. إظهار زر البدء بصوت (تخيلي)
+    const btn = document.getElementById('btn-start-game');
+    btn.classList.remove('hidden');
+    
+    console.log("تم اختيار: " + lvlId);
+}
+
+// دالة بدء اللعبة (سنكمل برمجتها في الخطوة القادمة)
+App.launchGame = function() {
+    if(!selectedLevelId) return;
+    console.log("جاري تجهيز ساحة المعركة للمستوى: " + selectedLevelId);
+    // هنا سنقوم بإخفاء القائمة وإظهار لوحة اللعب
+};
