@@ -179,3 +179,26 @@ input:focus + .glow-bar {
     margin-top: 40px;
     height: 60px; /* لحجز مساحة للزر */
 }
+
+/* 1. إصلاح تمركز الهيدر والشعارات */
+.game-header, .logo-ar, .subtitle-ar {
+    text-align: center; /* إجبار النص على التوسط */
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* 2. إصلاح شبكة البطاقات لتتوسط الشاشة */
+.levels-grid {
+    /* الكود السابق موجود، أضف هذا فقط للتأكيد */
+    margin: 40px auto; /* auto يمين ويسار تضمن التوسط */
+    justify-content: center;
+}
+
+/* 3. زر البدء */
+.action-area {
+    display: flex;
+    justify-content: center; /* توسيط الزر أفقياً */
+    width: 100%;
+    margin-top: 40px;
+}
