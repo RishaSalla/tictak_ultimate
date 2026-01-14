@@ -3,62 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>ULTIMATE MATH X-O</title>
+    <title>Math Matrix | PRO</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div id="setup-screen" class="app-screen">
-        <div class="main-card">
-            <h1 style="text-align:center; color:var(--x-neon);">ULTIMATE MATH</h1>
+    <section id="login-gate" class="full-screen-layer">
+        <div class="glass-card login-box">
+            <h1 class="brand-title">MATH <span class="plasma-text">MATRIX</span></h1>
+            <p class="access-label">أدخل شفرة الوصول</p>
             
-            <div class="level-selector">
-                <button class="lvl-card active" data-lvl="level1">مستوى 1</button>
-                <button class="lvl-card" data-lvl="level2">مستوى 2</button>
-                <button class="lvl-card" data-lvl="level3">مستوى 3</button>
-                <button class="lvl-card" data-lvl="level4">مستوى 4</button>
+            <div class="input-wrapper">
+                <input type="password" id="access-code" maxlength="8" placeholder="●●●●●●●●">
+                <div class="glow-bar"></div>
             </div>
 
-            <div class="inputs-group">
-                <input type="text" id="p1-name" placeholder="اسم لاعب X">
-                <input type="text" id="p2-name" placeholder="اسم لاعب O">
-            </div>
-
-            <button id="start-game" class="btn-launch">بدء اللعبة</button>
-            <button onclick="toggleManual(true)" class="btn-info">القوانين</button>
+            <button id="btn-verify" class="btn-plasma">فك التشفير</button>
+            <p id="login-msg" class="error-msg"></p>
         </div>
-    </div>
+    </section>
 
-    <div id="game-screen" class="app-screen hidden">
-        <div id="game-container">
-            </div>
-    </div>
-
-    <div id="math-overlay" class="overlay hidden">
-        <div class="modal-calculator">
-            <div id="question-area"></div>
-            <div id="answer-slots" style="display:flex; gap:10px; justify-content:center;"></div>
-            <div id="numpad-grid" class="level-selector" style="grid-template-columns: repeat(3, 1fr);"></div>
-            <div class="calc-controls" style="display:flex; gap:10px;">
-                <button id="confirm-ans" class="btn-launch" style="flex:2">تأكيد</button>
-                <button id="clear-ans" class="btn-info" style="flex:1">C</button>
-            </div>
+    <div id="app-content" class="hidden">
         </div>
-    </div>
 
-    <div id="manual-overlay" class="overlay hidden">
-        <div class="modal-manual">
-            <h2>قوانين اللعبة</h2>
-            <div id="manual-text" style="font-size: 0.9rem; line-height: 1.6;">
-                </div>
-            <button onclick="toggleManual(false)" class="btn-launch">فهمت</button>
-        </div>
-    </div>
-
-    <script src="levels/level1.js"></script>
-    <script src="levels/level2.js"></script>
-    <script src="levels/level3.js"></script>
-    <script src="levels/level4.js"></script>
     <script src="core.js"></script>
 </body>
 </html>
