@@ -24,6 +24,43 @@
     </section>
 
     <div id="app-content" class="hidden">
+        <header class="game-header">
+    <h1 class="logo-ar">حسبتاك <span class="version-tag">PRO</span></h1>
+    <p class="subtitle-ar">حيث تلتقي الأرقام بالذكاء</p>
+</header>
+
+<div class="levels-grid">
+    <div class="plasma-card" onclick="selectLevel('level1', this)">
+        <div class="card-glow red-glow"></div>
+        <h2 class="lvl-number">01</h2>
+        <h3 class="lvl-title">الكلاسيكي</h3>
+        <p class="lvl-desc">سرعة بديهة وضرب مباشر</p>
+    </div>
+
+    <div class="plasma-card" onclick="selectLevel('level2', this)">
+        <div class="card-glow blue-glow"></div>
+        <h2 class="lvl-number">02</h2>
+        <h3 class="lvl-title">المجهول</h3>
+        <p class="lvl-desc">أوجد الأرقام المفقودة</p>
+    </div>
+
+    <div class="plasma-card" onclick="selectLevel('level3', this)">
+        <div class="card-glow purple-glow"></div>
+        <h2 class="lvl-number">03</h2>
+        <h3 class="lvl-title">الزوجي</h3>
+        <p class="lvl-desc">اكتشف الثنائيات الصحيحة</p>
+    </div>
+
+    <div class="plasma-card" onclick="selectLevel('level4', this)">
+        <div class="card-glow gold-glow"></div>
+        <h2 class="lvl-number">04</h2>
+        <h3 class="lvl-title">التحدي</h3>
+        <p class="lvl-desc">اختبار النخبة الشامل</p>
+    </div>
+</div>
+
+<div class="action-area">
+    <button id="btn-start-game" class="btn-plasma hidden" onclick="App.launchGame()">بدء المهمة</button>
         </div>
 
     <script src="core.js"></script>
