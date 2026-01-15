@@ -170,3 +170,57 @@ input:focus + .glow-bar { width: 100%; box-shadow: 0 0 15px #00C9FF; }
 }
 .numpad button:hover { background: rgba(255,255,255,0.2); }
 .numpad button:active { transform: scale(0.95); }
+
+/* =========================================
+   تحديث الختم الكبير (Big Win Overlay)
+   ========================================= */
+
+/* تحضير المربع لاستقبال الختم */
+.sub-grid {
+    position: relative; /* ضروري لتموضع الختم */
+}
+
+/* طبقة تمنع اللعب في المربعات المنتهية */
+.sub-grid.won-x .cell,
+.sub-grid.won-o .cell {
+    opacity: 0.3; /* تغييم الخلايا القديمة */
+    pointer-events: none; /* منع الضغط نهائياً */
+}
+
+/* رسم الختم الكبير X */
+.sub-grid.won-x::after {
+    content: "X";
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 10rem; /* حجم ضخم */
+    font-weight: 900;
+    color: rgba(255, 77, 77, 0.8);
+    text-shadow: 0 0 50px rgba(255, 0, 0, 0.5);
+    z-index: 10;
+    animation: stamp-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* رسم الختم الكبير O */
+.sub-grid.won-o::after {
+    content: "O";
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 10rem;
+    font-weight: 900;
+    color: rgba(0, 201, 255, 0.8);
+    text-shadow: 0 0 50px rgba(0, 201, 255, 0.5);
+    z-index: 10;
+    animation: stamp-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* حركة الختم */
+@keyframes stamp-in {
+    0% { transform: scale(2); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
