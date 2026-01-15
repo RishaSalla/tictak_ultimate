@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Math Matrix | PRO</title>
+    <title>Math Matrix | حسبتاك</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,7 +11,7 @@
     <section id="login-gate" class="full-screen-layer">
         <div class="glass-card login-box">
             <h1 class="brand-title">MATH <span class="plasma-text">MATRIX</span></h1>
-            <p class="access-label">أدخل شفرة الوصول</p>
+            <p class="access-label">أدخل شفرة القائد</p>
             <div class="input-wrapper">
                 <input type="password" id="access-code" maxlength="8" placeholder="●●●●●●●●">
                 <div class="glow-bar"></div>
@@ -25,8 +25,7 @@
         
         <div id="game-hud" class="hud-bar hidden">
             <div class="hud-player p-x" id="hud-x">
-                <div class="hud-avatar">X</div>
-                <span id="hud-name-x">اللاعب 1</span>
+                <div class="hud-avatar" id="avatar-display-x">X</div> <span id="hud-name-x">الفريق الأول</span>
             </div>
             
             <div class="hud-score">
@@ -35,70 +34,123 @@
             </div>
 
             <div class="hud-player p-o" id="hud-o">
-                <span id="hud-name-o">اللاعب 2</span>
-                <div class="hud-avatar">O</div>
-            </div>
+                <span id="hud-name-o">الفريق الثاني</span>
+                <div class="hud-avatar" id="avatar-display-o">O</div> </div>
         </div>
 
         <header class="game-header">
             <h1 class="logo-ar">حسبتاك <span class="version-tag">PRO</span></h1>
-            <p class="subtitle-ar">ساحة العباقرة</p>
+            <p class="subtitle-ar">اختر ساحة المعركة</p>
         </header>
 
         <div class="levels-grid">
-            <div class="plasma-card" onclick="selectLevel('level1', this)">
-                <div class="card-glow red-glow"></div>
-                <h2 class="lvl-number">01</h2><h3 class="lvl-title">الكلاسيكي</h3>
-            </div>
-            <div class="plasma-card" onclick="selectLevel('level2', this)">
-                <div class="card-glow blue-glow"></div>
-                <h2 class="lvl-number">02</h2><h3 class="lvl-title">المجهول</h3>
-            </div>
-            <div class="plasma-card" onclick="selectLevel('level3', this)">
-                <div class="card-glow purple-glow"></div>
-                <h2 class="lvl-number">03</h2><h3 class="lvl-title">الزوجي</h3>
-            </div>
-            <div class="plasma-card" onclick="selectLevel('level4', this)">
+            <div class="plasma-card special-card" onclick="selectLevel('strategy', this)">
                 <div class="card-glow gold-glow"></div>
-                <h2 class="lvl-number">04</h2><h3 class="lvl-title">التحدي</h3>
+                <h2 class="lvl-number">01</h2>
+                <h3 class="lvl-title">التكتيك (XO)</h3>
+                <p class="lvl-desc">ذكاء استراتيجي خالص. حاصر خصمك بدون حساب.</p>
+            </div>
+
+            <div class="plasma-card" onclick="selectLevel('clash', this)">
+                <div class="card-glow red-glow"></div>
+                <h2 class="lvl-number">02</h2>
+                <h3 class="lvl-title">المواجهة</h3>
+                <p class="lvl-desc">سرعة بديهة في جدول الضرب.</p>
+            </div>
+
+            <div class="plasma-card" onclick="selectLevel('code', this)">
+                <div class="card-glow blue-glow"></div>
+                <h2 class="lvl-number">03</h2>
+                <h3 class="lvl-title">الشيفرة</h3>
+                <p class="lvl-desc">أوجد الرقم المفقود (س).</p>
+            </div>
+
+            <div class="plasma-card" onclick="selectLevel('duality', this)">
+                <div class="card-glow purple-glow"></div>
+                <h2 class="lvl-number">04</h2>
+                <h3 class="lvl-title">الثنائيات</h3>
+                <p class="lvl-desc">ميز بين الزوجي والفردي.</p>
+            </div>
+
+            <div class="plasma-card" onclick="selectLevel('genius', this)">
+                <div class="card-glow green-glow"></div>
+                <h2 class="lvl-number">05</h2>
+                <h3 class="lvl-title">العباقرة</h3>
+                <p class="lvl-desc">تحدي النخبة الشامل.</p>
             </div>
         </div>
 
         <div class="action-area">
-            <button id="btn-start-game" class="btn-plasma hidden" onclick="App.launchGame()">بدء المهمة</button>
+            <button id="btn-start-game" class="btn-plasma hidden" onclick="App.launchGame()">تجهيز القوات</button>
         </div>
 
-        <div id="game-arena" class="hidden"></div>
+        <div id="game-container" class="hidden">
+            <div class="power-ups-bar">
+                <button class="power-btn btn-nuke" onclick="App.usePower('nuke')" title="تدمير منطقة (القنبلة)">☢️</button>
+                <button class="power-btn btn-freeze" onclick="App.usePower('freeze')" title="تجميد الخصم (لعب مرتين)">❄️</button>
+                <button class="power-btn btn-hack" onclick="App.usePower('hack')" title="اختراق خلية (سرقة)">💀</button>
+            </div>
+
+            <div id="game-arena"></div>
+        </div>
     </div>
 
     <div id="battle-setup" class="full-screen-layer hidden">
         <div class="glass-card setup-box">
-            <h2 class="plasma-text">تجهيز المعركة</h2>
+            <h2 class="plasma-text">غرفة العمليات</h2>
             
             <div class="players-row">
                 <div class="player-group group-x">
-                    <div class="icon-avatar x-avatar">X</div>
-                    <input type="text" id="p1-name" class="plasma-input x-input" placeholder="اسم الفريق X" value="الفريق X">
+                    <label>شعار الفريق الأول</label>
+                    <select id="p1-avatar" class="plasma-select">
+                        <option value="X">التقليدي (X)</option>
+                        <option value="🦁">الأسد (🦁)</option>
+                        <option value="🚀">الصاروخ (🚀)</option>
+                        <option value="⚔️">السيف (⚔️)</option>
+                        <option value="🔥">النار (🔥)</option>
+                    </select>
+                    <input type="text" id="p1-name" class="plasma-input x-input" placeholder="اسم القائد" value="القائد 1">
                 </div>
-                <div class="vs-text">VS</div>
+
+                <div class="vs-text">ضد</div>
+
                 <div class="player-group group-o">
-                    <div class="icon-avatar o-avatar">O</div>
-                    <input type="text" id="p2-name" class="plasma-input o-input" placeholder="اسم الفريق O" value="الفريق O">
+                    <label>شعار الفريق الثاني</label>
+                    <select id="p2-avatar" class="plasma-select">
+                        <option value="O">التقليدي (O)</option>
+                        <option value="🐯">النمر (🐯)</option>
+                        <option value="💎">الجوهرة (💎)</option>
+                        <option value="🛡️">الدرع (🛡️)</option>
+                        <option value="❄️">الجليد (❄️)</option>
+                    </select>
+                    <input type="text" id="p2-name" class="plasma-input o-input" placeholder="اسم القائد" value="القائد 2">
                 </div>
             </div>
 
-            <div class="timer-settings">
-                <p>مؤقت التفكير (القنبلة):</p>
-                <div class="radio-group">
-                    <label class="radio-label"><input type="radio" name="timer" value="0" checked> <span>بدون</span></label>
-                    <label class="radio-label"><input type="radio" name="timer" value="15"> <span>15ث</span></label>
-                    <label class="radio-label"><input type="radio" name="timer" value="10"> <span>10ث</span></label>
-                    <label class="radio-label"><input type="radio" name="timer" value="5"> <span>5ث</span></label>
+            <hr class="plasma-divider">
+
+            <div class="game-settings-row">
+                <div class="setting-col">
+                    <p>مؤقت التفكير (القنبلة):</p>
+                    <div class="radio-group">
+                        <label class="radio-label"><input type="radio" name="timer" value="0" checked> <span>بدون</span></label>
+                        <label class="radio-label"><input type="radio" name="timer" value="15"> <span>15ث</span></label>
+                        <label class="radio-label"><input type="radio" name="timer" value="10"> <span>10ث</span></label>
+                    </div>
+                </div>
+
+                <div class="setting-col">
+                    <p>لون النظام (الثيم):</p>
+                    <div class="radio-group">
+                        <label class="radio-label"><input type="radio" name="theme" value="plasma" checked> <span>بلازما</span></label>
+                        <label class="radio-label"><input type="radio" name="theme" value="matrix"> <span>ماتريكس</span></label>
+                        <label class="radio-label"><input type="radio" name="theme" value="royal"> <span>ملكي</span></label>
+                    </div>
                 </div>
             </div>
 
             <div class="setup-actions">
-                <button class="btn-plasma" onclick="App.startMatch()">اشتباك!</button>
+                <button class="btn-plasma" onclick="App.startMatch()">بدء المعركة</button>
                 <button class="btn-cancel" onclick="App.hideSetup()">تراجع</button>
             </div>
         </div>
@@ -106,10 +158,7 @@
 
     <div id="math-modal" class="full-screen-layer hidden">
         <div class="glass-card calculator-box">
-            <div id="timer-bar-container" class="hidden">
-                <div id="timer-bar-fill"></div>
-            </div>
-            
+            <div id="timer-bar-container" class="hidden"><div id="timer-bar-fill"></div></div>
             <div id="timeout-msg" class="hidden">انتهى الوقت! 💥</div>
 
             <h3 id="calc-question" class="plasma-text" style="font-size: 2rem; direction: ltr;">?</h3>
@@ -136,11 +185,11 @@
     <div id="victory-modal" class="full-screen-layer hidden">
         <div class="victory-content">
             <div class="trophy-icon">🏆</div>
-            <h1 class="winner-title">الفائز!</h1>
+            <h1 class="winner-title">المنتصر!</h1>
             <h2 id="winner-name" class="plasma-text" style="font-size: 3rem;">-</h2>
             <div class="victory-actions">
                 <button class="btn-plasma" onclick="App.rematch()">جولة أخرى</button>
-                <button class="btn-cancel" onclick="location.reload()">خروج</button>
+                <button class="btn-cancel" onclick="location.reload()">خروج للقائمة</button>
             </div>
         </div>
         <div id="confetti-container"></div>
