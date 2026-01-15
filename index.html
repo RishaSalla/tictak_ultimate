@@ -63,6 +63,35 @@
             <button id="btn-start-game" class="btn-plasma hidden" onclick="App.launchGame()">بدء المهمة</button>
         </div>
     </div> 
+
+    <div id="game-arena" class="hidden">
+    </div>
+
+<div id="math-modal" class="full-screen-layer hidden">
+    <div class="glass-card calculator-box">
+        <h3 id="calc-question" class="plasma-text" style="font-size: 2rem;">?</h3>
+        
+        <div class="calc-screen">
+            <div id="calc-input" class="input-display"></div>
+        </div>
+
+        <div class="numpad">
+            <button onclick="App.typeNum(1)">1</button>
+            <button onclick="App.typeNum(2)">2</button>
+            <button onclick="App.typeNum(3)">3</button>
+            <button onclick="App.typeNum(4)">4</button>
+            <button onclick="App.typeNum(5)">5</button>
+            <button onclick="App.typeNum(6)">6</button>
+            <button onclick="App.typeNum(7)">7</button>
+            <button onclick="App.typeNum(8)">8</button>
+            <button onclick="App.typeNum(9)">9</button>
+            <button onclick="App.clearCalc()" style="color: #FF4D4D;">C</button>
+            <button onclick="App.typeNum(0)">0</button>
+            <button onclick="App.submitAnswer()" class="btn-plasma" style="grid-column: span 1; font-size:1rem;">✔</button>
+        </div>
+    </div>
+</div>
+    
     <div id="battle-setup" class="full-screen-layer hidden">
         <div class="glass-card setup-box">
             <h2 class="plasma-text" style="font-size: 2rem; margin-bottom: 30px;">تجهيز المعركة</h2>
