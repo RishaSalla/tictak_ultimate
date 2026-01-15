@@ -175,6 +175,7 @@ const App = {
         document.getElementById('calc-input').textContent = "_";
     },
 
+
     submitAnswer: function() {
         if(parseInt(this.currentInput) === this.currentAnswer) {
             // 1. تسجيل الحركة
@@ -182,32 +183,35 @@ const App = {
             this.markCell(cell, this.currentPlayer);
             
             const gridIdx = parseInt(cell.dataset.grid);
-            const cellIdx = parseInt(cell.dataset.cell); // هذا سيحدد الوجهة القادمة
+            const cellIdx = parseInt(cell.dataset.cell);
 
-            // 2. التحقق من فوز المربع الصغير (اختياري الآن، يمكن إضافته لاحقاً)
-            // checkSubGridWin(gridIdx)...
+            // 2. فحص هل فاز اللاعب بهذا المربع الكبير؟ (الكود الجديد)
+            this.checkSubGridWin(gridIdx);
             
             // 3. تحديد الوجهة القادمة (Forced Move)
-            // الوجهة هي نفس رقم الخلية التي لُعبت
             this.nextForcedGrid = cellIdx;
 
-            // إذا كانت الوجهة ممتلئة أو منتهية، اللعب يصبح حراً
-            // (سنفترض امتلاء المربع إذا لعبت فيه 9 مرات أو فاز أحدهم - هنا تبسيط للحالة)
+            // 4. قاعدة الإفلات (Free Move):
+            // إذا كانت الوجهة القادمة محجوزة (فاز بها أحد أو ممتلئة)، يصبح اللعب حراً
             if (this.gridStatus[this.nextForcedGrid] !== null) {
                 this.nextForcedGrid = null; // حر
             } else {
-                // تحقق هل المربع ممتلئ بالكامل (Tie)؟
+                // فحص الامتلاء (التعادل) في الوجهة القادمة
                 const targetGrid = document.getElementById(`grid-${this.nextForcedGrid}`);
                 const filledCells = targetGrid.querySelectorAll('.x-marked, .o-marked').length;
                 if (filledCells === 9) {
+                    this.gridStatus[this.nextForcedGrid] = 'Tie'; // إغلاق بالتعادل
                     this.nextForcedGrid = null; // حر
                 }
             }
 
-            // 4. تبديل الدور وتحديث الإضاءة
+            // 5. تبديل الدور وتحديث الواجهة
             this.currentPlayer = this.currentPlayer === 'X' ? 'O' : 'X';
             document.getElementById('math-modal').classList.add('hidden');
-            this.highlightActiveGrid(); // تحديث الأضواء
+            this.highlightActiveGrid(); 
+
+            // فحص الفوز باللعبة كاملة (اختياري للمستقبل)
+            // this.checkGlobalWin(); 
 
         } else {
             // إجابة خاطئة
@@ -215,6 +219,38 @@ const App = {
             screen.style.border = "1px solid red";
             setTimeout(() => screen.style.border = "1px solid rgba(255,255,255,0.1)", 500);
             this.clearCalc();
+        }
+    },
+
+    // دالة فحص فوز المربع الصغير (الجديدة كلياً)
+    checkSubGridWin: function(gridIdx) {
+        // إذا كان المربع منتهياً مسبقاً، اخرج
+        if (this.gridStatus[gridIdx] !== null) return;
+
+        const grid = document.getElementById(`grid-${gridIdx}`);
+        const cells = Array.from(grid.children); // تحويل الخلايا لمصفوفة
+        
+        // جميع احتمالات الفوز (صفوف، أعمدة، أقطار)
+        const wins = [
+            [0,1,2], [3,4,5], [6,7,8], // أفقي
+            [0,3,6], [1,4,7], [2,5,8], // عمودي
+            [0,4,8], [2,4,6]           // قطري
+        ];
+
+        for (let combo of wins) {
+            const [a, b, c] = combo;
+            // هل الخلايا الثلاثة تحمل نفس علامة اللاعب الحالي؟
+            if (cells[a].textContent === this.currentPlayer &&
+                cells[b].textContent === this.currentPlayer &&
+                cells[c].textContent === this.currentPlayer) {
+                
+                // تم الفوز!
+                this.gridStatus[gridIdx] = this.currentPlayer; // تحديث الحالة في الذاكرة
+                grid.classList.add(this.currentPlayer === 'X' ? 'won-x' : 'won-o'); // إضافة الختم البصري
+                
+                console.log(`Grid ${gridIdx} won by ${this.currentPlayer}`);
+                return;
+            }
         }
     },
 
