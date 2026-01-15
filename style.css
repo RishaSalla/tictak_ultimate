@@ -1,32 +1,18 @@
-/* =========================================
-   1. GLOBAL VARIABLES & RSET
-   ========================================= */
 :root {
-    /* ألوان البلازما المتفجرة */
-    --plasma-x: linear-gradient(135deg, #FF4D4D, #F9D423); /* برتقالي ناري */
-    --plasma-o: linear-gradient(135deg, #00C9FF, #92FE9D); /* فيروزي جليدي */
+    --plasma-x: linear-gradient(135deg, #FF4D4D, #F9D423);
+    --plasma-o: linear-gradient(135deg, #00C9FF, #92FE9D);
+    --bg-deep: radial-gradient(circle at center, #1a1c29 0%, #000000 100%);
+    --glass: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     
-    /* ألوان المستويات */
     --glow-red: #ff4d4d;
     --glow-blue: #00c9ff;
     --glow-purple: #bc13fe;
     --glow-gold: #ffd700;
-
-    /* الخلفية والزجاج */
-    --bg-deep: radial-gradient(circle at center, #1a1c29 0%, #000000 100%);
-    --glass: rgba(255, 255, 255, 0.05);
-    --glass-border: rgba(255, 255, 255, 0.1);
-    
-    /* خطوط */
-    --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    user-select: none; /* منع تحديد النصوص */
-}
+* { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
 
 body {
     background: var(--bg-deep);
@@ -35,15 +21,12 @@ body {
     height: 100dvh;
     overflow: hidden;
     direction: rtl;
-    text-align: center; /* توسيط عام */
+    text-align: center;
 }
 
-/* فئات مساعدة */
 .hidden { display: none !important; }
 
-/* =========================================
-   2. LOGIN GATE (بوابة الدخول)
-   ========================================= */
+/* طبقات ملء الشاشة */
 .full-screen-layer {
     position: fixed;
     inset: 0;
@@ -51,33 +34,26 @@ body {
     justify-content: center;
     align-items: center;
     z-index: 99999;
-    background: rgba(0, 0, 0, 0.85); /* تعتيم الخلفية للنوافذ */
+    background: rgba(0, 0, 0, 0.85);
     backdrop-filter: blur(10px);
 }
 
-#login-gate {
-    background: var(--bg-deep); /* خلفية كاملة لشاشة الدخول فقط */
-}
+#login-gate { background: var(--bg-deep); }
 
+/* البطاقات الزجاجية */
 .glass-card {
     background: var(--glass);
     backdrop-filter: blur(20px);
     border: 1px solid var(--glass-border);
     box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-    padding: 40px;
+    padding: 30px;
     border-radius: 24px;
     width: min(90%, 450px);
-    text-align: center;
     position: relative;
-    overflow: hidden;
 }
 
-.brand-title {
-    font-size: 2.5rem;
-    margin-bottom: 10px;
-    letter-spacing: 2px;
-}
-
+/* النصوص والعناوين */
+.brand-title { font-size: 2.5rem; margin-bottom: 10px; letter-spacing: 2px; }
 .plasma-text {
     background: var(--plasma-x);
     -webkit-background-clip: text;
@@ -86,385 +62,115 @@ body {
     font-weight: 900;
     filter: drop-shadow(0 0 10px rgba(255, 77, 77, 0.5));
 }
-
-.access-label {
-    color: #888;
-    font-size: 0.9rem;
-    letter-spacing: 1px;
-}
-
-/* حقل الإدخال وشريط التوهج */
-.input-wrapper {
-    position: relative;
-    margin: 30px 0;
-}
-
-input#access-code {
-    width: 100%;
-    background: rgba(0,0,0,0.3);
-    border: none;
-    padding: 15px;
-    color: #fff;
-    font-size: 1.5rem;
-    text-align: center;
-    letter-spacing: 8px;
-    border-radius: 12px;
-    outline: none;
-    font-family: monospace; /* لجعل النقاط تبدو أفضل */
-}
-
-.glow-bar {
-    height: 2px;
-    width: 0;
-    background: var(--plasma-o);
-    transition: width 0.4s ease;
-    margin: 0 auto;
-}
-
-input:focus + .glow-bar {
-    width: 100%;
-    box-shadow: 0 0 15px #00C9FF;
-}
-
-.error-msg {
-    margin-top: 15px;
-    font-size: 0.9rem;
-    min-height: 20px;
-    font-weight: bold;
-}
-
-/* =========================================
-   3. GAME HEADER & MENU (القائمة الرئيسية)
-   ========================================= */
-#app-content {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-}
-
-.game-header {
-    margin-bottom: 40px;
-    text-align: center;
-}
-
 .logo-ar {
-    font-size: 4rem;
+    font-size: 3.5rem;
     font-weight: 800;
     margin: 0;
     background: linear-gradient(to bottom, #ffffff, #aaaaaa);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    filter: drop-shadow(0 0 20px rgba(255,255,255,0.2));
 }
+.subtitle-ar { color: #888; margin-top: 5px; }
 
-.version-tag {
-    font-size: 1rem;
-    background: var(--plasma-x);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    vertical-align: super;
+/* حقول الإدخال */
+.input-wrapper { position: relative; margin: 30px 0; }
+input#access-code {
+    width: 100%; background: rgba(0,0,0,0.3); border: none; padding: 15px;
+    color: #fff; font-size: 1.5rem; text-align: center; letter-spacing: 8px;
+    border-radius: 12px; outline: none;
 }
+.glow-bar { height: 2px; width: 0; background: var(--plasma-o); transition: width 0.4s; margin: 0 auto; }
+input:focus + .glow-bar { width: 100%; box-shadow: 0 0 15px #00C9FF; }
 
-.subtitle-ar {
-    color: #888;
-    font-size: 1.2rem;
-    margin-top: 5px;
+/* الأزرار */
+.btn-plasma {
+    background: var(--plasma-x); border: none; padding: 12px 40px; border-radius: 50px;
+    color: #000; font-weight: bold; font-size: 1.1rem; cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
+.btn-plasma:hover { transform: scale(1.05); box-shadow: 0 0 30px rgba(249, 212, 35, 0.6); }
 
-/* =========================================
-   4. LEVELS GRID (شبكة المستويات)
-   ========================================= */
+/* شبكة المستويات */
+#app-content { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; }
 .levels-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 20px;
-    width: 100%;
-    max-width: 800px;
-    margin: 0 auto;
-    justify-content: center;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 15px; width: 100%; max-width: 800px; margin: 20px auto; justify-content: center;
 }
-
 .plasma-card {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
-    padding: 25px 15px;
-    cursor: pointer;
-    position: relative;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px; padding: 20px; cursor: pointer; position: relative;
+    transition: 0.3s;
 }
-
-.plasma-card:hover {
-    transform: translateY(-5px);
-    background: rgba(255, 255, 255, 0.08);
-}
-
-.plasma-card.active-card {
+.plasma-card:hover, .plasma-card.active-card {
+    transform: translateY(-5px); background: rgba(255, 255, 255, 0.08);
     border-color: #fff;
-    background: rgba(255, 255, 255, 0.1);
-    transform: scale(1.05);
-    box-shadow: 0 0 30px rgba(255,255,255,0.1);
 }
-
-/* ألوان التوهج لكل مستوى */
 .card-glow {
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    border-radius: 20px;
-    opacity: 0;
-    transition: opacity 0.3s;
-    z-index: -1;
+    position: absolute; inset: 0; border-radius: 20px; opacity: 0; transition: 0.3s; z-index: -1; filter: blur(20px);
 }
-
-.plasma-card:hover .card-glow,
-.plasma-card.active-card .card-glow {
-    opacity: 0.3;
-    filter: blur(20px);
-}
-
+.plasma-card:hover .card-glow, .plasma-card.active-card .card-glow { opacity: 0.4; }
 .red-glow { background: var(--glow-red); }
 .blue-glow { background: var(--glow-blue); }
 .purple-glow { background: var(--glow-purple); }
 .gold-glow { background: var(--glow-gold); }
 
-.lvl-number {
-    font-size: 3rem;
-    opacity: 0.05;
-    position: absolute;
-    top: -5px;
-    left: 10px;
-    font-weight: 900;
-}
+.lvl-number { font-size: 2.5rem; opacity: 0.05; position: absolute; top: -5px; left: 10px; font-weight: 900; }
+.lvl-title { font-size: 1.2rem; margin: 10px 0; color: #fff; }
+.lvl-desc { font-size: 0.75rem; color: #aaa; }
 
-.lvl-title {
-    font-size: 1.4rem;
-    margin: 10px 0;
-    color: #fff;
-}
+.action-area { margin-top: 30px; min-height: 60px; display: flex; justify-content: center; width: 100%; }
 
-.lvl-desc {
-    font-size: 0.8rem;
-    color: #aaa;
-}
-
-/* =========================================
-   5. ACTION AREA & BUTTONS (الأزرار)
-   ========================================= */
-.action-area {
-    margin-top: 40px;
-    height: 60px;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-}
-
-.btn-plasma {
-    background: var(--plasma-x);
-    border: none;
-    padding: 15px 50px;
-    border-radius: 50px;
-    color: #000;
-    font-weight: bold;
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    text-transform: uppercase;
-}
-
-.btn-plasma:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 30px rgba(249, 212, 35, 0.6);
-}
-
-/* =========================================
-   6. BATTLE SETUP MODAL (نافذة التجهيز)
-   ========================================= */
-.setup-box {
-    /* يرث خصائص glass-card مع إضافات */
-    width: min(95%, 500px);
-}
-
-.players-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 40px;
-}
-
-.player-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-    flex: 1;
-}
-
+/* نافذة التجهيز */
+.setup-box { width: min(95%, 500px); }
+.players-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 30px; }
+.player-group { display: flex; flex-direction: column; align-items: center; gap: 10px; flex: 1; }
 .icon-avatar {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 2rem;
-    font-weight: 900;
-    background: rgba(0,0,0,0.4);
-    border: 3px solid #555;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center;
+    font-size: 1.8rem; font-weight: 900; background: rgba(0,0,0,0.4); border: 3px solid #555;
 }
-
-.x-avatar { 
-    border-color: #FF4D4D; 
-    color: #FF4D4D; 
-    text-shadow: 0 0 10px #FF4D4D;
-    box-shadow: 0 0 20px rgba(255, 77, 77, 0.2); 
-}
-
-.o-avatar { 
-    border-color: #00C9FF; 
-    color: #00C9FF; 
-    text-shadow: 0 0 10px #00C9FF;
-    box-shadow: 0 0 20px rgba(0, 201, 255, 0.2); 
-}
-
-.vs-text {
-    font-size: 2rem;
-    font-weight: 900;
-    font-style: italic;
-    color: rgba(255,255,255,0.2);
-}
-
+.x-avatar { border-color: #FF4D4D; color: #FF4D4D; text-shadow: 0 0 10px #FF4D4D; }
+.o-avatar { border-color: #00C9FF; color: #00C9FF; text-shadow: 0 0 10px #00C9FF; }
+.vs-text { font-size: 1.5rem; font-weight: 900; font-style: italic; color: rgba(255,255,255,0.2); }
 .plasma-input {
-    width: 100%;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    padding: 12px;
-    border-radius: 10px;
-    color: #fff;
-    text-align: center;
-    font-size: 1rem;
-    transition: 0.3s;
+    width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+    padding: 10px; border-radius: 10px; color: #fff; text-align: center; transition: 0.3s;
 }
-
-.plasma-input:focus {
-    background: rgba(255,255,255,0.1);
-    outline: none;
-}
-
-.x-input:focus { border-color: #FF4D4D; box-shadow: 0 0 15px rgba(255, 77, 77, 0.3); }
-.o-input:focus { border-color: #00C9FF; box-shadow: 0 0 15px rgba(0, 201, 255, 0.3); }
-
-.setup-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.btn-cancel {
-    background: transparent;
-    border: none;
-    color: #666;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: color 0.3s;
-}
-
+.plasma-input:focus { background: rgba(255,255,255,0.1); outline: none; border-color: #fff; }
+.setup-actions { display: flex; flex-direction: column; gap: 10px; }
+.btn-cancel { background: transparent; border: none; color: #666; cursor: pointer; }
 .btn-cancel:hover { color: #fff; }
 
-/* =========================================
-   7. GAME ARENA (ساحة اللعب)
-   ========================================= */
+/* ساحة اللعب (الجديد) */
 #game-arena {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 شبكات رئيسية */
-    gap: 15px;
-    padding: 20px;
-    background: rgba(255, 255, 255, 0.02);
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    margin-top: 20px;
-    width: min(95vw, 600px); /* حجم متجاوب */
-    aspect-ratio: 1/1; /* مربع دائماً */
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 15px;
+    background: rgba(255, 255, 255, 0.02); border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1);
+    width: min(95vw, 550px); aspect-ratio: 1/1; margin-top: 20px;
 }
-
-/* الشبكات الداخلية (Sub-grids) */
 .sub-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 4px;
-    padding: 5px;
-    border-radius: 8px;
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; padding: 3px;
+    border-radius: 8px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.05);
 }
-
-/* المربعات الفردية (Cells) */
 .cell {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 4px;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.5rem;
-    font-weight: bold;
-    transition: all 0.2s;
-    aspect-ratio: 1/1;
-    position: relative;
+    background: rgba(255, 255, 255, 0.05); border-radius: 4px; cursor: pointer;
+    display: flex; justify-content: center; align-items: center; font-size: 1.2rem; font-weight: bold;
+    aspect-ratio: 1/1; transition: 0.2s;
 }
-
 .cell:hover { background: rgba(255, 255, 255, 0.15); }
+.cell.x-marked { color: #FF4D4D; text-shadow: 0 0 10px #FF4D4D; border: 1px solid #FF4D4D; background: rgba(255, 77, 77, 0.1); }
+.cell.o-marked { color: #00C9FF; text-shadow: 0 0 10px #00C9FF; border: 1px solid #00C9FF; background: rgba(0, 201, 255, 0.1); }
 
-/* ألوان اللاعبين داخل المربعات */
-.cell.x-marked { color: #FF4D4D; text-shadow: 0 0 10px #FF4D4D; border: 1px solid #FF4D4D; }
-.cell.o-marked { color: #00C9FF; text-shadow: 0 0 10px #00C9FF; border: 1px solid #00C9FF; }
-
-/* تأثير الفوز بقطاع كامل */
-.sub-grid.won-x { background: rgba(255, 77, 77, 0.2); border: 2px solid #FF4D4D; }
-.sub-grid.won-o { background: rgba(0, 201, 255, 0.2); border: 2px solid #00C9FF; }
-
-/* =========================================
-   8. CALCULATOR (الحاسبة)
-   ========================================= */
-.calculator-box { width: 300px; padding: 25px; }
-
+/* الحاسبة */
+.calculator-box { padding: 20px; width: 320px; }
 .calc-screen {
-    background: rgba(0,0,0,0.5);
-    border-radius: 10px;
-    padding: 15px;
-    margin: 20px 0;
-    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(0,0,0,0.5); border-radius: 10px; padding: 15px; margin: 15px 0;
+    border: 1px solid rgba(255,255,255,0.1); text-align: center;
 }
-
-.input-display {
-    font-size: 2rem;
-    letter-spacing: 5px;
-    min-height: 40px;
-    color: #fff;
-}
-
-.numpad {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-}
-
+.input-display { font-size: 1.8rem; letter-spacing: 5px; color: #fff; min-height: 35px; }
+.numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .numpad button {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    padding: 15px;
-    border-radius: 10px;
-    color: #fff;
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: 0.2s;
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 12px;
+    border-radius: 8px; color: #fff; font-size: 1.2rem; cursor: pointer; transition: 0.2s;
 }
-
 .numpad button:hover { background: rgba(255,255,255,0.2); }
 .numpad button:active { transform: scale(0.95); }
