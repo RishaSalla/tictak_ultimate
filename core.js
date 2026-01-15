@@ -1,5 +1,5 @@
 /**
- * MATH MATRIX ENGINE - FINAL BUILD
+ * MATH MATRIX ENGINE - LOGIC UPDATE (Forced Moves & Active Zones)
  */
 
 let selectedLevelId = null;
@@ -14,17 +14,22 @@ function selectLevel(lvlId, cardElement) {
 
 const App = {
     config: null,
+    // حالة اللعب
+    currentPlayer: 'X',
+    nextForcedGrid: null, // أي مربع كبير يجب اللعب فيه؟ (null = حر)
+    gridStatus: Array(9).fill(null), // حالة كل مربع كبير (null, 'X', 'O')
+    
+    // الحاسبة
     currentActiveCell: null,
     currentInput: "",
     currentAnswer: 0,
-    currentPlayer: 'X', // الدور الحالي
 
     init: async function() {
         try {
             const response = await fetch('config.json');
             this.config = await response.json();
         } catch (e) {
-            this.config = { accessCode: "00000000" }; // كود احتياطي
+            this.config = { accessCode: "00000000" };
         }
         this.setupLoginEvents();
     },
@@ -66,16 +71,21 @@ const App = {
     },
 
     startMatch: function() {
-        // إخفاء كل واجهات الإعداد والقوائم
         this.hideSetup();
         document.querySelector('.levels-grid').classList.add('hidden');
         document.querySelector('.game-header').classList.add('hidden');
         document.querySelector('.action-area').classList.add('hidden');
         
-        // إظهار وبناء الساحة
         const arena = document.getElementById('game-arena');
         arena.classList.remove('hidden');
+        
+        // إعادة تعيين الحالة
+        this.currentPlayer = 'X';
+        this.nextForcedGrid = null;
+        this.gridStatus = Array(9).fill(null);
+        
         this.buildBoard();
+        this.highlightActiveGrid(); // إضاءة البداية
     },
 
     buildBoard: function() {
@@ -97,12 +107,53 @@ const App = {
         }
     },
 
+    // ----------------------------------------------------
+    // LOGIC CORE (المنطق والإجبار)
+    // ----------------------------------------------------
+    
+    // دالة تحديث الإضاءة بناءً على الدور
+    highlightActiveGrid: function() {
+        for(let i=0; i<9; i++) {
+            const grid = document.getElementById(`grid-${i}`);
+            
+            // إزالة الكلاس النشط من الجميع أولاً
+            grid.classList.remove('active-zone');
+            
+            // شروط التنشيط:
+            // 1. المربع الكبير لم ينتهِ بعد (ليس X ولا O)
+            // 2. إما أن اللعب حر (nextForcedGrid == null) أو هذا هو المربع المطلوب
+            if (this.gridStatus[i] === null) {
+                if (this.nextForcedGrid === null || this.nextForcedGrid === i) {
+                    grid.classList.add('active-zone');
+                }
+            }
+        }
+    },
+
     openCalculator: function(cell) {
+        // منع اللعب في الخلايا المحجوزة
         if(cell.classList.contains('x-marked') || cell.classList.contains('o-marked')) return;
+
+        const gridIdx = parseInt(cell.dataset.grid);
+        const cellIdx = parseInt(cell.dataset.cell);
+
+        // التحقق من قانون الإجبار
+        // إذا كان هناك إجبار، وهذا المربع ليس هو المطلوب -> ارفض
+        if (this.nextForcedGrid !== null && this.nextForcedGrid !== gridIdx) {
+            // اهتزاز المربع المطلوب لتنبيه اللاعب
+            const forcedGrid = document.getElementById(`grid-${this.nextForcedGrid}`);
+            forcedGrid.style.transform = "translateX(5px)";
+            setTimeout(() => forcedGrid.style.transform = "translateX(0)", 100);
+            return; 
+        }
+
+        // إذا المربع الكبير منتهي أصلاً، لا يمكن اللعب فيه
+        if (this.gridStatus[gridIdx] !== null) return;
+
         this.currentActiveCell = cell;
         this.currentInput = "";
         
-        // سؤال عشوائي بسيط للتجربة
+        // توليد سؤال عشوائي
         const n1 = Math.floor(Math.random() * 9) + 2;
         const n2 = Math.floor(Math.random() * 9) + 2;
         this.currentAnswer = n1 * n2;
@@ -126,11 +177,40 @@ const App = {
 
     submitAnswer: function() {
         if(parseInt(this.currentInput) === this.currentAnswer) {
-            this.markCell(this.currentActiveCell, this.currentPlayer);
-            // تبديل الدور
+            // 1. تسجيل الحركة
+            const cell = this.currentActiveCell;
+            this.markCell(cell, this.currentPlayer);
+            
+            const gridIdx = parseInt(cell.dataset.grid);
+            const cellIdx = parseInt(cell.dataset.cell); // هذا سيحدد الوجهة القادمة
+
+            // 2. التحقق من فوز المربع الصغير (اختياري الآن، يمكن إضافته لاحقاً)
+            // checkSubGridWin(gridIdx)...
+            
+            // 3. تحديد الوجهة القادمة (Forced Move)
+            // الوجهة هي نفس رقم الخلية التي لُعبت
+            this.nextForcedGrid = cellIdx;
+
+            // إذا كانت الوجهة ممتلئة أو منتهية، اللعب يصبح حراً
+            // (سنفترض امتلاء المربع إذا لعبت فيه 9 مرات أو فاز أحدهم - هنا تبسيط للحالة)
+            if (this.gridStatus[this.nextForcedGrid] !== null) {
+                this.nextForcedGrid = null; // حر
+            } else {
+                // تحقق هل المربع ممتلئ بالكامل (Tie)؟
+                const targetGrid = document.getElementById(`grid-${this.nextForcedGrid}`);
+                const filledCells = targetGrid.querySelectorAll('.x-marked, .o-marked').length;
+                if (filledCells === 9) {
+                    this.nextForcedGrid = null; // حر
+                }
+            }
+
+            // 4. تبديل الدور وتحديث الإضاءة
             this.currentPlayer = this.currentPlayer === 'X' ? 'O' : 'X';
             document.getElementById('math-modal').classList.add('hidden');
+            this.highlightActiveGrid(); // تحديث الأضواء
+
         } else {
+            // إجابة خاطئة
             const screen = document.querySelector('.calc-screen');
             screen.style.border = "1px solid red";
             setTimeout(() => screen.style.border = "1px solid rgba(255,255,255,0.1)", 500);
