@@ -110,33 +110,107 @@ const App = {
         document.getElementById('battle-setup').classList.add('hidden');
     },
 
+    // 3. بدء المعركة وبناء اللوحة
     startMatch: function() {
-        // عند ضغط "اشتباك"
         const p1 = document.getElementById('p1-name').value || "اللاعب 1";
         const p2 = document.getElementById('p2-name').value || "اللاعب 2";
         
-        console.log(`Starting Match: ${p1} VS ${p2} on ${selectedLevelId}`);
-        
-        // إخفاء نافذة الإعداد
+        // إخفاء كل شيء قديم
         this.hideSetup();
-        
-        // إخفاء واجهة المستويات (استعداداً لظهور اللعبة لاحقاً)
         document.querySelector('.levels-grid').classList.add('hidden');
         document.querySelector('.game-header').classList.add('hidden');
         document.querySelector('.action-area').classList.add('hidden');
         
-        // رسالة مؤقتة للتأكد من الوصول لهذه المرحلة
-        const content = document.getElementById('app-content');
-        const tempMsg = document.createElement('h2');
-        tempMsg.style.textAlign = 'center';
-        tempMsg.style.marginTop = '50px';
-        tempMsg.style.color = '#00f3ff';
-        tempMsg.innerHTML = `جاري تحميل ساحة المعركة...<br>${p1} <span style="color:#fff">VS</span> ${p2}`;
-        content.appendChild(tempMsg);
+        // إظهار ساحة اللعب
+        const arena = document.getElementById('game-arena');
+        arena.classList.remove('hidden');
+        
+        // بناء الـ 81 مربع
+        this.buildBoard();
+        
+        console.log(`Battle Started: ${p1} VS ${p2}`);
+    },
+
+    // بناء الشبكة 9x9
+    buildBoard: function() {
+        const arena = document.getElementById('game-arena');
+        arena.innerHTML = ''; // تنظيف
+
+        // إنشاء 9 مربعات كبيرة (Sub-grids)
+        for(let i=0; i<9; i++) {
+            const subGrid = document.createElement('div');
+            subGrid.className = 'sub-grid';
+            subGrid.id = `grid-${i}`;
+            
+            // داخل كل مربع كبير، إنشاء 9 مربعات صغيرة (Cells)
+            for(let j=0; j<9; j++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.dataset.grid = i; // رقم المربع الكبير
+                cell.dataset.cell = j; // رقم الخلية
+                
+                // حدث النقر: فتح الحاسبة
+                cell.onclick = () => this.openCalculator(cell);
+                
+                subGrid.appendChild(cell);
+            }
+            arena.appendChild(subGrid);
+        }
+    },
+
+    // --- منطق الحاسبة ---
+    
+    currentActiveCell: null, // لتذكر الخلية التي ضغطنا عليها
+    currentInput: "", // لتخزين الأرقام المدخلة
+
+    openCalculator: function(cell) {
+        // إذا الخلية ملعوبة مسبقاً، لا تفعل شيئاً
+        if(cell.classList.contains('x-marked') || cell.classList.contains('o-marked')) return;
+
+        this.currentActiveCell = cell;
+        this.currentInput = "";
+        
+        // توليد سؤال عشوائي (مؤقتاً حتى نربط ملف JSON)
+        const num1 = Math.floor(Math.random() * 10) + 1;
+        const num2 = Math.floor(Math.random() * 10) + 1;
+        this.currentAnswer = num1 * num2; // الإجابة الصحيحة
+        
+        // تحديث الواجهة
+        document.getElementById('calc-question').textContent = `${num1} × ${num2} = ?`;
+        document.getElementById('calc-input').textContent = "_";
+        document.getElementById('math-modal').classList.remove('hidden');
+    },
+
+    typeNum: function(num) {
+        if(this.currentInput.length < 3) {
+            this.currentInput += num;
+            document.getElementById('calc-input').textContent = this.currentInput;
+        }
+    },
+
+    clearCalc: function() {
+        this.currentInput = "";
+        document.getElementById('calc-input').textContent = "_";
+    },
+
+    submitAnswer: function() {
+        if(parseInt(this.currentInput) === this.currentAnswer) {
+            // إجابة صحيحة!
+            this.markCell(this.currentActiveCell, 'X'); // مؤقتاً X دائماً، سنعدلها للتبديل لاحقاً
+            document.getElementById('math-modal').classList.add('hidden');
+        } else {
+            // إجابة خاطئة
+            const screen = document.querySelector('.calc-screen');
+            screen.style.borderColor = "red";
+            setTimeout(() => screen.style.borderColor = "rgba(255,255,255,0.1)", 500);
+            this.clearCalc();
+        }
+    },
+
+    markCell: function(cell, player) {
+        cell.classList.add(player === 'X' ? 'x-marked' : 'o-marked');
+        cell.textContent = player;
     }
 };
 
-// تشغيل النظام
-document.addEventListener('DOMContentLoaded', () => {
-    App.init();
-});
+// ... (تأكد من وجود مستمع الحدث DOMContentLoaded في النهاية)
