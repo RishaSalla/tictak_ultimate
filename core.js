@@ -3,7 +3,7 @@
  * Includes: Security, Level Select, Battle Setup
  */
 
-// متغير عام لحفظ المستوى المختار
+// متغير عام لحظ المستوى المختار
 let selectedLevelId = null;
 
 // دالة اختيار المستوى (مربوطة بـ HTML)
