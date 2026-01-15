@@ -376,3 +376,95 @@ input:focus + .glow-bar {
 }
 
 .btn-cancel:hover { color: #fff; }
+
+/* =========================================
+   7. GAME ARENA (ساحة اللعب)
+   ========================================= */
+#game-arena {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 شبكات رئيسية */
+    gap: 15px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 20px;
+    width: min(95vw, 600px); /* حجم متجاوب */
+    aspect-ratio: 1/1; /* مربع دائماً */
+}
+
+/* الشبكات الداخلية (Sub-grids) */
+.sub-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    padding: 5px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* المربعات الفردية (Cells) */
+.cell {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    transition: all 0.2s;
+    aspect-ratio: 1/1;
+    position: relative;
+}
+
+.cell:hover { background: rgba(255, 255, 255, 0.15); }
+
+/* ألوان اللاعبين داخل المربعات */
+.cell.x-marked { color: #FF4D4D; text-shadow: 0 0 10px #FF4D4D; border: 1px solid #FF4D4D; }
+.cell.o-marked { color: #00C9FF; text-shadow: 0 0 10px #00C9FF; border: 1px solid #00C9FF; }
+
+/* تأثير الفوز بقطاع كامل */
+.sub-grid.won-x { background: rgba(255, 77, 77, 0.2); border: 2px solid #FF4D4D; }
+.sub-grid.won-o { background: rgba(0, 201, 255, 0.2); border: 2px solid #00C9FF; }
+
+/* =========================================
+   8. CALCULATOR (الحاسبة)
+   ========================================= */
+.calculator-box { width: 300px; padding: 25px; }
+
+.calc-screen {
+    background: rgba(0,0,0,0.5);
+    border-radius: 10px;
+    padding: 15px;
+    margin: 20px 0;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.input-display {
+    font-size: 2rem;
+    letter-spacing: 5px;
+    min-height: 40px;
+    color: #fff;
+}
+
+.numpad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.numpad button {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 15px;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.numpad button:hover { background: rgba(255,255,255,0.2); }
+.numpad button:active { transform: scale(0.95); }
