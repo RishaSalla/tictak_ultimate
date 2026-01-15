@@ -78,12 +78,12 @@
             <div class="players-row">
                 <div class="player-group group-x">
                     <div class="icon-avatar x-avatar">X</div>
-                    <input type="text" id="p1-name" class="plasma-input x-input" placeholder="اسم الفريق/اللاعب" value="الفريق X">
+                    <input type="text" id="p1-name" class="plasma-input x-input" placeholder="اسم الفريق X" value="الفريق X">
                 </div>
                 <div class="vs-text">VS</div>
                 <div class="player-group group-o">
                     <div class="icon-avatar o-avatar">O</div>
-                    <input type="text" id="p2-name" class="plasma-input o-input" placeholder="اسم الفريق/اللاعب" value="الفريق O">
+                    <input type="text" id="p2-name" class="plasma-input o-input" placeholder="اسم الفريق O" value="الفريق O">
                 </div>
             </div>
 
@@ -109,6 +109,8 @@
             <div id="timer-bar-container" class="hidden">
                 <div id="timer-bar-fill"></div>
             </div>
+            
+            <div id="timeout-msg" class="hidden">انتهى الوقت! 💥</div>
 
             <h3 id="calc-question" class="plasma-text" style="font-size: 2rem; direction: ltr;">?</h3>
             <div class="calc-screen">
@@ -137,7 +139,7 @@
             <h1 class="winner-title">الفائز!</h1>
             <h2 id="winner-name" class="plasma-text" style="font-size: 3rem;">-</h2>
             <div class="victory-actions">
-                <button class="btn-plasma" onclick="App.rematch()">جولة أخرى (Rematch)</button>
+                <button class="btn-plasma" onclick="App.rematch()">جولة أخرى</button>
                 <button class="btn-cancel" onclick="location.reload()">خروج</button>
             </div>
         </div>
