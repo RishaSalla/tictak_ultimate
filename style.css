@@ -158,15 +158,18 @@ body {
 .sub-grid {
     display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; padding: 4px;
     border-radius: 8px; background: rgba(0, 0, 0, 0.4); 
-    border: 1px solid rgba(255, 255, 255, 0.05); position: relative;
-    transition: 0.3s; opacity: 0.5;
+    /* التغيير هنا: جعلنا الإطار أبيض ناصع */
+    border: 2px solid rgba(255, 255, 255, 0.8) !important; 
+    position: relative; transition: 0.3s; opacity: 0.8; /* رفعنا الشفافية */
 }
 .sub-grid.active-zone { opacity: 1; border: 2px solid var(--glow-active); box-shadow: 0 0 20px rgba(255, 215, 0, 0.2); }
 
 .cell {
-    background: rgba(255, 255, 255, 0.05); border-radius: 4px; cursor: pointer;
-    display: flex; justify-content: center; align-items: center; font-size: 1.5rem; /* كبرنا الخط للأفاتار */
+    background: rgba(255, 255, 255, 0.1); border-radius: 4px; cursor: pointer;
+    display: flex; justify-content: center; align-items: center; font-size: 1.5rem;
     font-weight: bold; aspect-ratio: 1/1; transition: 0.2s;
+    /* إضافة جديدة: إطار أبيض لكل خلية صغيرة */
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
 }
 .cell:hover { background: rgba(255, 255, 255, 0.15); }
 .cell.x-marked { background: rgba(255, 77, 77, 0.15); text-shadow: 0 0 10px currentColor; }
