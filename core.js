@@ -1,18 +1,13 @@
 /**
- * MATH MATRIX ENGINE - ULTIMATE EDITION
- * Includes: Audio, Timer, Global Win, HUD, Animations
+ * MATH MATRIX ENGINE - FIXED & FINAL
  */
 
-// 1. نظام الصوت (Base64 Encoded for Zero-Dependency)
 const AudioController = {
+    // نغمات مشفرة بسيطة
     sounds: {
-        click: new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU"), // (مختصر)
-        win: new Audio("data:audio/wav;base64,UklGRiQtT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YX"),   // (مختصر)
-        error: new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU") // (مختصر)
+        click: "data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU",
+        win: "data:audio/wav;base64,UklGRiQtT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YX"
     },
-    // *ملاحظة: لاستخدام أصوات حقيقية، يمكن استبدال السلاسل أعلاه بروابط ملفات mp3 لاحقاً.
-    // حالياً سأستخدم دالة لتوليد نغمة بسيطة باستخدام Web Audio API لتجنب مشاكل الملفات الطويلة
-    
     ctx: null,
     init: function() {
         window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -53,17 +48,12 @@ function selectLevel(lvlId, cardElement) {
 
 const App = {
     config: null,
-    // حالة اللعب
     currentPlayer: 'X',
     nextForcedGrid: null,
     gridStatus: Array(9).fill(null),
-    
-    // بيانات الفرق والنتائج
     names: { X: "Team X", O: "Team O" },
     scores: { X: 0, O: 0 },
-    timerSetting: 0, // 0 = لا يوجد
-
-    // متغيرات الحاسبة والمؤقت
+    timerSetting: 0,
     currentActiveCell: null,
     currentInput: "",
     currentAnswer: 0,
@@ -121,21 +111,17 @@ const App = {
 
     startMatch: function() {
         AudioController.win();
-        
-        // 1. قراءة الأسماء والإعدادات
         this.names.X = document.getElementById('p1-name').value || "الفريق X";
         this.names.O = document.getElementById('p2-name').value || "الفريق O";
         
         const timerOptions = document.getElementsByName('timer');
         for(let t of timerOptions) { if(t.checked) this.timerSetting = parseInt(t.value); }
 
-        // تحديث HUD
         document.getElementById('hud-name-x').textContent = this.names.X;
         document.getElementById('hud-name-o').textContent = this.names.O;
         document.getElementById('game-hud').classList.remove('hidden');
         this.updateHUD();
 
-        // إخفاء القوائم
         this.hideSetup();
         document.querySelector('.levels-grid').classList.add('hidden');
         document.querySelector('.game-header').classList.add('hidden');
@@ -144,7 +130,6 @@ const App = {
         const arena = document.getElementById('game-arena');
         arena.classList.remove('hidden');
         
-        // إعادة تهيئة المتغيرات للجولة
         this.currentPlayer = 'X';
         this.nextForcedGrid = null;
         this.gridStatus = Array(9).fill(null);
@@ -154,9 +139,8 @@ const App = {
     },
 
     rematch: function() {
-        // إعادة لعب نفس الجولة بنفس الأسماء
         document.getElementById('victory-modal').classList.add('hidden');
-        this.startMatch(); // سيعيد القراءة من الحقول الموجودة أصلاً
+        this.startMatch();
     },
 
     buildBoard: function() {
@@ -180,8 +164,6 @@ const App = {
 
     updateHUD: function() {
         document.getElementById('score-board').textContent = `${this.scores.X} - ${this.scores.O}`;
-        
-        // تظليل اللاعب الحالي
         const xEl = document.getElementById('hud-x');
         const oEl = document.getElementById('hud-o');
         if(this.currentPlayer === 'X') {
@@ -194,7 +176,7 @@ const App = {
     },
 
     highlightActiveGrid: function() {
-        this.updateHUD(); // تحديث الدور في الأعلى
+        this.updateHUD();
         for(let i=0; i<9; i++) {
             const grid = document.getElementById(`grid-${i}`);
             grid.classList.remove('active-zone');
@@ -210,7 +192,6 @@ const App = {
         if(cell.classList.contains('x-marked') || cell.classList.contains('o-marked')) return;
 
         const gridIdx = parseInt(cell.dataset.grid);
-        // التحقق من الإجبار
         if (this.nextForcedGrid !== null && this.nextForcedGrid !== gridIdx) {
             AudioController.error();
             const forcedGrid = document.getElementById(`grid-${this.nextForcedGrid}`);
@@ -224,6 +205,10 @@ const App = {
         this.currentActiveCell = cell;
         this.currentInput = "";
         
+        // إخفاء رسالة الانفجار إذا كانت موجودة
+        document.getElementById('timeout-msg').classList.add('hidden');
+        document.querySelector('.calc-screen').classList.remove('shake-screen');
+
         const n1 = Math.floor(Math.random() * 9) + 2;
         const n2 = Math.floor(Math.random() * 9) + 2;
         this.currentAnswer = n1 * n2;
@@ -232,7 +217,6 @@ const App = {
         document.getElementById('calc-input').textContent = "_";
         document.getElementById('math-modal').classList.remove('hidden');
 
-        // بدء المؤقت إذا كان مفعلاً
         this.startTimer();
     },
 
@@ -240,7 +224,6 @@ const App = {
         const barContainer = document.getElementById('timer-bar-container');
         const barFill = document.getElementById('timer-bar-fill');
         
-        // تصفير أي مؤقت سابق
         clearInterval(this.timerInterval);
         barContainer.classList.add('hidden');
         
@@ -249,25 +232,39 @@ const App = {
             barFill.style.transition = 'none';
             barFill.style.width = '100%';
             
-            // بدء العد التنازلي
             setTimeout(() => {
                 barFill.style.transition = `width ${this.timerSetting}s linear`;
                 barFill.style.width = '0%';
             }, 50);
 
             this.timerInterval = setTimeout(() => {
-                // انتهى الوقت!
                 this.handleTimeout();
             }, this.timerSetting * 1000);
         }
     },
 
     handleTimeout: function() {
+        // تأثيرات الانفجار
         AudioController.error();
-        // خسارة الدور فقط (إغلاق النافذة وتبديل الدور)
-        document.getElementById('math-modal').classList.add('hidden');
-        this.currentPlayer = this.currentPlayer === 'X' ? 'O' : 'X';
-        this.highlightActiveGrid();
+        const modal = document.getElementById('math-modal');
+        const msg = document.getElementById('timeout-msg');
+        
+        // 1. إظهار رسالة الانفجار
+        msg.classList.remove('hidden');
+        
+        // 2. اهتزاز النافذة
+        document.querySelector('.calculator-box').classList.add('shake-screen');
+        
+        // 3. الانتظار قليلاً ثم إغلاق النافذة وتغيير الدور
+        setTimeout(() => {
+            document.querySelector('.calculator-box').classList.remove('shake-screen');
+            modal.classList.add('hidden');
+            msg.classList.add('hidden');
+            
+            // عقوبة: انتقال الدور للخصم دون لعب
+            this.currentPlayer = this.currentPlayer === 'X' ? 'O' : 'X';
+            this.highlightActiveGrid();
+        }, 1500); // الانتظار ثانية ونصف لرؤية الرسالة
     },
 
     typeNum: function(num) {
@@ -285,7 +282,6 @@ const App = {
     },
 
     submitAnswer: function() {
-        // إيقاف المؤقت فوراً
         clearInterval(this.timerInterval);
 
         if(parseInt(this.currentInput) === this.currentAnswer) {
@@ -311,11 +307,7 @@ const App = {
             }
 
             document.getElementById('math-modal').classList.add('hidden');
-            
-            // فحص الفوز الكبير (النهائي)
-            if (this.checkGlobalWin()) {
-                return; // انتهت اللعبة
-            }
+            if (this.checkGlobalWin()) return;
 
             this.currentPlayer = this.currentPlayer === 'X' ? 'O' : 'X';
             this.highlightActiveGrid();
@@ -326,7 +318,6 @@ const App = {
             screen.style.border = "1px solid red";
             setTimeout(() => screen.style.border = "1px solid rgba(255,255,255,0.1)", 500);
             this.clearCalc();
-            // *خيار إضافي*: هل تريد إغلاق النافذة عند الخطأ أيضاً؟ حالياً نسمح بالمحاولة مرة أخرى.
         }
     },
 
@@ -344,7 +335,7 @@ const App = {
                 
                 this.gridStatus[gridIdx] = this.currentPlayer;
                 grid.classList.add(this.currentPlayer === 'X' ? 'won-x' : 'won-o');
-                AudioController.win(); // صوت فوز إضافي
+                AudioController.win();
                 return;
             }
         }
@@ -354,12 +345,10 @@ const App = {
         const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
         for (let combo of wins) {
             const [a, b, c] = combo;
-            // التحقق من مصفوفة gridStatus
             if (this.gridStatus[a] && this.gridStatus[a] !== 'Tie' &&
                 this.gridStatus[a] === this.gridStatus[b] &&
                 this.gridStatus[a] === this.gridStatus[c]) {
                 
-                // لدينا فائز!
                 this.declareWinner(this.gridStatus[a]);
                 return true;
             }
@@ -370,15 +359,10 @@ const App = {
     declareWinner: function(winnerSymbol) {
         AudioController.win();
         const winnerName = winnerSymbol === 'X' ? this.names.X : this.names.O;
-        
-        // تحديث نتيجة السلسلة
         this.scores[winnerSymbol]++;
         
-        // عرض شاشة التتويج
         document.getElementById('winner-name').textContent = winnerName;
         document.getElementById('victory-modal').classList.remove('hidden');
-        
-        // قصاصات الورق (بسيطة)
         this.spawnConfetti();
     },
 
@@ -395,9 +379,10 @@ const App = {
             conf.style.backgroundColor = ['#f00', '#0f0', '#00f', '#ff0'][Math.floor(Math.random()*4)];
             conf.style.animation = `fall ${Math.random()*2+2}s linear infinite`;
             container.appendChild(conf);
-            
-            // CSS Animation for fall needs to be injected if not present, but simple gravity works via CSS usually
         }
+        const style = document.createElement('style');
+        style.innerHTML = `@keyframes fall { to { top: 100vh; transform: rotate(720deg); } }`;
+        document.head.appendChild(style);
     },
 
     markCell: function(cell, player) {
