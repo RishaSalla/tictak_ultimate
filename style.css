@@ -1,28 +1,23 @@
 /* =========================================
-   XO ULTIMATE - FIXED & CONTRASTED
+   XO ULTIMATE - SCIENTIFIC LIGHT (RESTORED)
+   مع إصلاح ذكي للشاشات العريضة
    ========================================= */
 
 :root {
-    /* تم تغميق الألوان قليلاً لزيادة الوضوح */
-    --bg-main: #f1f5f9;       /* رمادي مائل للأزرق (أوضح من الأبيض) */
+    --bg-main: #f8fafc;       /* خلفية فاتحة نظيفة */
     --surface: #ffffff;
-    --text-main: #0f172a;     /* أسود كحلي غامق */
-    --text-sub: #475569;
+    --text-main: #1e293b;
+    --text-sub: #64748b;
     
-    --border: #cbd5e1;        /* حدود أغمق لتكون مرئية */
-    --border-focus: #94a3b8;
+    --border: #e2e8f0;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     
-    --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --accent: #0ea5e9;        /* أزرق سماوي */
+    --p1: #f43f5e;            /* أحمر حيوي */
+    --p2: #3b82f6;            /* أزرق حيوي */
     
-    /* الألوان الحيوية */
-    --accent: #0284c7;        /* أزرق قوي */
-    --p1: #e11d48;            /* أحمر غامق قليلاً */
-    --p2: #2563eb;            /* أزرق ملكي */
-    
-    /* الأبعاد */
     --font: 'Cairo', sans-serif;
     --radius: 16px;
-    --max-w: 550px;           /* ⛔ العمود الفقري: أقصى عرض للمحتوى */
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -33,198 +28,244 @@ body {
     font-family: var(--font);
     height: 100dvh;
     overflow: hidden;
-    /* خلفية هندسية واضحة */
-    background-image: radial-gradient(#94a3b8 1px, transparent 1px);
-    background-size: 24px 24px;
-    display: flex; flex-direction: column; align-items: center; /* توسيط كل شيء */
+    /* تم حذف الخلفية المنقطة المزعجة */
 }
 
 .hidden { display: none !important; }
 
 /* ===========================
-   1. الهيكل العام (The Spine)
+   الهيكل العام
    =========================== */
 .screen {
     position: absolute; inset: 0;
-    display: flex; flex-direction: column; align-items: center; /* توسيط المحتوى */
-    background: var(--bg-main);
-    background-image: radial-gradient(#94a3b8 1px, transparent 1px);
-    background-size: 24px 24px;
-    z-index: 10;
-    overflow-y: auto; /* السماح بالتمرير إذا صغرت الشاشة رأسياً */
-}
-
-/* حاوية مركزية تمنع التمدد */
-.container-limit {
-    width: 100%;
-    max-width: var(--max-w);
     display: flex; flex-direction: column;
-    flex: 1;
+    background: var(--bg-main);
+    z-index: 10;
+    overflow-y: auto; /* للسماح بالتمرير في الشاشات القصيرة */
 }
 
-/* الهيدر والفوتر */
+/* Header & Footer */
 .app-header {
-    width: 100%; max-width: var(--max-w);
     height: 70px; display: flex; justify-content: space-between; align-items: center;
-    padding: 0 20px; background: rgba(255,255,255,0.95);
-    border-bottom: 1px solid var(--border);
-    position: sticky; top: 0; z-index: 50;
+    padding: 0 24px; background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(10px); border-bottom: 1px solid var(--border);
+    flex-shrink: 0; /* منع التقلص */
 }
-
 .app-footer {
-    width: 100%; max-width: var(--max-w);
     padding: 20px; background: rgba(255,255,255,0.95);
-    border-top: 1px solid var(--border);
-    position: sticky; bottom: 0; z-index: 50;
+    backdrop-filter: blur(10px); border-top: 1px solid var(--border);
+    display: flex; justify-content: center;
+    flex-shrink: 0;
 }
 
 /* ===========================
-   2. شاشة الدخول (Login)
+   شاشة الدخول
    =========================== */
-#screen-login { justify-content: center; }
+#screen-login { justify-content: center; align-items: center; }
 .login-wrapper {
     background: var(--surface); padding: 40px 30px; border-radius: 24px;
-    box-shadow: var(--shadow); text-align: center;
-    width: 90%; max-width: 400px; /* لن يتمدد في اللابتوب */
+    box-shadow: var(--shadow); text-align: center; width: 90%; max-width: 400px;
     border: 1px solid var(--border);
 }
-.main-title { font-size: 3.5rem; line-height: 1; color: var(--text-main); margin-bottom: 5px; }
+.main-title { font-size: 3rem; line-height: 1; color: var(--text-main); margin-bottom: 5px; }
 .highlight { color: var(--accent); }
 .sub-title { color: var(--text-sub); letter-spacing: 1px; margin-bottom: 30px; font-weight: 700; }
 
 #pin-input {
     width: 100%; border: 2px solid var(--border); border-radius: 12px;
     font-size: 2rem; text-align: center; letter-spacing: 8px;
-    padding: 10px; font-family: monospace; transition: 0.3s;
-    background: #f8fafc;
+    padding: 10px; font-family: monospace; transition: 0.3s; background: #f8fafc;
 }
 #pin-input:focus { border-color: var(--accent); background: #fff; }
 
 .btn-start {
     margin-top: 20px; background: var(--text-main); color: #fff; border: none;
     padding: 15px 40px; border-radius: 12px; font-size: 1.1rem; font-weight: bold;
-    cursor: pointer; width: 100%; transition: 0.2s;
+    cursor: pointer; width: 100%; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
-.btn-start:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+.btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+.error-msg { color: var(--p1); font-weight: bold; margin-top: 15px; min-height: 20px; }
 
 /* ===========================
-   3. الإعدادات والقائمة
+   الإعدادات والقائمة (تمت استعادة الأزرار الجميلة)
    =========================== */
-.content-body { flex: 1; padding: 20px; width: 100%; }
-
+.content-body { flex: 1; padding: 24px; }
 .card {
     background: var(--surface); padding: 20px; border-radius: var(--radius);
-    border: 1px solid var(--border); margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border: 1px solid var(--border); margin-bottom: 20px; box-shadow: var(--shadow);
 }
-.p1-card { border-right: 5px solid var(--p1); }
-.p2-card { border-right: 5px solid var(--p2); }
+.p1-card { border-right: 4px solid var(--p1); }
+.p2-card { border-right: 4px solid var(--p2); }
 
+.card label { display: block; color: var(--text-sub); margin-bottom: 10px; font-weight: 600; }
 .card input {
     width: 100%; padding: 12px; background: #f8fafc; border: 1px solid var(--border);
-    border-radius: 8px; font-family: var(--font); text-align: center; font-size: 1rem;
-    color: var(--text-main); font-weight: 600; margin-bottom: 15px;
+    border-radius: 8px; font-family: var(--font); text-align: center; margin-bottom: 15px;
+    font-weight: bold; color: var(--text-main);
 }
+.avatar-row { display: flex; gap: 10px; justify-content: center; }
 .av-btn {
     width: 50px; height: 50px; border-radius: 12px; border: 2px solid var(--border);
-    background: #fff; font-size: 1.8rem; cursor: pointer; transition: 0.2s;
+    background: #fff; font-size: 1.6rem; cursor: pointer; transition: 0.2s;
 }
 .av-btn.selected { border-color: var(--accent); background: #e0f2fe; transform: scale(1.1); }
 
-/* شبكة الأنماط (Modes Grid) */
+/* Modes Grid */
 .modes-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 15px; /* عمودين دائماً */
-    padding: 20px; width: 100%;
+    display: grid; grid-template-columns: 1fr; gap: 15px;
+    padding: 24px;
 }
 .mode-item {
-    background: var(--surface); padding: 25px 15px; border-radius: var(--radius);
+    background: var(--surface); padding: 20px; border-radius: var(--radius);
     border: 1px solid var(--border); text-align: center; cursor: pointer;
-    transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    transition: 0.2s; box-shadow: var(--shadow);
+    display: flex; flex-direction: column; align-items: center;
 }
-.mode-item:hover { border-color: var(--accent); transform: translateY(-3px); }
-.mode-item.featured { grid-column: span 2; background: linear-gradient(to right, #fff, #f0f9ff); border: 2px solid var(--accent); }
-
-.mode-icon svg { width: 45px; height: 45px; stroke: var(--text-sub); stroke-width: 1.5; }
+.mode-item:hover { transform: translateY(-3px); border-color: var(--accent); }
+.mode-item.featured { background: linear-gradient(135deg, #fff, #f0f9ff); border-color: var(--accent); }
+.mode-icon svg { width: 45px; height: 45px; stroke: var(--text-sub); transition: 0.3s; margin-bottom: 10px; stroke-width: 1.5; }
 .mode-item:hover .mode-icon svg { stroke: var(--accent); }
 .mode-item h3 { font-size: 1.1rem; font-weight: 700; }
 
 /* ===========================
-   4. ساحة اللعب (تصحيح التباين)
+   ساحة اللعب (استعادة الجمال)
    =========================== */
-.game-arena {
-    flex: 1; width: 100%; display: flex; flex-direction: column;
-    justify-content: center; align-items: center; padding: 10px;
-}
-
 .score-pill {
-    background: var(--surface); padding: 8px 25px; border-radius: 50px;
-    border: 1px solid var(--border); box-shadow: var(--shadow);
-    display: flex; gap: 20px; font-weight: 800; font-size: 1.1rem;
+    display: flex; align-items: center; gap: 15px; background: var(--surface);
+    padding: 8px 20px; border-radius: 50px; border: 1px solid var(--border); box-shadow: var(--shadow);
 }
-.p-score.active { color: var(--text-main); transform: scale(1.15); position: relative; }
-.p-score.active::after {
-    content: ''; position: absolute; bottom: -5px; left: 0; right: 0;
-    height: 3px; background: currentColor; border-radius: 2px;
-}
-.p1 { color: var(--text-sub); } .p1.active { color: var(--p1); }
-.p2 { color: var(--text-sub); } .p2.active { color: var(--p2); }
+.p-score { font-weight: 800; color: var(--text-sub); display: flex; align-items: center; gap: 5px; transition: 0.3s; }
+.p-score.active { color: var(--text-main); transform: scale(1.1); }
+.p-score.p1.active { color: var(--p1); }
+.p-score.p2.active { color: var(--p2); }
 
-/* الرقعة - الحل لمشكلة البهتان */
-.grid-container {
-    width: 100%; max-width: 400px; /* تصغير الرقعة قليلاً لتكون ملمومة */
-    aspect-ratio: 1/1; position: relative; margin: 20px 0;
+.game-arena {
+    flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;
+    padding: 10px;
 }
+.status-badge {
+    background: var(--text-main); color: #fff; padding: 8px 20px; border-radius: 20px;
+    font-weight: 600; margin-bottom: 20px; box-shadow: var(--shadow);
+}
+
+/* الرقعة - واضحة وجميلة */
+.grid-container {
+    width: 100%;
+    max-width: 450px; /* حجم مثالي للجوال */
+    aspect-ratio: 1/1;
+    position: relative;
+}
+.game-grid { width: 100%; height: 100%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+
 .sub-grid {
-    background: #fff; /* خلفية بيضاء صريحة */
-    border-radius: 8px;
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    border: 1px solid var(--border); /* حدود واضحة */
-    transition: 0.3s;
+    background: rgba(255,255,255,0.8); border-radius: 12px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; padding: 4px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    border: 2px solid transparent; transition: 0.3s;
 }
 .sub-grid.active-zone {
-    border: 2px solid var(--accent);
-    box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.2);
-    transform: scale(1.02); z-index: 2;
+    background: #fff; border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.15);
 }
-.sub-grid:not(.active-zone) { opacity: 0.5; filter: grayscale(1); }
+.sub-grid:not(.active-zone) { opacity: 0.6; filter: grayscale(0.5); }
 
 .cell {
-    background: #f1f5f9; /* رمادي فاتح للخلايا الفارغة */
-    border-radius: 4px; cursor: pointer;
+    background: #f1f5f9; border-radius: 8px; cursor: pointer;
     display: flex; justify-content: center; align-items: center;
-    font-size: 1.8rem; font-weight: 900;
-    border: 1px solid transparent; /* تحضير للحدود */
+    font-size: 1.6rem; font-weight: 900; transition: 0.2s;
 }
 .cell:hover { background: #e2e8f0; }
-.cell.x { color: var(--p1); background: #fee2e2; border-color: rgba(225, 29, 72, 0.2); }
-.cell.o { color: var(--p2); background: #dbeafe; border-color: rgba(37, 99, 235, 0.2); }
+.cell.x { color: var(--p1); background: #fee2e2; }
+.cell.o { color: var(--p2); background: #dbeafe; }
+.sub-grid.won::after {
+    content: attr(data-winner); position: absolute; inset: 0;
+    display: flex; justify-content: center; align-items: center;
+    font-size: 5rem; font-weight: 900; z-index: 5;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+.sub-grid.winner-X::after { color: var(--p1); }
+.sub-grid.winner-O::after { color: var(--p2); }
 
-/* أزرار القوى */
+/* شريط القدرات (استعادة الأزرار العائمة) */
 .powers-bar {
-    width: 100%; display: flex; justify-content: center; gap: 30px;
-    padding: 20px 0;
+    padding: 20px; display: flex; justify-content: center; gap: 25px;
+    background: linear-gradient(to top, var(--bg-main), transparent);
 }
 .power-fab {
     width: 65px; height: 65px; border-radius: 20px; background: var(--surface);
     border: 2px solid var(--border); box-shadow: var(--shadow);
-    color: var(--text-sub); transition: 0.2s; position: relative;
+    display: flex; justify-content: center; align-items: center; cursor: pointer;
+    transition: 0.2s; color: var(--text-sub);
 }
-.power-fab svg { width: 32px; height: 32px; }
-.power-fab:hover { transform: translateY(-5px); border-color: var(--text-main); color: var(--text-main); }
+.power-fab svg { width: 30px; height: 30px; stroke-width: 2; }
+.power-fab:hover { transform: translateY(-5px); color: var(--text-main); border-color: var(--text-main); }
 .power-fab.active { background: var(--text-main); color: #fff; border-color: var(--text-main); }
 
 /* ===========================
-   5. النوافذ والخطوط
+   النوافذ المنبثقة (كما كانت)
    =========================== */
-.modal-box {
-    width: 90%; max-width: 420px; background: var(--surface);
-    border-radius: 24px; border: 1px solid var(--border);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+.modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(5px); z-index: 100;
+    display: flex; justify-content: center; align-items: center;
 }
-.numpad button { height: 65px; font-size: 1.5rem; background: #fff; border: 1px solid #f1f5f9; }
-.numpad button:active { background: #f8fafc; }
+.modal-box {
+    background: var(--surface); width: 90%; max-width: 420px;
+    border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--border); overflow: hidden; display: flex; flex-direction: column;
+}
+.large { max-width: 500px; }
+.modal-top {
+    padding: 15px 24px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center; background: #f8fafc;
+}
+.close-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-sub); }
+.modal-content { padding: 24px; color: var(--text-main); line-height: 1.6; }
+.modal-content h4 { color: var(--accent); margin-bottom: 8px; }
+.modal-content ul { padding-right: 20px; margin-bottom: 15px; color: var(--text-sub); }
+.modal-content hr { border: 0; height: 1px; background: var(--border); margin: 20px 0; }
 
-/* أزرار عامة */
-.btn-primary { width: 100%; max-width: 300px; } /* منع تمدد الزر */
-.btn-text { width: auto; padding: 10px 30px; }
+/* Calculator */
+.calc-header { padding: 20px; text-align: center; background: #f8fafc; border-bottom: 1px solid var(--border); }
+.pro-font { font-family: monospace; font-size: 1.4rem; font-weight: bold; }
+.calc-inputs { padding: 20px; display: flex; justify-content: center; gap: 10px; background: var(--surface); }
+.calc-slot { width: 60px; height: 60px; border: 2px solid var(--border); border-radius: 12px; font-size: 1.8rem; display: flex; justify-content: center; align-items: center; font-weight: bold; color: var(--text-main); background: #f8fafc; }
+.calc-slot.active { border-color: var(--accent); background: #fff; box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1); }
+.numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); }
+.numpad button { height: 65px; border: none; background: var(--surface); font-size: 1.5rem; font-weight: 600; color: var(--text-main); cursor: pointer; }
+.numpad button:active { background: #f1f5f9; }
+.numpad .del { color: var(--p1); }
+.numpad .ok { grid-column: span 2; background: var(--accent); color: #fff; }
+.icon-btn, .btn-help-circle { background: transparent; border: none; padding: 8px; cursor: pointer; color: var(--text-sub); transition: 0.2s; }
+.icon-btn:hover { color: var(--text-main); background: rgba(0,0,0,0.05); border-radius: 50%; }
+.icon-btn svg { width: 28px; height: 28px; }
+.btn-primary { width: 100%; } .btn-text { width: auto; padding: 10px 30px; }
+.timer-line { height: 4px; background: #e2e8f0; }
+#timer-progress { height: 100%; width: 100%; background: var(--accent); transition: width 0.05s linear; }
+
+/* =========================================
+   🔴 إصلاح الشاشات العريضة (اللابتوب) 🔴
+   هذا الجزء هو الذي يمنع التمدد القبيح
+   ========================================= */
+@media (min-width: 768px) {
+    /* تقييد عرض المحتوى الداخلي فقط */
+    .login-wrapper,
+    .content-body,
+    .modes-grid,
+    .game-arena,
+    .powers-bar {
+        max-width: 500px; /* العرض المثالي للابتوب */
+        margin-left: auto; /* توسيط */
+        margin-right: auto; /* توسيط */
+        width: 100%;
+    }
+
+    /* تحسين شكل القائمة في اللابتوب */
+    .modes-grid {
+        grid-template-columns: repeat(2, 1fr); /* عمودين بدلاً من واحد */
+    }
+    .mode-item.featured { grid-column: span 2; }
+
+    /* تكبير الرقعة قليلاً في اللابتوب */
+    .grid-container { max-width: 500px; }
+}
