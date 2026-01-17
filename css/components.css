@@ -1,1 +1,247 @@
+/* =========================================
+   🧩 COMPONENTS (UI KIT)
+   الأزرار، البطاقات، والشبكة
+   ========================================= */
 
+/* --- 1. العناوين والنصوص --- */
+.brand-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+    margin-bottom: 5px;
+    letter-spacing: -1px;
+}
+.brand-subtitle {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-bottom: 40px;
+    letter-spacing: 0.5px;
+}
+.highlight { color: var(--primary); }
+
+/* --- 2. الأزرار (Buttons) --- */
+/* الزر الأساسي الملون */
+.btn-primary {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    border-radius: var(--radius-md);
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); /* ظل ملون */
+}
+.btn-primary:active { transform: scale(0.98); }
+.btn-primary:hover { background-color: var(--primary-hover); transform: translateY(-2px); }
+
+/* أزرار الأيقونات */
+.btn-icon, .btn-small, .btn-settings {
+    background: transparent;
+    border: none;
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: 0.2s;
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+}
+.btn-icon:hover { background-color: rgba(0,0,0,0.05); color: var(--primary); }
+.btn-small svg { width: 24px; height: 24px; }
+
+/* --- 3. حقول الإدخال (Inputs) --- */
+.pin-wrapper { margin-bottom: 30px; }
+#pin-input {
+    width: 100%;
+    border: 2px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 15px;
+    font-size: 2rem;
+    text-align: center;
+    letter-spacing: 12px;
+    font-family: monospace;
+    color: var(--text-primary);
+    background: var(--bg-surface);
+    transition: 0.3s;
+}
+#pin-input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); }
+
+/* --- 4. البطاقات (Cards) --- */
+.player-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+}
+.p1-theme { border-right: 4px solid var(--p1-color); }
+.p2-theme { border-right: 4px solid var(--p2-color); }
+
+.card-header {
+    display: flex; justify-content: space-between; margin-bottom: 15px;
+    font-weight: 600; color: var(--text-secondary);
+}
+
+.input-field {
+    width: 100%; padding: 12px;
+    border: 1px solid var(--border-light); border-radius: var(--radius-sm);
+    background: var(--bg-app); color: var(--text-primary);
+    text-align: center; font-weight: 600; margin-bottom: 15px;
+}
+
+/* شبكة الأفاتار */
+.avatar-grid { display: flex; gap: 10px; justify-content: center; }
+.av-item {
+    width: 45px; height: 45px;
+    border: 1px solid var(--border-light); border-radius: 12px;
+    background: var(--bg-surface); cursor: pointer;
+    font-size: 1.4rem; transition: 0.2s;
+    display: flex; align-items: center; justify-content: center;
+}
+.av-item:hover { transform: translateY(-2px); }
+.p1-theme .av-item.selected { background: var(--p1-bg); border-color: var(--p1-color); }
+.p2-theme .av-item.selected { background: var(--p2-bg); border-color: var(--p2-color); }
+
+/* --- 5. بطاقات الأنماط (Menu Modes) --- */
+.modes-wrapper {
+    display: grid; grid-template-columns: 1fr; gap: 15px; padding: 20px;
+}
+.mode-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    display: flex; align-items: center; gap: 20px;
+    cursor: pointer; transition: 0.2s;
+    position: relative; overflow: hidden;
+}
+.mode-card:hover { transform: translateY(-3px); border-color: var(--primary); box-shadow: var(--shadow-md); }
+
+.mode-icon-box {
+    width: 50px; height: 50px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+}
+.mode-icon-box svg { width: 28px; height: 28px; }
+
+/* ألوان الأيقونات */
+.clash-color { background: #EEF2FF; color: #6366F1; }
+.code-color { background: #ECFDF5; color: #10B981; }
+.duality-color { background: #FFF7ED; color: #F97316; }
+.balance-color { background: linear-gradient(135deg, #4F46E5, #8B5CF6); color: white; }
+
+.mode-card.featured { border: 2px solid var(--primary); background: #F5F3FF; }
+.badge-new {
+    position: absolute; top: 10px; left: 10px;
+    background: var(--primary); color: white;
+    font-size: 0.7rem; padding: 2px 8px; border-radius: 20px; font-weight: bold;
+}
+
+/* --- 6. ساحة اللعب (Game Elements) --- */
+.score-board {
+    display: flex; align-items: center; gap: 15px;
+    background: var(--bg-surface); padding: 6px 20px;
+    border-radius: 50px; border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-sm);
+}
+.score-pill { display: flex; gap: 8px; font-weight: 700; color: var(--text-secondary); transition: 0.3s; }
+.score-pill.active { transform: scale(1.1); }
+.p1-pill.active { color: var(--p1-color); }
+.p2-pill.active { color: var(--p2-color); }
+
+/* الرقعة */
+.grid-frame {
+    width: 100%; max-width: 340px; /* حجم مثالي داخل الإطار */
+    aspect-ratio: 1/1;
+    background: var(--bg-surface);
+    border-radius: var(--radius-lg);
+    padding: 10px;
+    box-shadow: var(--shadow-md);
+    margin: 20px auto;
+}
+.game-grid {
+    width: 100%; height: 100%;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+}
+.sub-grid {
+    background: var(--bg-app); border-radius: 8px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;
+    padding: 3px; border: 2px solid transparent; transition: 0.3s;
+}
+.sub-grid.active-zone {
+    background: white; border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15); z-index: 5;
+}
+.sub-grid:not(.active-zone) { opacity: 0.5; filter: grayscale(1); }
+
+.cell {
+    background: white; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; font-weight: 800; cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+.cell.x { color: var(--p1-color); background: var(--p1-bg); }
+.cell.o { color: var(--p2-color); background: var(--p2-bg); }
+
+/* شريط القوى العائم */
+.powers-dock {
+    display: flex; justify-content: center; gap: 20px;
+    background: transparent; border-top: none;
+}
+.power-btn {
+    width: 60px; height: 60px; border-radius: 18px;
+    background: var(--bg-surface); border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-sm); cursor: pointer; position: relative;
+    color: var(--text-secondary); transition: 0.2s;
+    display: flex; align-items: center; justify-content: center;
+}
+.power-btn:hover { transform: translateY(-5px); color: var(--text-primary); }
+.power-btn.active { background: var(--text-primary); color: white; border-color: var(--text-primary); }
+.power-btn .icon-layer svg { width: 28px; height: 28px; }
+.power-count {
+    position: absolute; top: -5px; right: -5px;
+    background: var(--primary); color: white;
+    width: 20px; height: 20px; border-radius: 50%;
+    font-size: 0.7rem; display: flex; align-items: center; justify-content: center;
+}
+
+/* --- 7. النوافذ (Modals) --- */
+.modal-overlay {
+    background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100;
+}
+.modal-card {
+    background: var(--bg-surface); width: 90%; max-width: 360px;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    border: 1px solid var(--border-light);
+    overflow: hidden; animation: popUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+@keyframes popUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* الحاسبة */
+.calc-display { padding: 20px; text-align: center; background: var(--bg-app); border-bottom: 1px solid var(--border-light); }
+.calc-question { font-size: 1.2rem; color: var(--text-secondary); margin-bottom: 10px; }
+.calc-inputs-row { display: flex; justify-content: center; gap: 8px; }
+.calc-slot {
+    width: 50px; height: 50px; background: white;
+    border: 2px solid var(--border-light); border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; font-weight: bold;
+}
+.calc-slot.active { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1); }
+
+.numpad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border-light); }
+.numpad-grid button {
+    height: 60px; background: white; border: none;
+    font-size: 1.4rem; font-weight: 500; cursor: pointer; color: var(--text-primary);
+}
+.numpad-grid button:active { background: var(--bg-app); }
+.numpad-grid .key-ok { background: var(--primary); color: white; grid-column: span 2; }
+.numpad-grid .key-del { color: var(--p1-color); }
