@@ -252,4 +252,32 @@
 
     </main> <script type="module" src="js/app.js"></script>
 </body>
+    <style>
+    /* كود طوارئ لإصلاح النوافذ وإجبارها على الطفو */
+    .modal-overlay {
+        position: absolute !important; /* إخراجها من الزحام */
+        inset: 0 !important;           /* تغطية كامل الإطار */
+        z-index: 9999 !important;      /* وضعها في الطبقة العليا */
+        width: 100% !important;
+        height: 100% !important;
+        background: rgba(255, 255, 255, 0.85) !important;
+        backdrop-filter: blur(5px);
+        
+        /* ضمان التوسط */
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    /* ضمان إخفاء النوافذ غير النشطة */
+    .modal-overlay.hidden {
+        display: none !important;
+    }
+    
+    /* إصلاح حاوية التطبيق لضمان احتواء النوافذ */
+    #app-frame {
+        position: relative !important;
+        overflow: hidden !important; 
+    }
+</style>
 </html>
