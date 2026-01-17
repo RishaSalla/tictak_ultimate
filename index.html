@@ -1,1 +1,255 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="XO Ultimate Pro - The Scientific Edition">
+    <title>XO Ultimate | Pro</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
 
+    <main id="app-frame">
+        
+        <section id="screen-login" class="screen active">
+            <div class="login-content">
+                <div class="logo-area">
+                    <h1 class="brand-title">XO <span class="highlight">PRO</span></h1>
+                    <p class="brand-subtitle">الأكاديمية العلمية</p>
+                </div>
+                
+                <div class="pin-wrapper">
+                    <input type="password" id="pin-input" placeholder="••••" maxlength="4" inputmode="numeric">
+                </div>
+                
+                <button class="btn-primary" id="btn-login">دخول المنصة</button>
+                <p id="login-msg" class="status-text"></p>
+                
+                <footer class="login-footer">v2.0.0 &bull; Scientific Build</footer>
+            </div>
+        </section>
+
+        <section id="screen-setup" class="screen hidden">
+            <header class="top-bar">
+                <h2>تجهيز القادة</h2>
+                <button class="btn-icon" id="btn-help-setup">؟</button>
+            </header>
+
+            <div class="scroll-content">
+                <div class="player-card p1-theme">
+                    <div class="card-header">
+                        <span class="p-label">القائد الأول (X)</span>
+                        <span class="p-icon">⚔️</span>
+                    </div>
+                    <input type="text" id="p1-name" class="input-field" value="اللاعب 1" placeholder="الاسم">
+                    <div class="avatar-grid" id="p1-avatars">
+                        <button class="av-item selected" data-val="X">X</button>
+                        <button class="av-item" data-val="🦁">🦁</button>
+                        <button class="av-item" data-val="⚡">⚡</button>
+                        <button class="av-item" data-val="🚀">🚀</button>
+                    </div>
+                </div>
+
+                <div class="player-card p2-theme">
+                    <div class="card-header">
+                        <span class="p-label">القائد الثاني (O)</span>
+                        <span class="p-icon">🛡️</span>
+                    </div>
+                    <input type="text" id="p2-name" class="input-field" value="اللاعب 2" placeholder="الاسم">
+                    <div class="avatar-grid" id="p2-avatars">
+                        <button class="av-item selected" data-val="O">O</button>
+                        <button class="av-item" data-val="🐯">🐯</button>
+                        <button class="av-item" data-val="🔥">🔥</button>
+                        <button class="av-item" data-val="💎">💎</button>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="bottom-bar">
+                <button class="btn-primary full-width" id="btn-save-setup">حفظ وانطلاق</button>
+            </footer>
+        </section>
+
+        <section id="screen-menu" class="screen hidden">
+            <header class="top-bar">
+                <div class="user-welcome">
+                    <span class="sub-text">مرحباً بك في</span>
+                    <h3>مركز التحديات</h3>
+                </div>
+                <button class="btn-settings" id="btn-back-settings">⚙️</button>
+            </header>
+
+            <div class="modes-wrapper">
+                <div class="mode-card" data-mode="clash">
+                    <div class="mode-icon-box clash-color">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.35-4.35"/></svg>
+                    </div>
+                    <div class="mode-info">
+                        <h3>المواجهة</h3>
+                        <p>تحدي العمليات المباشرة</p>
+                    </div>
+                </div>
+
+                <div class="mode-card" data-mode="code">
+                    <div class="mode-icon-box code-color">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                    </div>
+                    <div class="mode-info">
+                        <h3>الشيفرة</h3>
+                        <p>إيجاد الرقم المفقود</p>
+                    </div>
+                </div>
+
+                <div class="mode-card" data-mode="duality">
+                    <div class="mode-icon-box duality-color">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                    </div>
+                    <div class="mode-info">
+                        <h3>الثنائيات</h3>
+                        <p>أزواج الأرقام المتطابقة</p>
+                    </div>
+                </div>
+
+                <div class="mode-card featured" data-mode="balance">
+                    <div class="badge-new">PRO</div>
+                    <div class="mode-icon-box balance-color">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18"/><path d="M6 6h12"/><path d="M6 6l-3 6a3 3 0 0 0 3 3h0a3 3 0 0 0 3-3l-3-6Z"/><path d="M18 6l-3 6a3 3 0 0 0 3 3h0a3 3 0 0 0 3-3l-3-6Z"/></svg>
+                    </div>
+                    <div class="mode-info">
+                        <h3>الميزان</h3>
+                        <p>تحدي العباقرة (90/10)</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="screen-game" class="screen hidden">
+            <header class="game-header">
+                <button class="btn-small" id="btn-exit-game">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                </button>
+                
+                <div class="score-board">
+                    <div class="score-pill p1-pill" id="hud-p1">
+                        <span class="av">X</span>
+                        <span class="val" id="score-x">0</span>
+                    </div>
+                    <div class="vs-divider">:</div>
+                    <div class="score-pill p2-pill" id="hud-p2">
+                        <span class="val" id="score-o">0</span>
+                        <span class="av">O</span>
+                    </div>
+                </div>
+
+                <button class="btn-small" id="btn-help-game">؟</button>
+            </header>
+
+            <div class="arena-wrapper">
+                <div class="status-bubble" id="game-status">
+                    <span class="dot-indicator"></span>
+                    <span id="status-text">جاري التحميل...</span>
+                </div>
+
+                <div class="grid-frame">
+                    <div id="game-grid" class="game-grid">
+                        </div>
+                </div>
+            </div>
+
+            <footer class="powers-dock">
+                <button class="power-btn" data-power="nuke">
+                    <div class="icon-layer">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1.1-.9 2-2 2H7c-1.1 0-2-.9-2-2V6"/><path d="M8 6V4c0-1.1.9-2 2-2h4c1.1 0 2 .9 2 2v2"/></svg>
+                    </div>
+                    <span class="power-count" id="count-nuke">1</span>
+                </button>
+                
+                <button class="power-btn" data-power="freeze">
+                    <div class="icon-layer">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18"/><path d="M6 9l12 6"/><path d="M6 15l12-6"/></svg>
+                    </div>
+                    <span class="power-count" id="count-freeze">1</span>
+                </button>
+
+                <button class="power-btn" data-power="hack">
+                    <div class="icon-layer">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
+                    </div>
+                    <span class="power-count" id="count-hack">1</span>
+                </button>
+            </footer>
+        </section>
+
+        <div id="modal-calc" class="modal-overlay hidden">
+            <div class="modal-card">
+                <div class="timer-bar"><div id="timer-progress"></div></div>
+                
+                <div class="calc-display">
+                    <div class="calc-question" id="calc-q">...</div>
+                    <div class="calc-inputs-row" id="calc-inputs">
+                        </div>
+                </div>
+
+                <div class="numpad-grid">
+                    <button data-key="1">1</button>
+                    <button data-key="2">2</button>
+                    <button data-key="3">3</button>
+                    <button data-key="4">4</button>
+                    <button data-key="5">5</button>
+                    <button data-key="6">6</button>
+                    <button data-key="7">7</button>
+                    <button data-key="8">8</button>
+                    <button data-key="9">9</button>
+                    <button data-key="del" class="key-del">⌫</button>
+                    <button data-key="0">0</button>
+                    <button data-key="ok" class="key-ok">✔</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="modal-win" class="modal-overlay hidden">
+            <div class="modal-card center-align">
+                <div class="win-icon">🏆</div>
+                <h2 class="win-title">مبروك الفوز!</h2>
+                <h3 id="winner-name" class="winner-name">-</h3>
+                <div class="modal-actions">
+                    <button class="btn-primary" id="btn-rematch">جولة أخرى</button>
+                    <button class="btn-secondary" id="btn-home">القائمة</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="modal-help" class="modal-overlay hidden">
+            <div class="modal-card help-card">
+                <header class="modal-header">
+                    <h3>الدليل السريع</h3>
+                    <button class="btn-close-modal">×</button>
+                </header>
+                <div class="help-content">
+                    <div class="help-item">
+                        <span class="icon">🎯</span>
+                        <p><strong>الهدف:</strong> سيطر على 3 مربعات كبيرة متتالية.</p>
+                    </div>
+                    <div class="help-item">
+                        <span class="icon">⚖️</span>
+                        <p><strong>القانون الذهبي:</strong> مكان لعبك يحدد أين سيلعب خصمك تالياً.</p>
+                    </div>
+                    <hr>
+                    <h4>القدرات:</h4>
+                    <ul class="powers-list">
+                        <li>🧹 <strong>الممحاة:</strong> تنظف مربعاً بالكامل.</li>
+                        <li>❄️ <strong>التجميد:</strong> تمنع الخصم من اللعب.</li>
+                        <li>✋ <strong>الاستحواذ:</strong> تسرق خلية من الخصم.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </main> <script type="module" src="js/app.js"></script>
+</body>
+</html>
