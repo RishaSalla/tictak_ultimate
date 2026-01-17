@@ -3,191 +3,221 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>XO Ultimate | Console Edition</title>
+    <title>XO Ultimate | Pro Edition</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div id="console-container">
+    <section id="screen-login" class="screen active">
+        <div class="login-container">
+            <h1 class="logo-main">XO <span class="highlight">ULTIMATE</span></h1>
+            <p class="logo-tag">الإصدار الاحترافي</p>
+            
+            <div class="pin-box">
+                <input type="password" id="access-code" placeholder="----" maxlength="4">
+            </div>
+            
+            <button class="btn-primary large" id="btn-login">دخول النظام</button>
+            <p id="login-msg" class="msg-text"></p>
+        </div>
+    </section>
+
+    <section id="screen-setup" class="screen hidden">
+        <header class="top-nav">
+            <h2>تجهيز القادة</h2>
+        </header>
         
-        <section id="screen-login" class="screen active">
-            <div class="center-content">
-                <h1 class="logo-text">XO <span class="highlight">ULTIMATE</span></h1>
-                <p class="logo-sub">إصدار النخبة</p>
-                <div class="input-group">
-                    <input type="password" id="access-code" placeholder="رمز الدخول" maxlength="4">
-                    <div class="bar"></div>
-                </div>
-                <button class="btn-main" id="btn-login">دخول النظام</button>
-                <p id="login-msg" class="error-text"></p>
-            </div>
-        </section>
-
-        <section id="screen-setup" class="screen hidden">
-            <header class="screen-head">
-                <h2>تجهيز اللاعبين</h2>
-            </header>
-            <div class="screen-body scrollable">
-                <div class="setup-card p1-card">
-                    <label>القائد الأول (X)</label>
-                    <input type="text" id="setup-p1-name" value="اللاعب 1" placeholder="الاسم">
-                    <div class="avatars-grid" id="p1-avatars">
-                        <button class="av-btn selected" data-val="X">X</button>
-                        <button class="av-btn" data-val="🦁">🦁</button>
-                        <button class="av-btn" data-val="⚔️">⚔️</button>
-                    </div>
-                </div>
-                
-                <div class="setup-card p2-card">
-                    <label>القائد الثاني (O)</label>
-                    <input type="text" id="setup-p2-name" value="اللاعب 2" placeholder="الاسم">
-                    <div class="avatars-grid" id="p2-avatars">
-                        <button class="av-btn selected" data-val="O">O</button>
-                        <button class="av-btn" data-val="🐯">🐯</button>
-                        <button class="av-btn" data-val="🛡️">🛡️</button>
-                    </div>
-                </div>
-
-                <div class="setup-card">
-                    <label>نمط الألوان</label>
-                    <div class="themes-row">
-                        <button class="theme-btn active" data-theme="plasma" onclick="App.UI.setTheme('plasma')">
-                            <span class="dot plasma"></span> بلازما
-                        </button>
-                        <button class="theme-btn" data-theme="matrix" onclick="App.UI.setTheme('matrix')">
-                            <span class="dot matrix"></span> ماتريكس
-                        </button>
-                        <button class="theme-btn" data-theme="royal" onclick="App.UI.setTheme('royal')">
-                            <span class="dot royal"></span> ملكي
-                        </button>
-                    </div>
+        <div class="content-scroll">
+            <div class="setup-card p1-style">
+                <label>القائد الأول (X)</label>
+                <input type="text" id="p1-name" value="اللاعب 1" placeholder="الاسم">
+                <div class="avatar-select" id="p1-avatars">
+                    <button class="av-btn selected" data-val="X">X</button>
+                    <button class="av-btn" data-val="🦁">🦁</button>
+                    <button class="av-btn" data-val="⚔️">⚔️</button>
                 </div>
             </div>
-            <footer class="screen-foot">
-                <button class="btn-main full" onclick="App.Core.finishSetup()">حفظ وانطلاق</button>
-            </footer>
-        </section>
 
-        <section id="screen-menu" class="screen hidden">
-            <header class="screen-head">
-                <div class="head-row">
-                    <h2>مركز التحديات</h2>
-                    <button class="icon-btn" onclick="App.UI.openHelp()">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <div class="setup-card p2-style">
+                <label>القائد الثاني (O)</label>
+                <input type="text" id="p2-name" value="اللاعب 2" placeholder="الاسم">
+                <div class="avatar-select" id="p2-avatars">
+                    <button class="av-btn selected" data-val="O">O</button>
+                    <button class="av-btn" data-val="🐯">🐯</button>
+                    <button class="av-btn" data-val="🛡️">🛡️</button>
+                </div>
+            </div>
+
+            <div class="setup-card">
+                <label>نمط الواجهة</label>
+                <div class="theme-row">
+                    <button class="theme-opt active" data-theme="plasma" onclick="App.UI.setTheme('plasma')">
+                        <span class="dot plasma"></span> بلازما
+                    </button>
+                    <button class="theme-opt" data-theme="matrix" onclick="App.UI.setTheme('matrix')">
+                        <span class="dot matrix"></span> ماتريكس
+                    </button>
+                    <button class="theme-opt" data-theme="royal" onclick="App.UI.setTheme('royal')">
+                        <span class="dot royal"></span> ملكي
                     </button>
                 </div>
-            </header>
-            
-            <div class="modes-container">
-                <div class="mode-card featured" onclick="App.Core.selectMode('strategy')">
-                    <div class="mode-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 22h16M4 22V8l2-2h12l2 2v14M8 8v4M16 8v4M4 2h4l1 3h6l1-3h4M12 5v17"/></svg>
-                    </div>
-                    <div class="mode-text">
-                        <h3>التكتيك (XO)</h3>
-                        <p>استراتيجية خالصة بدون حساب.</p>
-                    </div>
-                </div>
+            </div>
+        </div>
 
-                <div class="grid-2col">
-                    <div class="mode-card" onclick="App.Core.selectMode('clash')">
-                        <div class="mode-icon small">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                        </div>
-                        <h3>المواجهة</h3>
-                        <p>ضرب</p>
-                    </div>
-                    <div class="mode-card" onclick="App.Core.selectMode('code')">
-                        <div class="mode-icon small">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.2 7.8c.1.2.1.5.1.7v11a2 2 0 0 1-2 2h-9a2 2 0 0 1-2-2v-2"/><path d="M11 2a2 2 0 0 1 2 2v2"/><circle cx="12" cy="12" r="3"/><path d="M12 2v2"/><path d="M12 20v2"/></svg>
-                        </div>
-                        <h3>الشيفرة</h3>
-                        <p>مجهول</p>
-                    </div>
-                    <div class="mode-card" onclick="App.Core.selectMode('duality')">
-                        <div class="mode-icon small">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3v19M6 6h12M6 6l-3 6a3 3 0 0 0 3 3h0a3 3 0 0 0 3-3l-3-6ZM18 6l-3 6a3 3 0 0 0 3 3h0a3 3 0 0 0 3-3l-3-6Z"/></svg>
-                        </div>
-                        <h3>الثنائيات</h3>
-                        <p>زوجي/فردي</p>
-                    </div>
-                    <div class="mode-card" onclick="App.Core.selectMode('genius')">
-                        <div class="mode-icon small">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM12 3v1M12 20v1M3 12h1M20 12h1M18.4 5.6l-.7.7M6.3 17.7l-.7.7M5.6 5.6l.7.7M17.7 17.7l.7.7"/></svg>
-                        </div>
-                        <h3>العباقرة</h3>
-                        <p>مختلط</p>
-                    </div>
+        <footer class="bottom-nav">
+            <button class="btn-primary full" onclick="App.Core.finishSetup()">حفظ وانطلاق</button>
+        </footer>
+    </section>
+
+    <section id="screen-menu" class="screen hidden">
+        <header class="top-nav">
+            <h2>مركز التحديات</h2>
+            <button class="help-circle-btn" onclick="App.UI.openHelp()">؟</button>
+        </header>
+
+        <div class="modes-grid">
+            <div class="mode-card featured" onclick="App.Core.selectMode('strategy')">
+                <div class="mode-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 22h16"/><path d="M4 22V8l2-2h12l2 2v14"/><path d="M8 8v4"/><path d="M16 8v4"/><path d="M4 2h4l1 3h6l1-3h4"/><path d="M12 5v17"/></svg>
+                </div>
+                <div class="mode-info">
+                    <h3>التكتيك (XO)</h3>
+                    <p>ذكاء استراتيجي خالص.</p>
                 </div>
             </div>
-            
-            <footer class="screen-foot">
-                <button class="btn-sec full" onclick="App.UI.showScreen('screen-setup')">تعديل الإعدادات</button>
-            </footer>
-        </section>
 
-        <section id="screen-game" class="screen hidden game-layout">
-            <header class="game-top-bar">
-                <button class="icon-btn" onclick="App.Core.exitGame()">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a4 4 0 0 1 4 4v7"/></svg>
-                </button>
-                <div class="score-pill">
-                    <div class="p-info p1" id="hud-p1"><span class="av">X</span> <span id="score-x">0</span></div>
-                    <div class="vs">VS</div>
-                    <div class="p-info p2" id="hud-p2"><span id="score-o">0</span> <span class="av">O</span></div>
+            <div class="sub-modes">
+                <div class="mode-card" onclick="App.Core.selectMode('clash')">
+                    <div class="mode-icon small">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    </div>
+                    <h3>المواجهة</h3>
                 </div>
-                <button class="icon-btn" onclick="App.UI.openHelp()">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                </button>
-            </header>
+                <div class="mode-card" onclick="App.Core.selectMode('code')">
+                    <div class="mode-icon small">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.2 7.8c.1.2.1.5.1.7v11a2 2 0 0 1-2 2h-9a2 2 0 0 1-2-2v-2"/><path d="M11 2a2 2 0 0 1 2 2v2"/><circle cx="12" cy="12" r="3"/><path d="M12 2v2"/><path d="M12 20v2"/></svg>
+                    </div>
+                    <h3>الشيفرة</h3>
+                </div>
+                <div class="mode-card" onclick="App.Core.selectMode('duality')">
+                    <div class="mode-icon small">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3v19"/><path d="M6 6h12"/><path d="M6 6l-3 6a3 3 0 0 0 3 3h0a3 3 0 0 0 3-3l-3-6Z"/><path d="M18 6l-3 6a3 3 0 0 0 3 3h0a3 3 0 0 0 3-3l-3-6Z"/></svg>
+                    </div>
+                    <h3>الثنائيات</h3>
+                </div>
+                <div class="mode-card" onclick="App.Core.selectMode('genius')">
+                    <div class="mode-icon small">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/><path d="M12 3v1"/><path d="M12 20v1"/><path d="M3 12h1"/><path d="M20 12h1"/><path d="M18.4 5.6l-.7.7"/><path d="M6.3 17.7l-.7.7"/></svg>
+                    </div>
+                    <h3>العباقرة</h3>
+                </div>
+            </div>
+        </div>
 
-            <div class="status-floater" id="game-status">جاري بدء المباراة...</div>
+        <footer class="bottom-nav">
+            <button class="btn-text" onclick="App.UI.showScreen('screen-setup')">تعديل الإعدادات</button>
+        </footer>
+    </section>
 
-            <div class="arena-zone">
+    <section id="screen-game" class="screen hidden">
+        
+        <header class="game-header">
+            <button class="icon-btn" onclick="App.Core.exitGame()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a4 4 0 0 1 4 4v7"/></svg>
+            </button>
+            
+            <div class="score-display">
+                <div class="p-pill p1" id="hud-p1"><span class="av">X</span> <span id="score-x">0</span></div>
+                <div class="vs-tag">VS</div>
+                <div class="p-pill p2" id="hud-p2"><span id="score-o">0</span> <span class="av">O</span></div>
+            </div>
+
+            <button class="help-circle-btn small" onclick="App.UI.openHelp()">؟</button>
+        </header>
+
+        <div class="arena-container">
+            <div class="status-msg" id="game-status">جاري بدء المباراة...</div>
+            
+            <div class="grid-constraint">
                 <div id="game-grid" class="game-grid">
                     </div>
             </div>
+        </div>
 
-            <footer class="game-dock">
-                <button class="dock-item btn-nuke" onclick="App.Core.activatePower('nuke')">
-                    <div class="dock-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 20H7L3 16C2 15 2 13 3 12L13 2L22 11L20 20Z"/><path d="M11 3L20 12"/><path d="M8 20L12 16"/></svg>
-                    </div>
-                    <span class="lbl">ممحاة</span>
-                    <span class="badge" id="count-nuke">1</span>
-                </button>
+        <footer class="game-footer">
+            <button class="power-btn btn-nuke" onclick="App.Core.activatePower('nuke')">
+                <div class="icon-outline">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1.1-.9 2-2 2H7c-1.1 0-2-.9-2-2V6"/><path d="M8 6V4c0-1.1.9-2 2-2h4c1.1 0 2 .9 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                </div>
+                <span class="lbl">ممحاة</span>
+                <span class="count" id="count-nuke">1</span>
+            </button>
+            
+            <button class="power-btn btn-freeze" onclick="App.Core.activatePower('freeze')">
+                <div class="icon-outline">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18"/><path d="M6 9l12 6"/><path d="M6 15l12-6"/></svg>
+                </div>
+                <span class="lbl">تجميد</span>
+                <span class="count" id="count-freeze">1</span>
+            </button>
+
+            <button class="power-btn btn-hack" onclick="App.Core.activatePower('hack')">
+                <div class="icon-outline">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
+                </div>
+                <span class="lbl">استحواذ</span>
+                <span class="count" id="count-hack">1</span>
+            </button>
+        </footer>
+    </section>
+
+    <div id="modal-help" class="modal-overlay hidden">
+        <div class="modal-card wide">
+            <header class="modal-head">
+                <h3>دليل اللعب والقدرات</h3>
+                <button class="close-x" onclick="App.UI.closeHelp()">×</button>
+            </header>
+            <div class="modal-body text-content">
+                <h4>🎯 الهدف الاستراتيجي</h4>
+                <p>عليك الفوز بـ 3 مربعات كبيرة متجاورة (أفقياً، عمودياً، أو قطرياً) لتحقيق الانتصار النهائي.</p>
+                <hr>
                 
-                <button class="dock-item btn-freeze" onclick="App.Core.activatePower('freeze')">
-                    <div class="dock-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="22"/><line x1="12" y1="2" x2="15.5" y2="5.5"/><line x1="12" y1="22" x2="8.5" y2="18.5"/><line x1="2.5" y1="7.5" x2="21.5" y2="16.5"/><line x1="2.5" y1="7.5" x2="4.5" y2="11"/><line x1="21.5" y1="16.5" x2="19.5" y2="13"/></svg>
-                    </div>
-                    <span class="lbl">تجميد</span>
-                    <span class="badge" id="count-freeze">1</span>
-                </button>
+                <h4>📜 قوانين اللعب</h4>
+                <ul class="rules-list">
+                    <li><strong>الإجبار (التوجيه):</strong> المربع الصغير الذي تضع فيه رمزك يحدد "المربع الكبير" الذي يجب أن يلعب فيه خصمك في دوره التالي.</li>
+                    <li><strong>المنطقة النشطة:</strong> ستلاحظ مربعاً يضيء باللون الذهبي، هذا هو المكان الوحيد المسموح لك باللعب فيه.</li>
+                    <li><strong>الحرية المطلقة:</strong> إذا وجهك الخصم لمربع "مكتمل" أو "محسوم مسبقاً"، تُكسر القيود ويحق لك اللعب في أي مكان في الرقعة!</li>
+                </ul>
+                <hr>
 
-                <button class="dock-item btn-hack" onclick="App.Core.activatePower('hack')">
-                    <div class="dock-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>
-                    </div>
-                    <span class="lbl">استحواذ</span>
-                    <span class="badge" id="count-hack">1</span>
-                </button>
-            </footer>
-        </section>
-
+                <h4>💎 القدرات الخارقة (Outline)</h4>
+                <div class="power-row">
+                    <div class="p-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1.1-.9 2-2 2H7c-1.1 0-2-.9-2-2V6"/><path d="M8 6V4c0-1.1.9-2 2-2h4c1.1 0 2 .9 2 2v2"/></svg></div>
+                    <div class="p-desc"><strong>الممحاة:</strong> تقوم بتنظيف مربع كبير بالكامل وإعادته لنقطة الصفر.</div>
+                </div>
+                <div class="power-row">
+                    <div class="p-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18"/><path d="M6 9l12 6"/><path d="M6 15l12-6"/></svg></div>
+                    <div class="p-desc"><strong>التجميد:</strong> يمنع انتقال الدور. العب مرتين متتاليتين لتفاجئ خصمك.</div>
+                </div>
+                <div class="power-row">
+                    <div class="p-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg></div>
+                    <div class="p-desc"><strong>الاستحواذ:</strong> اختر خلية يملكها خصمك وقم بتحويلها لصالحك فوراً.</div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div id="modal-calc" class="modal-layer hidden">
-        <div class="modal-box calc-box">
-            <div class="timer-bar"><div id="timer-fill"></div></div>
-            <div class="calc-screen">
-                <div class="q-row" id="calc-q">?</div>
-                <div class="a-row" id="calc-a">_</div>
+    <div id="modal-calc" class="modal-overlay hidden">
+        <div class="modal-card">
+            <div class="timer-strip"><div id="timer-bar"></div></div>
+            <div class="calc-vis">
+                <div class="q-val" id="calc-q">?</div>
+                <div class="a-val" id="calc-a">_</div>
             </div>
-            <div class="numpad">
+            <div class="numpad-grid">
                 <button onclick="App.Core.typeNum(1)">1</button>
                 <button onclick="App.Core.typeNum(2)">2</button>
                 <button onclick="App.Core.typeNum(3)">3</button>
@@ -197,44 +227,21 @@
                 <button onclick="App.Core.typeNum(7)">7</button>
                 <button onclick="App.Core.typeNum(8)">8</button>
                 <button onclick="App.Core.typeNum(9)">9</button>
-                <button class="danger" onclick="App.Core.clearCalc()">C</button>
+                <button class="cancel" onclick="App.Core.clearCalc()">C</button>
                 <button onclick="App.Core.typeNum(0)">0</button>
-                <button class="success" onclick="App.Core.submitCalc()">✔</button>
+                <button class="confirm" onclick="App.Core.submitCalc()">✔</button>
             </div>
         </div>
     </div>
 
-    <div id="modal-help" class="modal-layer hidden">
-        <div class="modal-box help-box">
-            <header class="modal-head">
-                <h3>دليل الأكاديمية</h3>
-                <button onclick="App.UI.closeHelp()">×</button>
-            </header>
-            <div class="modal-body">
-                <h4>🎯 الهدف</h4>
-                <p>السيطرة على 3 مربعات كبيرة متتالية.</p>
-                <hr>
-                <h4>📜 قوانين اللعب</h4>
-                <p>المربع الصغير الذي تلعب فيه يحدد أين سيلعب خصمك تالياً (المربع الذهبي).</p>
-                <hr>
-                <h4>💎 القدرات</h4>
-                <ul class="help-list">
-                    <li><strong>🧹 الممحاة:</strong> تمسح مربعاً كبيراً بالكامل.</li>
-                    <li><strong>❄️ التجميد:</strong> تمنع الخصم من اللعب لدور واحد.</li>
-                    <li><strong>✋ الاستحواذ:</strong> تسرق خلية واحدة من الخصم.</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-win" class="modal-layer hidden">
-        <div class="modal-box win-box">
-            <div class="win-icon">🏆</div>
+    <div id="modal-win" class="modal-overlay hidden">
+        <div class="modal-card center-text">
+            <div class="win-anim">🏆</div>
             <h2>انتصار!</h2>
             <h3 id="winner-name">-</h3>
-            <div class="modal-actions">
-                <button class="btn-main" onclick="App.Core.rematch()">جولة أخرى</button>
-                <button class="btn-sec" onclick="App.Core.exitGame()">القائمة</button>
+            <div class="actions-row">
+                <button class="btn-primary" onclick="App.Core.rematch()">جولة أخرى</button>
+                <button class="btn-text" onclick="App.Core.exitGame()">القائمة</button>
             </div>
         </div>
     </div>
