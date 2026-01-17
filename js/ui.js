@@ -1,74 +1,69 @@
 /**
  * 🎨 UI MANAGER
  * مسؤول عن الرسم، التحريك، والتعامل مع عناصر DOM
- * يفصل المنطق (Logic) عن العرض (View)
  */
 
 export const UI = {
-    // تخزين مراجع العناصر لتسريع الأداء
+    // تخزين العناصر لتسريع الوصول إليها
     elements: {
         screens: document.querySelectorAll('.screen'),
         gridContainer: document.getElementById('game-grid'),
-        statusText: document.getElementById('status-text'),
+        statusText: document.getElementById('game-status'),
         hudP1: document.getElementById('hud-p1'),
         hudP2: document.getElementById('hud-p2'),
         scoreX: document.getElementById('score-x'),
         scoreO: document.getElementById('score-o'),
-        modals: document.querySelectorAll('.modal-overlay'),
         calcQ: document.getElementById('calc-q'),
-        calcInputs: document.getElementById('calc-inputs')
+        calcInputs: document.getElementById('calc-inputs'),
+        winnerName: document.getElementById('winner-name')
     },
 
     // 1. التنقل بين الشاشات
     showScreen(screenId) {
-        // إخفاء الكل
+        // إخفاء الجميع
         this.elements.screens.forEach(s => {
-            s.classList.add('hidden');
             s.classList.remove('active');
+            s.classList.add('hidden');
         });
 
-        // إظهار المطلوب
+        // إظهار المطلوبة
         const target = document.getElementById(screenId);
         if (target) {
             target.classList.remove('hidden');
-            // تأخير بسيط لتفعيل الأنيميشن
+            // تأخير بسيط لتفعيل الترانزيشن
             setTimeout(() => target.classList.add('active'), 10);
         }
     },
 
-    // 2. تحديث واجهة الإعدادات
+    // 2. تحديث اختيار الأفاتار في الإعدادات
     updateAvatarSelection(playerId, selectedVal) {
         const container = document.getElementById(`${playerId}-avatars`);
-        const btns = container.querySelectorAll('.av-item');
-        
-        btns.forEach(btn => {
+        container.querySelectorAll('.av-btn').forEach(btn => {
             if (btn.dataset.val === selectedVal) btn.classList.add('selected');
             else btn.classList.remove('selected');
         });
     },
 
-    // 3. بناء الرقعة (Grid Builder)
+    // 3. بناء الرقعة (مرة واحدة فقط)
     createGrid(onClickCallback) {
         const grid = this.elements.gridContainer;
         grid.innerHTML = ''; // تنظيف
 
-        // إنشاء 9 مربعات كبيرة
         for (let g = 0; g < 9; g++) {
+            // المربع الكبير (Sub Grid)
             const subGrid = document.createElement('div');
             subGrid.className = 'sub-grid';
             subGrid.id = `sub-${g}`;
-            subGrid.dataset.g = g;
-
-            // إنشاء 9 خلايا داخل كل مربع
+            
+            // الخلايا الصغيرة (Cells)
             for (let c = 0; c < 9; c++) {
                 const cell = document.createElement('div');
                 cell.className = 'cell';
                 cell.dataset.g = g;
                 cell.dataset.c = c;
                 
-                // ربط حدث النقر
+                // إضافة مستمع النقر
                 cell.addEventListener('click', () => onClickCallback(g, c));
-                
                 subGrid.appendChild(cell);
             }
             grid.appendChild(subGrid);
@@ -79,118 +74,105 @@ export const UI = {
     updateGrid(logicState) {
         const { grid, metaGrid, nextGrid, winner } = logicState;
 
-        // تحديث كل خلية
         for (let g = 0; g < 9; g++) {
             const subEl = document.getElementById(`sub-${g}`);
             
-            // هل المربع الكبير فائز؟
+            // 1. حالة المربع الكبير (فائز/تعادل)
+            subEl.className = 'sub-grid'; // تصفير الكلاسات
             if (metaGrid[g] !== null) {
                 subEl.classList.add('won');
-                subEl.classList.add(`winner-${metaGrid[g]}`); // للتلوين
-                subEl.setAttribute('data-winner', metaGrid[g] === 'DRAW' ? '=' : metaGrid[g]);
+                // إضافة لون الفائز كخلفية خفيفة
+                if (metaGrid[g] === 'X') subEl.style.backgroundColor = 'var(--p1-light)';
+                else if (metaGrid[g] === 'O') subEl.style.backgroundColor = 'var(--p2-light)';
+                else subEl.style.backgroundColor = '#ddd'; // تعادل
             } else {
-                subEl.classList.remove('won', 'winner-X', 'winner-O');
-                subEl.removeAttribute('data-winner');
+                subEl.style.backgroundColor = '#fff';
             }
 
-            // تحديث المناطق النشطة (Focus Mode)
-            // إذا كانت اللعبة منتهية، لا يوجد نشاط
-            if (winner) {
-                subEl.classList.remove('active-zone');
-            } else {
-                // إذا كان nextGrid حر (null) أو يطابق المربع الحالي
-                if ((nextGrid === null || nextGrid === g) && metaGrid[g] === null) {
+            // 2. المنطقة النشطة (Active Zone)
+            // إذا لم يكن هناك فائز، والمربع الحالي هو الهدف (أو اللعب حر)
+            if (!winner && metaGrid[g] === null) {
+                if (nextGrid === null || nextGrid === g) {
                     subEl.classList.add('active-zone');
-                } else {
-                    subEl.classList.remove('active-zone');
                 }
             }
 
-            // تحديث الخلايا الصغيرة
+            // 3. تحديث الخلايا الداخلية
             const cells = subEl.children;
             for (let c = 0; c < 9; c++) {
                 const cell = cells[c];
                 const val = grid[g][c];
                 
-                cell.className = 'cell'; // إعادة تعيين
-                if (val === 'X') cell.classList.add('x', 'pop-in');
-                if (val === 'O') cell.classList.add('o', 'pop-in');
-                
+                // إعادة التعيين
+                cell.className = 'cell';
                 cell.textContent = val || '';
+                
+                if (val === 'X') cell.classList.add('x');
+                if (val === 'O') cell.classList.add('o');
             }
         }
     },
 
-    // 5. تحديث الشريط العلوي (HUD)
+    // 5. تحديث المعلومات (HUD)
     updateHUD(state) {
         const { turn, p1, p2 } = state;
-        
-        // النتائج
+
+        // تحديث النقاط
         this.elements.scoreX.textContent = p1.score;
         this.elements.scoreO.textContent = p2.score;
 
-        // الدور النشط
+        // تحديث الدور النشط
         if (turn === 'X') {
             this.elements.hudP1.classList.add('active');
             this.elements.hudP2.classList.remove('active');
-            this.updateStatus(`دور ${p1.name || 'القائد 1'}`, 'var(--p1-color)');
+            this.updateStatus(`دور ${p1.name}`, 'var(--p1-color)');
         } else {
             this.elements.hudP2.classList.add('active');
             this.elements.hudP1.classList.remove('active');
-            this.updateStatus(`دور ${p2.name || 'القائد 2'}`, 'var(--p2-color)');
+            this.updateStatus(`دور ${p2.name}`, 'var(--p2-color)');
         }
 
         // تحديث عدادات القوى
-        this.updatePowerCounts('X', p1.powers);
-        this.updatePowerCounts('O', p2.powers);
-        
-        // تعطيل/تفعيل أزرار القوى حسب الدور
-        const currentPowers = turn === 'X' ? p1.powers : p2.powers;
-        document.querySelectorAll('.power-btn').forEach(btn => {
-            const type = btn.dataset.power;
-            if (currentPowers[type] > 0) {
-                btn.style.opacity = '1';
-                btn.style.pointerEvents = 'all';
-            } else {
-                btn.style.opacity = '0.3';
-                btn.style.pointerEvents = 'none';
+        ['nuke', 'freeze', 'hack'].forEach(type => {
+            const count = turn === 'X' ? p1.powers[type] : p2.powers[type];
+            const badge = document.getElementById(`count-${type}`);
+            if (badge) badge.textContent = count;
+            
+            // تعطيل الأزرار إذا نفذت القوة
+            const btn = document.querySelector(`button[data-power="${type}"]`);
+            if (btn) {
+                if (count > 0) btn.style.opacity = '1';
+                else btn.style.opacity = '0.3';
+                btn.classList.remove('active'); // إزالة التفعيل السابق
             }
-            // إزالة التفعيل السابق
-            btn.classList.remove('active');
         });
     },
 
     updateStatus(msg, color) {
-        const el = document.getElementById('game-status');
-        const txt = document.getElementById('status-text');
-        const dot = el.querySelector('.dot-indicator');
+        const el = this.elements.statusText;
+        el.textContent = msg;
+        if (color) el.style.color = color;
+        else el.style.color = 'var(--text-light)';
         
-        txt.textContent = msg;
-        dot.style.backgroundColor = color || '#ccc';
-        el.classList.add('pulse-effect'); // نبض خفيف عند التحديث
-        setTimeout(() => el.classList.remove('pulse-effect'), 500);
+        // تأثير نبض بسيط
+        el.style.transform = 'scale(1.1)';
+        setTimeout(() => el.style.transform = 'scale(1)', 200);
     },
 
-    updatePowerCounts(playerSymbol, powers) {
-        // نحدث العدادات فقط إذا كان هو اللاعب الحالي لتجنب الخلط البصري
-        // أو يمكن تحديثها دائماً ولكن إخفاؤها بصرياً.
-        // هنا سنحدث العدادات في DOM بناءً على المعرفات
-        ['nuke', 'freeze', 'hack'].forEach(p => {
-            const counter = document.getElementById(`count-${p}`);
-            if (counter) counter.textContent = powers[p];
-        });
-    },
-
-    // 6. التعامل مع النوافذ (Modals)
+    // 6. النوافذ المنبثقة (Modals)
     openModal(id) {
         const modal = document.getElementById(id);
         if (modal) {
             modal.classList.remove('hidden');
-            // إعادة تشغيل أنيميشن الظهور
-            const card = modal.querySelector('.modal-card');
-            card.style.animation = 'none';
-            card.offsetHeight; /* trigger reflow */
-            card.style.animation = 'popUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28)';
+            // حركة دخول
+            const content = modal.querySelector('.clay-modal');
+            content.style.opacity = '0';
+            content.style.transform = 'scale(0.8)';
+            setTimeout(() => {
+                content.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                content.style.opacity = '1';
+                content.style.transform = 'scale(1)';
+            }, 50);
         }
     },
 
@@ -199,73 +181,36 @@ export const UI = {
         if (modal) modal.classList.add('hidden');
     },
 
-    // 7. إعداد الحاسبة (Calculator Setup)
-    setupCalculator(questionData, mode) {
-        const qContainer = this.elements.calcQ;
-        const inputsContainer = this.elements.calcInputs;
-        
+    // 7. إعداد الحاسبة
+    setupCalculator(questionData) {
         // عرض السؤال
-        let displayQ = questionData.q || `الهدف: ${questionData.t}`;
-        // تلوين العلامات
-        displayQ = displayQ.replace(/\?/g, '<span style="color:var(--primary)">?</span>');
+        let displayQ = questionData.q.replace(/\?/g, '<span style="color:var(--p1-color)">?</span>');
+        this.elements.calcQ.innerHTML = displayQ;
         
-        if (mode === 'duality') {
-            const opMap = {'*':'×', '/':'÷', '+':'جمع', '-':'طرح'};
-            displayQ = `أوجد رقمين ناتجهما <b>${questionData.t}</b> (${opMap[questionData.op]})`;
-        }
-        
-        qContainer.innerHTML = displayQ;
-        inputsContainer.innerHTML = ''; // تفريغ الخانات
-
-        // تحديد عدد الخانات
-        let slotsCount = 1;
-        if (mode === 'duality') slotsCount = 2;
-
-        // إنشاء الخانات
-        for (let i = 0; i < slotsCount; i++) {
-            const slot = document.createElement('div');
-            slot.className = 'calc-slot';
-            slot.id = `calc-slot-${i}`;
-            if (i === 0) slot.classList.add('active'); // تفعيل الأولى
-            inputsContainer.appendChild(slot);
-        }
-
-        // إعادة تعيين شريط الوقت
-        const timer = document.getElementById('timer-progress');
-        timer.style.transition = 'none';
-        timer.style.width = '100%';
-        setTimeout(() => {
-            timer.style.transition = 'width 15s linear'; // وقت افتراضي 15 ثانية
-            timer.style.width = '0%';
-        }, 50);
+        // تفريغ المدخلات
+        this.elements.calcInputs.innerHTML = ''; 
+        this.updateCalcInput(['']); // خانة واحدة فارغة مبدئياً
     },
 
-    updateCalcInput(buffer, activeIndex) {
-        // تحديث النصوص داخل الخانات
-        const slots = document.querySelectorAll('.calc-slot');
-        slots.forEach((slot, idx) => {
-            slot.textContent = buffer[idx] || '';
-            
-            // تحديد الخانة النشطة
-            if (idx === activeIndex) {
-                slot.classList.add('active');
-                slot.style.borderColor = 'var(--primary)';
-            } else {
-                slot.classList.remove('active');
-                slot.style.borderColor = 'var(--border-light)';
-            }
+    updateCalcInput(buffer) {
+        const container = this.elements.calcInputs;
+        container.innerHTML = '';
+        
+        buffer.forEach(val => {
+            const span = document.createElement('span');
+            span.className = 'calc-digit';
+            span.textContent = val;
+            // تنسيق بسيط للأرقام
+            span.style.fontSize = '2rem';
+            span.style.fontWeight = 'bold';
+            span.style.margin = '0 5px';
+            span.style.borderBottom = '3px solid var(--text-main)';
+            container.appendChild(span);
         });
     },
 
-    // 8. مؤثرات بصرية خاصة
-    shakeCalculator() {
-        const card = document.querySelector('#modal-calc .modal-card');
-        card.classList.add('shake-error');
-        setTimeout(() => card.classList.remove('shake-error'), 400);
-    },
-
     showWinScreen(winnerName) {
-        document.getElementById('winner-name').textContent = winnerName;
+        this.elements.winnerName.textContent = winnerName;
         this.openModal('modal-win');
     }
 };
