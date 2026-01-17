@@ -1,1 +1,23 @@
+/* =========================================
+   XO ULTIMATE PRO - MAIN STYLESHEET
+   تجميع ملفات التصميم
+   ========================================= */
 
+/* 1. المتغيرات (الألوان والخطوط) */
+@import url('variables.css');
+
+/* 2. الهيكلة (إطار الجهاز واللابتوب) */
+@import url('layout.css');
+
+/* 3. العناصر (الأزرار والبطاقات) */
+@import url('components.css');
+
+/* تحسينات إضافية صغيرة للحركة */
+.screen {
+    will-change: transform, opacity;
+}
+
+/* إصلاح التمرير في iOS */
+body {
+    -webkit-overflow-scrolling: touch;
+}
