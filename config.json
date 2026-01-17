@@ -1,6 +1,5 @@
 {
-    "gameTitle": "MATH MATRIX PRO",
-    "version": "2.0.0",
-    "accessCode": "00000000",
-    "adminDebug": false
+  "access_pin": "0000",
+  "version": "2.0.0",
+  "admin_contact": "aljohani.osamaa@gmail.com"
 }
