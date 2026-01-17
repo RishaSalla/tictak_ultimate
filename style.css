@@ -1,242 +1,237 @@
 /* =========================================
-   STYLE.CSS - INTELLIGENCE ACADEMY EDITION
+   MATH MATRIX - PROFESSIONAL RESET
+   Font: Cairo (Google Fonts)
    ========================================= */
 
 :root {
-    /* الثيم الافتراضي (بلازما) */
-    --bg-main: radial-gradient(circle at center, #1a1c29 0%, #050505 100%);
-    --primary-grad: linear-gradient(135deg, #FF4D4D, #F9D423); /* برتقالي */
-    --secondary-grad: linear-gradient(135deg, #00C9FF, #92FE9D); /* سماوي */
-    --accent-glow: #ffd700;
-    --glass-bg: rgba(255, 255, 255, 0.05);
-    --glass-border: rgba(255, 255, 255, 0.1);
-    --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* الألوان الأساسية */
+    --bg-dark: #0f1016;
+    --bg-panel: rgba(255, 255, 255, 0.05);
+    --border-dim: rgba(255, 255, 255, 0.1);
+    --border-light: rgba(255, 255, 255, 0.2);
     
-    /* ألوان القدرات */
-    --color-nuke: #ff4444;
-    --color-freeze: #00ffff;
-    --color-hack: #00ff00;
+    /* ألوان التفاعل */
+    --accent: #FFD700; /* ذهبي */
+    --primary: #4A90E2; /* أزرق */
+    --danger: #FF5E57; /* أحمر */
+    
+    /* ألوان اللاعبين (افتراضي) */
+    --p1-color: #FF5E57;
+    --p2-color: #4A90E2;
+
+    /* القوى */
+    --nuke-color: #ff9f43;
+    --freeze-color: #00d2d3;
+    --hack-color: #5f27cd;
+
+    --font-main: 'Cairo', sans-serif;
+    --radius: 16px; /* Squircle Radius */
 }
 
-/* ثيمات إضافية */
-body.theme-matrix {
-    --bg-main: #000000;
-    --primary-grad: linear-gradient(135deg, #00FF00, #004400);
-    --secondary-grad: linear-gradient(135deg, #00cc00, #ccffcc);
-    --accent-glow: #00FF00;
-    font-family: 'Courier New', monospace;
-}
-body.theme-royal {
-    --bg-main: radial-gradient(circle, #2E003E 0%, #000000 100%);
-    --primary-grad: linear-gradient(135deg, #FFD700, #B8860B);
-    --secondary-grad: linear-gradient(135deg, #9400D3, #4B0082);
-    --accent-glow: #FFD700;
-}
-
-* { box-sizing: border-box; margin: 0; padding: 0; user-select: none; outline: none; -webkit-tap-highlight-color: transparent; }
-
+/* Reset */
+* { box-sizing: border-box; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; }
 body {
-    background: var(--bg-main); color: #fff; font-family: var(--font-main);
-    height: 100dvh; overflow: hidden; direction: rtl; text-align: center;
-    transition: background 0.5s ease;
+    background: var(--bg-dark); color: #fff; font-family: var(--font-main);
+    height: 100dvh; overflow: hidden; direction: rtl;
+    display: flex; flex-direction: column;
 }
 
 .hidden { display: none !important; }
-.theme-text { background: var(--primary-grad); -webkit-background-clip: text; background-clip: text; color: transparent; font-weight: 900; }
 
-/* -------------------------------------------
-   1. الهيكل العام والطبقات
-   ------------------------------------------- */
-.full-screen-layer {
-    position: fixed; inset: 0; display: flex; justify-content: center; align-items: center;
-    z-index: 2000; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px);
+/* 1. الطبقات العامة */
+.app-screen {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    justify-content: center; align-items: center; z-index: 10;
 }
 
-.glass-card {
-    background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border);
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5); padding: 25px; border-radius: 20px;
-    width: min(90%, 500px); position: relative;
+.glass-panel {
+    background: var(--bg-panel); border: 1px solid var(--border-dim);
+    backdrop-filter: blur(20px); border-radius: 24px; padding: 30px;
+    width: min(90%, 400px); text-align: center;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
 }
 
-#app-content {
-    height: 100%; display: flex; flex-direction: column;
-    /* التعديل المهم للتوسيط ومنع التداخل */
-    justify-content: flex-start; 
-    align-items: center;
-    padding-top: 70px; /* مساحة للـ HUD */
-    overflow-y: auto;
+/* 2. شاشة الدخول */
+.brand-logo { font-size: 2.5rem; margin-bottom: 5px; }
+.highlight { color: var(--accent); }
+.brand-slogan { color: #888; margin-bottom: 30px; }
+.pin-entry { display: flex; gap: 10px; justify-content: center; }
+.pin-entry input {
+    background: rgba(0,0,0,0.3); border: 1px solid var(--border-dim);
+    color: #fff; padding: 12px; border-radius: var(--radius); text-align: center;
+    font-family: monospace; font-size: 1.2rem; width: 150px;
 }
 
-/* -------------------------------------------
-   2. القائمة واختيار الأنماط (الشبكة الجديدة)
-   ------------------------------------------- */
-#main-menu {
-    width: 100%; max-width: 800px; padding: 20px;
+/* 3. الأزرار (نظام موحد) */
+.btn-action {
+    border: none; padding: 12px 24px; border-radius: var(--radius);
+    font-family: var(--font-main); font-weight: 700; cursor: pointer;
+    transition: transform 0.1s, filter 0.2s; font-size: 1rem;
+}
+.btn-action:active { transform: scale(0.96); }
+.primary { background: var(--accent); color: #000; }
+.secondary { background: rgba(255,255,255,0.1); color: #fff; }
+.full-width { width: 100%; margin-top: 20px; }
+
+.btn-icon {
+    background: transparent; border: none; font-size: 1.5rem; color: #fff;
+    cursor: pointer; width: 44px; height: 44px; display: flex;
+    justify-content: center; align-items: center; border-radius: 50%;
+}
+.btn-icon:hover { background: rgba(255,255,255,0.1); }
+
+/* 4. التطبيق الرئيسي */
+#main-app { flex: 1; display: flex; flex-direction: column; height: 100%; }
+
+/* الشريط العلوي HUD */
+.hud-bar {
+    height: 60px; background: rgba(0,0,0,0.6); border-bottom: 1px solid var(--border-dim);
+    display: flex; justify-content: space-between; align-items: center; padding: 0 10px;
+}
+.score-display { display: flex; align-items: center; gap: 15px; }
+.player-pill {
+    display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.05);
+    padding: 4px 12px; border-radius: 50px; border: 1px solid transparent; transition: 0.3s;
+}
+.p-x.active-turn { border-color: var(--p1-color); background: rgba(255, 94, 87, 0.1); }
+.p-o.active-turn { border-color: var(--p2-color); background: rgba(74, 144, 226, 0.1); }
+.avatar { font-weight: 900; }
+.score { font-family: monospace; font-size: 1.2rem; }
+.vs-badge { font-size: 0.8rem; color: #666; font-weight: bold; }
+
+/* حاوية الشاشات */
+.screens-container { flex: 1; position: relative; overflow: hidden; }
+
+/* أ. القائمة الرئيسية */
+#screen-menu {
+    padding: 20px; overflow-y: auto; height: 100%;
     display: flex; flex-direction: column; align-items: center;
-    flex-grow: 1; justify-content: center;
 }
-
+.menu-header { text-align: center; margin-bottom: 20px; }
 .modes-grid {
-    display: grid; 
-    grid-template-columns: repeat(2, 1fr); /* عمودين */
-    gap: 15px; width: 100%; margin: 20px 0;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    width: 100%; max-width: 600px; margin-bottom: 20px;
 }
-
 .mode-card {
-    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 15px; padding: 15px; cursor: pointer; position: relative;
-    transition: 0.3s; overflow: hidden; min-height: 120px;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    text-align: center;
+    background: var(--bg-panel); border: 1px solid var(--border-dim);
+    border-radius: var(--radius); padding: 15px; cursor: pointer;
+    text-align: center; transition: 0.2s; min-height: 100px;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
 }
+.mode-card:hover { border-color: var(--accent); background: rgba(255,255,255,0.08); }
+.mode-card.featured {
+    grid-column: span 2; background: linear-gradient(45deg, rgba(255,215,0,0.05), transparent);
+    border-color: rgba(255,215,0,0.3); min-height: 120px; flex-direction: row; gap: 15px;
+}
+.mode-icon { font-size: 2rem; margin-bottom: 5px; }
+.mode-info { text-align: right; }
+.mode-info h3 { font-size: 1.1rem; }
+.mode-info p { font-size: 0.8rem; color: #aaa; }
+.menu-footer { display: flex; gap: 10px; margin-top: auto; }
 
-/* النمط المميز (المستطيل الكبير في الأعلى) */
-.featured-mode {
-    grid-column: span 2; /* يأخذ العرض كامل */
-    background: linear-gradient(45deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
-    border: 1px solid var(--accent-glow);
-    min-height: 140px;
+/* ب. ساحة اللعب */
+#screen-game {
+    height: 100%; display: flex; flex-direction: column;
 }
-.featured-mode .mode-content { display: flex; align-items: center; gap: 20px; }
-.featured-mode .mode-icon { font-size: 3rem; }
-.featured-mode .mode-info { text-align: right; }
-.featured-mode h2 { font-size: 1.5rem; margin-bottom: 5px; color: #fff; }
-.featured-mode p { color: #ccc; font-size: 0.9rem; }
-
-.mode-card:hover { transform: translateY(-3px); background: rgba(255,255,255,0.08); border-color: #fff; }
-.mode-card.active-card { border-color: var(--accent-glow); box-shadow: 0 0 20px rgba(255,255,255,0.1); }
-.mode-card h3 { font-size: 1.1rem; margin: 10px 0 5px; }
-.mode-card p { font-size: 0.8rem; color: #888; }
-
-/* -------------------------------------------
-   3. ساحة اللعب والأسلحة
-   ------------------------------------------- */
-#game-container {
-    flex-grow: 1; display: flex; flex-direction: column; 
-    justify-content: center; align-items: center; width: 100%;
+.game-board-wrapper {
+    flex: 1; display: flex; justify-content: center; align-items: center; padding: 10px;
 }
-
-.game-wrapper {
-    display: flex; gap: 20px; align-items: flex-start;
-    flex-wrap: wrap; justify-content: center;
-}
-
-/* شريط القدرات (الجانبي) */
-.power-ups-bar {
-    display: flex; flex-direction: column; gap: 15px;
-    background: rgba(0,0,0,0.4); padding: 15px; border-radius: 15px;
-    border: 1px solid rgba(255,255,255,0.05);
-}
-.power-item { display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 0.7rem; color: #aaa; position: relative; }
-.power-btn {
-    width: 50px; height: 50px; border-radius: 12px; border: none; font-size: 1.5rem; cursor: pointer;
-    background: rgba(255,255,255,0.1); transition: 0.2s;
-}
-.power-count {
-    position: absolute; top: -5px; right: -5px; background: #fff; color: #000;
-    border-radius: 50%; width: 20px; height: 20px; font-weight: bold; display: flex; justify-content: center; align-items: center;
-}
-.btn-nuke:hover { color: var(--color-nuke); box-shadow: 0 0 15px var(--color-nuke); }
-.btn-freeze:hover { color: var(--color-freeze); box-shadow: 0 0 15px var(--color-freeze); }
-.btn-hack:hover { color: var(--color-hack); box-shadow: 0 0 15px var(--color-hack); }
-
-/* رقعة اللعب */
 #game-arena {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
     width: min(95vw, 450px); aspect-ratio: 1/1;
 }
-
 .sub-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 4px;
-    background: rgba(0, 0, 0, 0.4); border-radius: 8px;
-    border: 2px solid rgba(255, 255, 255, 0.1); /* إطار عادي */
-    transition: 0.3s;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 3px;
+    background: rgba(0,0,0,0.3); border-radius: 8px; border: 2px solid transparent;
+    transition: 0.3s; position: relative;
 }
-.sub-grid.active-zone {
-    border-color: var(--accent-glow); opacity: 1;
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.15);
-}
-.sub-grid:not(.active-zone) { opacity: 0.5; }
+.sub-grid.active-zone { border-color: var(--accent); box-shadow: 0 0 20px rgba(255, 215, 0, 0.1); }
+.sub-grid:not(.active-zone) { opacity: 0.4; pointer-events: none; } /* منع اللعب في غير النشط */
 
 .cell {
-    background: rgba(255, 255, 255, 0.08); border-radius: 4px; cursor: pointer;
-    display: flex; justify-content: center; align-items: center; font-size: 1.4rem;
-    font-weight: bold; aspect-ratio: 1/1; border: 1px solid rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.08); border-radius: 4px; cursor: pointer;
+    display: flex; justify-content: center; align-items: center;
+    font-size: 1.2rem; font-weight: bold; border: 1px solid rgba(255,255,255,0.02);
 }
-.cell:hover { background: rgba(255, 255, 255, 0.2); }
-.cell.x-marked { color: #ff6b6b; text-shadow: 0 0 8px currentColor; }
-.cell.o-marked { color: #4facfe; text-shadow: 0 0 8px currentColor; }
+.cell:active { background: rgba(255,255,255,0.2); }
+.cell.x { color: var(--p1-color); background: rgba(255, 94, 87, 0.15); }
+.cell.o { color: var(--p2-color); background: rgba(74, 144, 226, 0.15); }
 
-/* الختم الكبير */
-.sub-grid.won-x::after, .sub-grid.won-o::after {
-    position: absolute; inset: 0; display: flex; justify-content: center; align-items: center;
-    font-size: 7rem; font-weight: 900; z-index: 10; animation: stamp 0.3s cubic-bezier(0.5, 0, 0.5, 1.5);
+/* ختم الفوز الكبير */
+.sub-grid.won::after {
+    content: attr(data-winner); position: absolute; inset: 0;
+    display: flex; justify-content: center; align-items: center;
+    font-size: 6rem; font-weight: 900; z-index: 5;
+    text-shadow: 0 0 20px rgba(0,0,0,0.8);
 }
-.sub-grid.won-x::after { content: attr(data-winner); color: rgba(255, 77, 77, 0.9); }
-.sub-grid.won-o::after { content: attr(data-winner); color: rgba(0, 201, 255, 0.9); }
-@keyframes stamp { 0% { transform: scale(2); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+.sub-grid.won.winner-x::after { color: var(--p1-color); }
+.sub-grid.won.winner-o::after { color: var(--p2-color); }
 
-/* -------------------------------------------
-   4. الإعدادات (التصميم الجديد)
-   ------------------------------------------- */
-.settings-box { width: min(95%, 600px); max-height: 90vh; overflow-y: auto; text-align: right; }
-.settings-box h2 { text-align: center; margin-bottom: 20px; }
-.settings-section { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-.settings-section h3 { font-size: 1rem; color: #aaa; margin-bottom: 15px; }
-
-.players-config { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-.p-config { flex: 1; display: flex; flex-direction: column; gap: 10px; }
-.input-minimal { background: transparent; border: none; border-bottom: 1px solid #555; color: #fff; padding: 5px; text-align: center; width: 100%; }
-.input-minimal:focus { border-color: #fff; }
-
-.avatar-selector { display: flex; gap: 5px; justify-content: center; }
-.av-opt { width: 35px; height: 35px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; justify-content: center; align-items: center; cursor: pointer; border: 2px solid transparent; }
-.av-opt.selected { border-color: var(--accent-glow); background: rgba(255,255,255,0.2); }
-
-.theme-selector { display: flex; gap: 10px; }
-.theme-opt { flex: 1; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px; cursor: pointer; text-align: center; border: 1px solid transparent; }
-.theme-opt.selected { border-color: var(--accent-glow); background: rgba(255,255,255,0.1); }
-.color-preview { width: 20px; height: 20px; border-radius: 50%; margin: 0 auto 5px; }
-.theme-plasma .color-preview { background: linear-gradient(135deg, #FF4D4D, #F9D423); }
-.theme-matrix .color-preview { background: #00FF00; }
-.theme-royal .color-preview { background: #FFD700; }
-
-.timer-selector { display: flex; gap: 10px; }
-.timer-opt { flex: 1; padding: 10px; border-radius: 20px; background: rgba(255,255,255,0.05); text-align: center; cursor: pointer; }
-.timer-opt.selected { background: var(--accent-glow); color: #000; font-weight: bold; }
-
-/* -------------------------------------------
-   5. HUD والعناصر الأخرى
-   ------------------------------------------- */
-.hud-bar {
-    position: fixed; top: 0; left: 0; right: 0; height: 60px;
-    background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    display: flex; justify-content: space-between; align-items: center; padding: 0 15px; z-index: 1000;
+/* شريط القوى (Dock) */
+.powers-dock {
+    height: 80px; background: rgba(0,0,0,0.8); border-top: 1px solid var(--border-dim);
+    display: flex; justify-content: center; align-items: center; gap: 20px;
 }
-.hud-player { display: flex; align-items: center; gap: 8px; opacity: 0.6; }
-.hud-player.active-turn { opacity: 1; transform: scale(1.05); }
-.hud-avatar { width: 35px; height: 35px; border-radius: 50%; background: #333; display: flex; justify-content: center; align-items: center; font-weight: bold; border: 2px solid #555; }
-.p-x .hud-avatar { border-color: #ff6b6b; color: #ff6b6b; }
-.p-o .hud-avatar { border-color: #4facfe; color: #4facfe; }
-
-.btn-primary { background: var(--primary-grad); border: none; padding: 10px 30px; border-radius: 50px; color: #000; font-weight: bold; cursor: pointer; transition: 0.2s; }
-.btn-primary:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(255, 200, 0, 0.4); }
-.btn-icon-small { background: transparent; border: none; font-size: 1.2rem; cursor: pointer; width: 40px; }
-.btn-text { background: transparent; border: none; color: #aaa; cursor: pointer; text-decoration: underline; margin-top: 10px; }
-
-/* التعليمات */
-.tabs-header { display: flex; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px; }
-.tab-btn { flex: 1; background: transparent; border: none; color: #888; padding: 10px; cursor: pointer; }
-.tab-btn.active { color: #fff; border-bottom: 2px solid var(--accent-glow); }
-.tab-content ul { padding-right: 20px; text-align: right; line-height: 1.6; }
-.power-desc { display: flex; gap: 10px; align-items: center; text-align: right; margin-bottom: 10px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px; }
-.power-desc .icon { font-size: 1.5rem; }
-
-/* الموبايل */
-@media (max-width: 600px) {
-    .modes-grid { grid-template-columns: 1fr; } 
-    .featured-mode { grid-column: auto; }
-    .game-wrapper { flex-direction: column; align-items: center; }
-    .power-ups-bar { flex-direction: row; width: 100%; justify-content: space-around; }
+.power-btn {
+    background: transparent; border: none; color: #aaa; display: flex;
+    flex-direction: column; align-items: center; gap: 4px; cursor: pointer;
+    position: relative; width: 60px;
 }
+.power-btn .icon { font-size: 1.5rem; background: rgba(255,255,255,0.1); width: 40px; height: 40px; border-radius: 12px; display: flex; justify-content: center; align-items: center; transition: 0.2s; }
+.power-btn .label { font-size: 0.7rem; }
+.power-btn .badge { position: absolute; top: 0; right: 5px; background: var(--accent); color: #000; font-size: 0.7rem; width: 16px; height: 16px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; }
+.power-btn:hover .icon { transform: translateY(-5px); background: rgba(255,255,255,0.2); }
+.power-btn:disabled { opacity: 0.3; pointer-events: none; }
+
+/* 5. النوافذ المنبثقة (Modals) */
+.modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100;
+    display: flex; justify-content: center; align-items: center;
+    backdrop-filter: blur(5px);
+}
+.modal-box {
+    background: #1e1f26; border: 1px solid var(--border-light);
+    border-radius: 24px; padding: 25px; width: min(90%, 380px);
+}
+.modal-title { text-align: center; margin-bottom: 20px; }
+
+/* إصلاح الحاسبة (Grid System) */
+.calculator-layout { padding: 20px; }
+.calc-display {
+    background: #000; padding: 15px; border-radius: 12px; margin-bottom: 15px;
+    text-align: center; border: 1px solid #333;
+}
+.calc-display .question { color: #888; font-size: 0.9rem; margin-bottom: 5px; }
+.calc-display .answer { color: #fff; font-size: 2rem; font-family: monospace; min-height: 40px; }
+
+.numpad-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+}
+.numpad-grid button {
+    height: 55px; /* ارتفاع ثابت */
+    background: rgba(255,255,255,0.05); border: none; border-radius: 12px;
+    color: #fff; font-size: 1.2rem; cursor: pointer;
+}
+.numpad-grid button:active { background: rgba(255,255,255,0.2); }
+.numpad-grid .btn-submit { background: var(--primary); grid-column: span 2; }
+.numpad-grid .btn-clear { color: var(--danger); background: rgba(255, 94, 87, 0.1); }
+
+.timer-line { height: 4px; background: #333; margin-bottom: 10px; border-radius: 2px; overflow: hidden; }
+#timer-progress { height: 100%; width: 100%; background: var(--danger); transition: width linear; }
+
+/* الإعدادات */
+.setting-group { margin-bottom: 15px; }
+.setting-group label { display: block; margin-bottom: 8px; color: #aaa; font-size: 0.9rem; }
+.input-row { display: flex; gap: 10px; }
+.input-row input { flex: 1; background: rgba(0,0,0,0.3); border: 1px solid #444; color: #fff; padding: 8px; border-radius: 8px; }
+.input-row select { background: #333; color: #fff; border: none; border-radius: 8px; padding: 0 10px; }
+.theme-toggles { display: flex; gap: 10px; justify-content: center; }
+.theme-btn { width: 40px; height: 40px; border-radius: 50%; border: 2px solid transparent; background: rgba(255,255,255,0.05); cursor: pointer; font-size: 1.2rem; }
+.theme-btn.active { border-color: #fff; background: rgba(255,255,255,0.2); }
+
+.modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+.modal-actions button { flex: 1; }
+
+/* Animations */
+.shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+@keyframes shake { 10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 40%, 60% { transform: translate3d(4px, 0, 0); } }
