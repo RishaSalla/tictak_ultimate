@@ -2,258 +2,202 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Math Matrix | أكاديمية الذكاء</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Math Matrix | Elite</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <section id="login-gate" class="full-screen-layer">
-        <div class="glass-card login-box">
-            <h1 class="brand-title">MATH <span class="theme-text">MATRIX</span></h1>
-            <p class="access-label">بوابة الوصول</p>
-            <div class="input-wrapper">
-                <input type="password" id="access-code" maxlength="8" placeholder="●●●●●●●●">
-                <div class="glow-bar"></div>
+    <div class="bg-overlay"></div>
+
+    <section id="login-screen" class="app-screen">
+        <div class="glass-panel login-box">
+            <h1 class="brand-logo">MATH <span class="highlight">MATRIX</span></h1>
+            <p class="brand-slogan">بوابة النخبة</p>
+            
+            <div class="pin-entry">
+                <input type="password" id="access-code" placeholder="أدخل الشفرة" maxlength="8">
+                <button id="btn-login" class="btn-action primary">دخول</button>
             </div>
-            <button id="btn-verify" class="btn-primary">دخول النظام</button>
-            <p id="login-msg" class="error-msg"></p>
+            <p id="login-msg" class="status-msg"></p>
         </div>
     </section>
 
-    <div id="app-content" class="hidden">
+    <div id="main-app" class="hidden">
         
-        <div id="game-hud" class="hud-bar hidden">
-            <button class="btn-icon-small" onclick="App.exitGame()" title="انسحاب">↩️</button>
+        <header class="hud-bar">
+            <button class="btn-icon" onclick="App.UI.toggleMenu()" title="القائمة">☰</button>
             
-            <div class="hud-player p-x" id="hud-x">
-                <div class="hud-avatar" id="avatar-display-x">X</div>
-                <span id="hud-name-x">اللاعب 1</span>
-            </div>
-            
-            <div class="hud-score">
-                <span class="score-val" id="score-board">0 - 0</span>
+            <div class="score-display">
+                <div class="player-pill p-x" id="hud-p1">
+                    <span class="avatar">X</span>
+                    <span class="score" id="score-x">0</span>
+                </div>
+                <div class="vs-badge">VS</div>
+                <div class="player-pill p-o" id="hud-p2">
+                    <span class="score" id="score-o">0</span>
+                    <span class="avatar">O</span>
+                </div>
             </div>
 
-            <div class="hud-player p-o" id="hud-o">
-                <span id="hud-name-o">اللاعب 2</span>
-                <div class="hud-avatar" id="avatar-display-o">O</div>
-            </div>
+            <button class="btn-icon" onclick="App.Game.exitMatch()" title="انسحاب">↩</button>
+        </header>
+
+        <main class="screens-container">
             
-            <button class="btn-icon-small" onclick="App.showInstructions()" title="دليل اللعب">❔</button>
-        </div>
-
-        <div id="main-menu">
-            <header class="game-header">
-                <h1 class="logo-ar">العباقرة <span class="version-tag">PRO</span></h1>
-                <p class="subtitle-ar">اختر نمط التحدي</p>
-                <button class="btn-text" onclick="App.showInstructions()">📖 دليل اللعب والقوانين</button>
-            </header>
-
-            <div class="modes-grid">
-                <div class="mode-card featured-mode" onclick="selectLevel('strategy', this)">
-                    <div class="card-bg"></div>
-                    <div class="mode-content">
+            <section id="screen-menu" class="active-screen">
+                <div class="menu-header">
+                    <h2>اختر ساحة التحدي</h2>
+                </div>
+                
+                <div class="modes-grid">
+                    <div class="mode-card featured" onclick="App.Game.selectMode('strategy')">
                         <div class="mode-icon">♟️</div>
                         <div class="mode-info">
-                            <h2>التكتيك الاستراتيجي (XO)</h2>
-                            <p>تحدي الذكاء الخالص. حاصر خصمك بدون رياضيات.</p>
+                            <h3>التكتيك (XO)</h3>
+                            <p>استراتيجية خالصة. حاصر خصمك بذكاء.</p>
                         </div>
                     </div>
-                </div>
 
-                <div class="mode-card" onclick="selectLevel('clash', this)">
-                    <div class="card-bg"></div>
-                    <h3>⚡ المواجهة</h3>
-                    <p>جدول الضرب السريع</p>
-                </div>
-
-                <div class="mode-card" onclick="selectLevel('code', this)">
-                    <div class="card-bg"></div>
-                    <h3>🧩 الشيفرة</h3>
-                    <p>أوجد المجهول (س)</p>
-                </div>
-
-                <div class="mode-card" onclick="selectLevel('duality', this)">
-                    <div class="card-bg"></div>
-                    <h3>⚖️ الثنائيات</h3>
-                    <p>زوجي أم فردي؟</p>
-                </div>
-
-                <div class="mode-card" onclick="selectLevel('genius', this)">
-                    <div class="card-bg"></div>
-                    <h3>🧠 العباقرة</h3>
-                    <p>التحدي الشامل</p>
-                </div>
-            </div>
-
-            <div class="action-area">
-                <button id="btn-start-game" class="btn-primary hidden" onclick="App.launchGame()">إعداد التحدي</button>
-            </div>
-        </div>
-
-        <div id="game-container" class="hidden">
-            <div class="game-wrapper">
-                <div class="power-ups-bar">
-                    <div class="power-item">
-                        <button class="power-btn btn-nuke" onclick="App.usePower('nuke')">🧹</button>
-                        <span>ممحاة</span>
-                        <span class="power-count" id="count-nuke">1</span>
+                    <div class="mode-card" onclick="App.Game.selectMode('clash')">
+                        <div class="mode-icon">⚡</div>
+                        <h3>المواجهة</h3>
                     </div>
-                    <div class="power-item">
-                        <button class="power-btn btn-freeze" onclick="App.usePower('freeze')">❄️</button>
-                        <span>تجميد</span>
-                        <span class="power-count" id="count-freeze">1</span>
+                    <div class="mode-card" onclick="App.Game.selectMode('code')">
+                        <div class="mode-icon">🧩</div>
+                        <h3>الشيفرة</h3>
                     </div>
-                    <div class="power-item">
-                        <button class="power-btn btn-hack" onclick="App.usePower('hack')">✋</button>
-                        <span>استحواذ</span>
-                        <span class="power-count" id="count-hack">1</span>
+                    <div class="mode-card" onclick="App.Game.selectMode('duality')">
+                        <div class="mode-icon">⚖️</div>
+                        <h3>الثنائيات</h3>
+                    </div>
+                    <div class="mode-card" onclick="App.Game.selectMode('genius')">
+                        <div class="mode-icon">🧠</div>
+                        <h3>العباقرة</h3>
                     </div>
                 </div>
 
-                <div id="game-arena"></div>
-            </div>
-        </div>
+                <div class="menu-footer">
+                    <button class="btn-action secondary" onclick="App.UI.showSettings()">⚙️ الإعدادات</button>
+                    <button class="btn-action secondary" onclick="App.UI.showHelp()">📖 التعليمات</button>
+                </div>
+            </section>
+
+            <section id="screen-game" class="hidden">
+                <div class="game-board-wrapper">
+                    <div id="game-arena" class="game-grid">
+                        </div>
+                </div>
+
+                <div class="powers-dock">
+                    <button class="power-btn btn-nuke" onclick="App.Game.usePower('nuke')">
+                        <span class="icon">☢️</span>
+                        <span class="label">مسح</span>
+                        <span class="badge" id="count-nuke">1</span>
+                    </button>
+                    <button class="power-btn btn-freeze" onclick="App.Game.usePower('freeze')">
+                        <span class="icon">❄️</span>
+                        <span class="label">تجميد</span>
+                        <span class="badge" id="count-freeze">1</span>
+                    </button>
+                    <button class="power-btn btn-hack" onclick="App.Game.usePower('hack')">
+                        <span class="icon">💀</span>
+                        <span class="label">استحواذ</span>
+                        <span class="badge" id="count-hack">1</span>
+                    </button>
+                </div>
+            </section>
+
+        </main>
     </div>
 
-    <div id="battle-setup" class="full-screen-layer hidden">
-        <div class="glass-card settings-box">
-            <h2 class="theme-text">الإعدادات</h2>
+    <div id="modal-settings" class="modal-overlay hidden">
+        <div class="modal-box">
+            <h2 class="modal-title">الإعدادات</h2>
             
-            <div class="settings-section">
-                <h3>1. المتنافسون</h3>
-                <div class="players-config">
-                    <div class="p-config">
-                        <input type="text" id="p1-name" class="input-minimal" placeholder="اللاعب الأول" value="اللاعب 1">
-                        <div class="avatar-selector" id="p1-avatars">
-                            <div class="av-opt selected" onclick="App.selectAvatar('X', 'X', this)">X</div>
-                            <div class="av-opt" onclick="App.selectAvatar('X', '🦁', this)">🦁</div>
-                            <div class="av-opt" onclick="App.selectAvatar('X', '🚀', this)">🚀</div>
-                        </div>
-                        <input type="hidden" id="p1-avatar-val" value="X">
-                    </div>
-                    <div class="vs-divider">ضد</div>
-                    <div class="p-config">
-                        <input type="text" id="p2-name" class="input-minimal" placeholder="اللاعب الثاني" value="اللاعب 2">
-                        <div class="avatar-selector" id="p2-avatars">
-                            <div class="av-opt selected" onclick="App.selectAvatar('O', 'O', this)">O</div>
-                            <div class="av-opt" onclick="App.selectAvatar('O', '🐯', this)">🐯</div>
-                            <div class="av-opt" onclick="App.selectAvatar('O', '💎', this)">💎</div>
-                        </div>
-                        <input type="hidden" id="p2-avatar-val" value="O">
-                    </div>
+            <div class="setting-group">
+                <label>اللاعب الأول</label>
+                <div class="input-row">
+                    <input type="text" id="conf-p1-name" value="اللاعب 1">
+                    <select id="conf-p1-avatar"><option>X</option><option>🦁</option><option>🚀</option></select>
                 </div>
-            </div>
-
-            <div class="settings-section">
-                <h3>2. نظام الألوان</h3>
-                <div class="theme-selector">
-                    <div class="theme-opt theme-plasma selected" onclick="App.setTheme('plasma', this)">
-                        <div class="color-preview"></div>
-                        <span>بلازما</span>
-                    </div>
-                    <div class="theme-opt theme-matrix" onclick="App.setTheme('matrix', this)">
-                        <div class="color-preview"></div>
-                        <span>ماتريكس</span>
-                    </div>
-                    <div class="theme-opt theme-royal" onclick="App.setTheme('royal', this)">
-                        <div class="color-preview"></div>
-                        <span>ملكي</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="settings-section">
-                <h3>3. مؤقت التفكير</h3>
-                <div class="timer-selector">
-                    <div class="timer-opt selected" onclick="App.setTimer(0, this)">بدون</div>
-                    <div class="timer-opt" onclick="App.setTimer(15, this)">15ث</div>
-                    <div class="timer-opt" onclick="App.setTimer(10, this)">10ث</div>
-                    <div class="timer-opt" onclick="App.setTimer(5, this)">5ث</div>
-                </div>
-            </div>
-
-            <div class="setup-actions">
-                <button class="btn-primary" onclick="App.startMatch()">بدء التحدي</button>
-                <button class="btn-text" onclick="App.hideSetup()">إلغاء</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="instructions-modal" class="full-screen-layer hidden">
-        <div class="glass-card instructions-box">
-            <h2 class="theme-text">دليل الأكاديمية</h2>
-            <div class="tabs-header">
-                <button class="tab-btn active" onclick="App.switchTab('rules')">القوانين</button>
-                <button class="tab-btn" onclick="App.switchTab('modes')">الأنماط</button>
-                <button class="tab-btn" onclick="App.switchTab('powers')">القدرات</button>
             </div>
             
-            <div id="tab-rules" class="tab-content">
-                <ul>
-                    <li><strong>الهدف:</strong> الفوز بـ 3 مربعات كبيرة متجاورة (أفقياً، عمودياً، أو قطرياً).</li>
-                    <li><strong>الإجبار:</strong> حركتك في المربع الصغير تحدد أين يجب أن يلعب خصمك تالياً.</li>
-                    <li><strong>المنطقة النشطة:</strong> المربع المضيء بالذهبي هو المكان الوحيد المسموح باللعب فيه.</li>
-                    <li><strong>الحرية:</strong> إذا وجهك الخصم لمربع ممتلئ أو مغلق، يمكنك اللعب في أي مكان تريده!</li>
-                </ul>
-            </div>
-
-            <div id="tab-modes" class="tab-content hidden">
-                <ul>
-                    <li><strong>♟️ التكتيك:</strong> لعب مباشر (XO). الأفضل للتخطيط الاستراتيجي.</li>
-                    <li><strong>⚡ المواجهة:</strong> يجب حل مسألة ضرب (مثلاً 5×6) لتضع علامتك.</li>
-                    <li><strong>🧩 الشيفرة:</strong> معادلات بمجهول واحد (3 + ؟ = 9).</li>
-                    <li><strong>⚖️ الثنائيات:</strong> هل الرقم زوجي أم فردي؟</li>
-                </ul>
-            </div>
-
-            <div id="tab-powers" class="tab-content hidden">
-                <div class="power-desc">
-                    <span class="icon">🧹</span>
-                    <div><strong>الممحاة (مرة واحدة):</strong> تقوم بتنظيف مربع كبير كامل وإعادة اللعب فيه من الصفر. استخدمها لإنقاذ مربع على وشك السقوط.</div>
-                </div>
-                <div class="power-desc">
-                    <span class="icon">❄️</span>
-                    <div><strong>التجميد (مرة واحدة):</strong> تمنع انتقال الدور للخصم، مما يسمح لك باللعب مرتين متتاليتين.</div>
-                </div>
-                <div class="power-desc">
-                    <span class="icon">✋</span>
-                    <div><strong>الاستحواذ (مرة واحدة):</strong> اختر خلية يملكها خصمك وقم بتحويلها لصالحك فوراً.</div>
+            <div class="setting-group">
+                <label>اللاعب الثاني</label>
+                <div class="input-row">
+                    <input type="text" id="conf-p2-name" value="اللاعب 2">
+                    <select id="conf-p2-avatar"><option>O</option><option>🐯</option><option>💎</option></select>
                 </div>
             </div>
 
-            <button class="btn-primary" onclick="App.closeInstructions()">فهمت</button>
-        </div>
-    </div>
+            <div class="setting-group">
+                <label>الثيم</label>
+                <div class="theme-toggles">
+                    <button class="theme-btn active" data-theme="plasma" onclick="App.UI.setTheme('plasma')">🟠</button>
+                    <button class="theme-btn" data-theme="matrix" onclick="App.UI.setTheme('matrix')">🟢</button>
+                    <button class="theme-btn" data-theme="royal" onclick="App.UI.setTheme('royal')">🟣</button>
+                </div>
+            </div>
 
-    <div id="math-modal" class="full-screen-layer hidden">
-        <div class="glass-card calculator-box">
-            <div id="timer-bar-container" class="hidden"><div id="timer-bar-fill"></div></div>
-            <div id="timeout-msg" class="hidden">انتهى الوقت!</div>
-            <h3 id="calc-question" class="theme-text" style="font-size: 2rem; direction: ltr;">?</h3>
-            <div class="calc-screen"><div id="calc-input" class="input-display">_</div></div>
-            <div class="numpad">
-                <button onclick="App.typeNum(1)">1</button><button onclick="App.typeNum(2)">2</button><button onclick="App.typeNum(3)">3</button>
-                <button onclick="App.typeNum(4)">4</button><button onclick="App.typeNum(5)">5</button><button onclick="App.typeNum(6)">6</button>
-                <button onclick="App.typeNum(7)">7</button><button onclick="App.typeNum(8)">8</button><button onclick="App.typeNum(9)">9</button>
-                <button onclick="App.clearCalc()" style="color: #ff4d4d;">C</button><button onclick="App.typeNum(0)">0</button>
-                <button onclick="App.submitAnswer()" class="btn-primary">✔</button>
+            <div class="modal-actions">
+                <button class="btn-action primary" onclick="App.UI.saveSettings()">حفظ وبدء</button>
+                <button class="btn-action secondary" onclick="App.UI.closeModal('settings')">إلغاء</button>
             </div>
         </div>
     </div>
 
-    <div id="victory-modal" class="full-screen-layer hidden">
-        <div class="victory-content">
-            <div class="trophy-icon">🏆</div>
-            <h1 class="theme-text">المنتصر!</h1>
-            <h2 id="winner-name">-</h2>
-            <div class="victory-actions">
-                <button class="btn-primary" onclick="App.rematch()">جولة أخرى</button>
-                <button class="btn-text" onclick="location.reload()">القائمة الرئيسية</button>
+    <div id="modal-calc" class="modal-overlay hidden">
+        <div class="modal-box calculator-layout">
+            <div class="timer-line"><div id="timer-progress"></div></div>
+            
+            <div class="calc-display">
+                <div class="question" id="calc-q">5 × 6</div>
+                <div class="answer" id="calc-a">_</div>
+            </div>
+            
+            <div class="numpad-grid">
+                <button onclick="App.Game.typeCalc(1)">1</button>
+                <button onclick="App.Game.typeCalc(2)">2</button>
+                <button onclick="App.Game.typeCalc(3)">3</button>
+                <button onclick="App.Game.typeCalc(4)">4</button>
+                <button onclick="App.Game.typeCalc(5)">5</button>
+                <button onclick="App.Game.typeCalc(6)">6</button>
+                <button onclick="App.Game.typeCalc(7)">7</button>
+                <button onclick="App.Game.typeCalc(8)">8</button>
+                <button onclick="App.Game.typeCalc(9)">9</button>
+                <button onclick="App.Game.clearCalc()" class="btn-clear">C</button>
+                <button onclick="App.Game.typeCalc(0)">0</button>
+                <button onclick="App.Game.submitCalc()" class="btn-submit">✔</button>
             </div>
         </div>
-        <div id="confetti-container"></div>
+    </div>
+
+    <div id="modal-win" class="modal-overlay hidden">
+        <div class="modal-box win-box">
+            <div class="trophy">🏆</div>
+            <h2 id="winner-text">فاز الفريق الأحمر</h2>
+            <div class="modal-actions">
+                <button class="btn-action primary" onclick="App.Game.rematch()">جولة أخرى</button>
+                <button class="btn-action secondary" onclick="App.Game.exitMatch()">خروج</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-help" class="modal-overlay hidden">
+        <div class="modal-box">
+            <h2>دليل اللعب</h2>
+            <ul class="rules-list">
+                <li><strong>🎯 الهدف:</strong> سيطر على 3 مربعات كبيرة متتالية.</li>
+                <li><strong>⛓️ الإجبار:</strong> مكان لعبك يحدد مكان لعب خصمك.</li>
+                <li><strong>💡 المنطقة النشطة:</strong> المربع المضيء هو الوحيد المتاح للعب.</li>
+                <li><strong>🔓 الحرية:</strong> إذا وجهك الخصم لمنطقة مغلقة، العب أينما تشاء.</li>
+            </ul>
+            <button class="btn-action primary full-width" onclick="App.UI.closeModal('help')">فهمت</button>
+        </div>
     </div>
 
     <script src="core.js"></script>
