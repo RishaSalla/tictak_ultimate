@@ -116,7 +116,8 @@
 /* --- 6. الرقعة (The Grid) - الإصلاح النهائي --- */
 .grid-frame {
     width: var(--grid-size); height: var(--grid-size);
-    background: #4a5568; /* رمادي غامق جداً بدلاً من الفاتح */
+    /* هذا هو التغيير: لون غامق جداً للإطار */
+    background: #2d3748; 
     border-radius: var(--radius-md);
     padding: var(--cell-gap);
     box-shadow: var(--clay-shadow-in);
