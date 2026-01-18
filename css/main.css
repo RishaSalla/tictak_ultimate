@@ -1,5 +1,10 @@
-//// new
+/* يجب أن تكون هذه السطور في البداية تماماً */
 @import 'variables.css';
 @import 'animations.css';
 @import 'layout.css';
 @import 'components.css';
+
+/* أي تعديلات إضافية تأتي تحتها */
+.hidden, .modal-overlay.hidden {
+    display: none !important;
+}
