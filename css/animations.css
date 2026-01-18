@@ -1,67 +1,27 @@
-/* =========================================
-   ✨ ANIMATIONS & EFFECTS
-   الحركة والحيوية
-   ========================================= */
-
-/* 1. ظهور النوافذ (Pop Up) - انثنائي ومرن */
-@keyframes popIn {
-    0% { transform: scale(0.9); opacity: 0; }
-    60% { transform: scale(1.05); opacity: 1; }
-    100% { transform: scale(1); opacity: 1; }
+/* حركة الكأس (Trophy Bounce) */
+.trophy-anim {
+    font-size: 5rem; margin-bottom: 10px; display: inline-block;
+    animation: bounce 2s infinite;
 }
-
-/* 2. اهتزاز عند الخطأ (Shake) */
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    20%, 60% { transform: translateX(-5px); }
-    40%, 80% { transform: translateX(5px); }
-}
-
-/* 3. نبض خفيف للأزرار المهمة (Pulse) */
-@keyframes softPulse {
-    0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
-    70% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
-}
-
-/* 4. دخول الشاشات (Fade In) */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* 5. تأثير الفوز (Bounce) */
-@keyframes winBounce {
+@keyframes bounce {
     0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
     40% { transform: translateY(-20px); }
     60% { transform: translateY(-10px); }
 }
 
-/* --- تطبيق الكلاسات (Helper Classes) --- */
-
-.screen.active {
-    animation: fadeIn 0.4s ease-out forwards;
+/* حركة النوافذ (Zoom In) */
+.clay-modal {
+    animation: zoomIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@keyframes zoomIn {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
 }
 
-.modal-card {
-    animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-}
-
-.shake-error {
-    animation: shake 0.4s ease-in-out;
-}
-
-.pulse-effect {
-    animation: softPulse 2s infinite;
-}
-
-.win-icon {
-    animation: winBounce 1s infinite;
-}
-
-/* تأثير التحميل للنقاط */
-@keyframes loadingDots {
-    0% { content: '.'; }
-    33% { content: '..'; }
-    66% { content: '...'; }
+/* حركة التنبيه (Pulse) */
+.pulse { animation: pulse 1s infinite; }
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
 }
