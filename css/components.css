@@ -1,181 +1,237 @@
 /* =========================================
-   🧱 CLAY COMPONENTS
-   الأزرار، البطاقات، والرقعة (التصميم المجسم)
+   🧱 CLAY COMPONENTS - REIMAGINED
+   التصميم التفصيلي: الرقعة، الألواح، والأزرار
    ========================================= */
 
-/* --- 1. العناوين والنصوص --- */
+/* --- 1. العناوين والشعارات --- */
 .brand-logo {
-    font-family: var(--font-num); font-weight: 800; font-size: 4rem;
+    font-family: var(--font-num); font-weight: 800; font-size: 3.5rem;
     display: flex; align-items: center; justify-content: center; gap: 5px;
     margin-bottom: 10px; position: relative;
 }
 .x-color { color: var(--p1-color); text-shadow: 2px 2px 0px rgba(0,0,0,0.1); }
 .o-color { color: var(--p2-color); text-shadow: 2px 2px 0px rgba(0,0,0,0.1); }
 .badge {
-    font-size: 0.8rem; background: var(--text-main); color: #fff;
-    padding: 2px 6px; border-radius: 6px; position: absolute; top: 10px; right: -20px;
-    transform: rotate(10deg);
+    font-size: 0.7rem; background: var(--text-main); color: #fff;
+    padding: 3px 8px; border-radius: 8px; position: absolute; top: 0; right: -15px;
+    transform: rotate(10deg); box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
 }
-.clay-heading { font-size: 1.8rem; color: var(--text-main); margin-bottom: 30px; }
+.clay-heading { font-size: 1.6rem; color: var(--text-main); margin-bottom: 25px; font-weight: 700; }
 
 /* --- 2. الأزرار الطينية (Clay Buttons) --- */
 .clay-btn {
     border: none; outline: none; cursor: pointer;
     font-family: var(--font-txt); font-weight: 700;
-    border-radius: var(--radius-md);
-    transition: all 0.2s ease;
+    border-radius: var(--radius-md); transition: all 0.2s ease;
     display: flex; align-items: center; justify-content: center; gap: 10px;
-    
-    /* سحر الطين */
     background: var(--clay-bg);
     box-shadow: var(--clay-shadow-out);
     color: var(--text-main);
 }
-.clay-btn:active { transform: scale(0.96); box-shadow: inset 4px 4px 8px rgba(174,174,192,0.4), inset -4px -4px 8px #fff; }
+.clay-btn:active { transform: scale(0.97); box-shadow: var(--clay-shadow-in); }
 
-.clay-btn.primary { background: var(--text-main); color: #fff; box-shadow: 6px 6px 12px rgba(45, 52, 54, 0.3); }
-.clay-btn.secondary { background: #fff; color: var(--text-main); }
-.clay-btn.big { padding: 18px 40px; font-size: 1.2rem; border-radius: 25px; width: 100%; }
-.clay-btn.full { width: 100%; padding: 15px; font-size: 1.1rem; }
+.clay-btn.primary { 
+    background: var(--text-main); color: #fff; 
+    box-shadow: 6px 6px 15px rgba(74, 78, 105, 0.4); 
+}
+.clay-btn.secondary { background: #fff; color: var(--text-main); border: 1px solid #eee; }
+.clay-btn.big { padding: 16px 40px; font-size: 1.1rem; border-radius: 30px; width: 100%; }
+.clay-btn.full { width: 100%; padding: 14px; font-size: 1rem; }
+.clay-btn.small { padding: 8px 15px; font-size: 0.9rem; border-radius: 15px; }
 
-/* أزرار الأيقونات الدائرية */
 .icon-btn {
-    width: 45px; height: 45px; border-radius: 50%;
+    width: 40px; height: 40px; border-radius: 50%;
     border: none; background: var(--clay-bg);
-    box-shadow: 5px 5px 10px rgba(174,174,192,0.3), -5px -5px 10px #fff;
+    box-shadow: 5px 5px 10px rgba(0,0,0,0.05), -5px -5px 10px #fff;
     cursor: pointer; display: flex; align-items: center; justify-content: center;
-    font-size: 1.2rem; color: var(--text-light); transition: 0.2s;
+    font-size: 1.1rem; color: var(--text-light); transition: 0.2s;
 }
-.icon-btn:active { transform: scale(0.9); box-shadow: inset 3px 3px 6px rgba(0,0,0,0.1); }
+.icon-btn:hover { color: var(--text-main); transform: translateY(-2px); }
 
-/* --- 3. حقول الإدخال (Inner Shadow) --- */
+/* --- 3. حقول الإدخال (Engraved) --- */
 .clay-input {
-    width: 100%; padding: 15px; border: none; border-radius: var(--radius-sm);
-    background: #F0F4F8;
-    box-shadow: var(--clay-shadow-in); /* ظل داخلي */
-    font-family: var(--font-txt); text-align: center; font-size: 1.1rem; color: var(--text-main);
+    width: 100%; padding: 12px; border: none; border-radius: var(--radius-sm);
+    background: #f0f4f8; box-shadow: var(--clay-shadow-in);
+    font-family: var(--font-txt); text-align: center; font-size: 1rem; color: var(--text-main);
 }
-.pin-container { margin-bottom: 40px; }
+.pin-container { margin-bottom: 30px; }
 #pin-input {
-    width: 100%; padding: 15px; font-size: 2.5rem; letter-spacing: 15px;
+    width: 100%; padding: 10px; font-size: 2rem; letter-spacing: 10px;
     background: transparent; border: none; text-align: center;
     font-family: var(--font-num); color: var(--text-main);
 }
 
-/* --- 4. البطاقات (Clay Cards) --- */
+/* --- 4. بطاقات الإعداد (Setup Cards) --- */
 .clay-card {
-    background: var(--clay-bg);
-    border-radius: var(--radius-md);
-    padding: 20px; margin-bottom: 20px;
+    background: var(--clay-bg); border-radius: var(--radius-md);
+    padding: 20px; margin-bottom: 15px;
     box-shadow: var(--clay-shadow-out);
-    position: relative;
+    position: relative; overflow: hidden;
 }
-.card-label { font-size: 0.9rem; color: var(--text-light); margin-bottom: 10px; font-weight: 700; }
-.p1-theme { border-left: 5px solid var(--p1-color); }
-.p2-theme { border-left: 5px solid var(--p2-color); }
+/* إزالة الحدود الملونة واستبدالها بظلال ناعمة */
+.p1-theme { box-shadow: inset 4px 0 0 var(--p1-color), var(--clay-shadow-out); }
+.p2-theme { box-shadow: inset 4px 0 0 var(--p2-color), var(--clay-shadow-out); }
 
-.avatars-row { display: flex; justify-content: center; gap: 15px; margin-top: 15px; }
+.card-label { font-size: 0.85rem; color: var(--text-light); margin-bottom: 8px; font-weight: 700; }
+
+.avatars-row { 
+    display: flex; justify-content: center; gap: 10px; margin-top: 15px; 
+    flex-wrap: wrap; /* للسماح بـ 5 عناصر */
+}
 .av-btn {
-    width: 50px; height: 50px; border-radius: 14px; border: none;
-    background: #fff; box-shadow: 4px 4px 8px rgba(0,0,0,0.05);
-    font-size: 1.5rem; cursor: pointer; transition: 0.2s;
+    width: 45px; height: 45px; border-radius: 12px; border: none;
+    background: #fff; box-shadow: 3px 3px 6px rgba(0,0,0,0.05);
+    font-size: 1.4rem; cursor: pointer; transition: 0.2s;
 }
-.av-btn.selected { transform: scale(1.1); box-shadow: inset 3px 3px 6px rgba(0,0,0,0.1); border: 2px solid; }
-.p1-theme .selected { border-color: var(--p1-color); background: var(--p1-light); }
-.p2-theme .selected { border-color: var(--p2-color); background: var(--p2-light); }
+.av-btn.selected { transform: scale(1.1); box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1); border: 2px solid; }
+.p1-theme .selected { border-color: var(--p1-color); background: #fff5f5; }
+.p2-theme .selected { border-color: var(--p2-color); background: #f0ffff; }
 
-/* --- 5. بطاقات القائمة (Menu) --- */
-.modes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 10px; }
+/* --- 5. القائمة الرئيسية (Menu Grid) --- */
+.modes-wrapper { display: flex; flex-direction: column; gap: 15px; padding: 10px; height: 100%; }
+
+/* الكلاسيك: عريض */
+.mode-card.full-width {
+    width: 100%; display: flex; align-items: center; gap: 20px;
+    padding: 25px; background: linear-gradient(135deg, #fff, #f8f9fa);
+    border: 2px solid var(--text-main); /* تمييز بسيط للكلاسيك */
+}
+.mode-card.full-width .mode-icon { font-size: 2.5rem; margin-bottom: 0; }
+
+/* الشبكة 2x2 */
+.modes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; flex: 1; }
 .mode-card {
-    background: var(--clay-bg); padding: 20px 10px;
+    background: var(--clay-bg); padding: 15px;
     border-radius: var(--radius-md); text-align: center;
     box-shadow: var(--clay-shadow-out); cursor: pointer;
-    transition: 0.2s; border: 2px solid transparent;
+    transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center;
 }
+.mode-card:hover { transform: translateY(-3px); }
 .mode-card:active { transform: scale(0.98); box-shadow: none; }
-.mode-card.wide { grid-column: span 2; display: flex; align-items: center; justify-content: center; gap: 20px; padding: 20px; }
-.mode-card.classic { border-color: var(--text-main); background: #fff; } /* تمييز الكلاسيك */
 
-.mode-icon { font-size: 2rem; margin-bottom: 10px; }
-.mode-text h4 { font-weight: 800; color: var(--text-main); margin-bottom: 4px; }
-.mode-text p { font-size: 0.8rem; color: var(--text-light); }
+.mode-icon { font-size: 1.8rem; margin-bottom: 8px; }
+.mode-text h4 { font-size: 1rem; margin-bottom: 4px; color: var(--text-main); }
+.mode-text p { font-size: 0.7rem; color: var(--text-light); line-height: 1.3; }
 
-/* --- 6. الرقعة الثابتة (Game Board) - ممنوع اللمس هنا! --- */
-.grid-container {
-    width: var(--grid-size); height: var(--grid-size); /* مربع ثابت */
-    background: var(--clay-bg);
+/* --- 6. الرقعة (The Grid) - الإصلاح النهائي --- */
+.grid-frame {
+    width: var(--grid-size); height: var(--grid-size);
+    background: #e2e8f0; /* لون الفراغات (Gap Color) */
     border-radius: var(--radius-md);
-    padding: 10px;
-    box-shadow: var(--clay-shadow-in); /* ظل غائر للداخل */
-    margin-top: 20px;
+    padding: var(--cell-gap);
+    box-shadow: var(--clay-shadow-in);
+    /* توسيط */
+    display: flex; align-items: center; justify-content: center;
 }
 .game-grid {
     width: 100%; height: 100%;
     display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr);
-    gap: 8px;
+    gap: var(--cell-gap);
 }
 .sub-grid {
-    background: #fff; border-radius: 8px;
+    background: #fff; /* خلفية بيضاء للمربعات الكبيرة */
+    border-radius: 8px;
     display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr);
     gap: 2px; padding: 2px;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
     transition: 0.3s;
 }
-.sub-grid.active-zone { box-shadow: 0 0 0 3px var(--text-main); transform: scale(1.02); z-index: 5; }
+/* عند الفوز بمربع */
+.sub-grid.won { opacity: 0.8; position: relative; }
+.sub-grid.won::after {
+    content: ''; position: absolute; inset: 0; 
+    display: flex; align-items: center; justify-content: center;
+    font-size: 4rem; font-family: var(--font-num); font-weight: 800;
+    opacity: 0.3;
+}
+
+/* المنطقة النشطة (Active Zone) */
+.sub-grid.active-zone { 
+    transform: scale(1.03); 
+    box-shadow: 0 0 0 3px var(--text-main); 
+    z-index: 5; 
+}
 
 .cell {
     display: flex; align-items: center; justify-content: center;
-    font-family: var(--font-num); font-weight: 800; font-size: 1.4rem;
+    font-family: var(--font-num); font-weight: 800; font-size: 1.2rem;
     cursor: pointer; border-radius: 4px; background: transparent;
 }
-.cell:active { background: #f0f0f0; }
+.cell:hover { background: #f7fafc; }
 .cell.x { color: var(--p1-color); }
 .cell.o { color: var(--p2-color); }
 
-/* --- 7. شريط النتائج والقوى --- */
-.game-score {
-    display: flex; align-items: center; gap: 15px;
-    background: var(--clay-bg); padding: 5px 20px; border-radius: 30px;
-    box-shadow: var(--clay-shadow-in);
+/* --- 7. الألواح الجانبية (Game Panels) --- */
+.p-info { text-align: center; margin-bottom: 20px; }
+.avatar-circle {
+    width: 70px; height: 70px; border-radius: 50%;
+    background: #fff; display: flex; align-items: center; justify-content: center;
+    font-size: 2rem; margin: 0 auto 10px;
+    box-shadow: var(--clay-shadow-out); border: 3px solid transparent;
 }
-.score-pill { display: flex; flex-direction: column; align-items: center; line-height: 1; }
-.score-pill span { font-weight: 800; font-family: var(--font-num); font-size: 1.2rem; }
-.score-pill .lbl { font-size: 0.7rem; color: var(--text-light); }
-.p1.active span { color: var(--p1-color); }
-.p2.active span { color: var(--p2-color); }
+.p1-panel .avatar-circle { color: var(--p1-color); border-color: var(--p1-color); }
+.p2-panel .avatar-circle { color: var(--p2-color); border-color: var(--p2-color); }
 
-.powers-bar { gap: 20px; }
-.power-fab {
-    width: 60px; height: 60px; border-radius: 20px; border: none;
-    background: var(--clay-bg); color: var(--text-light);
-    box-shadow: var(--clay-shadow-out); cursor: pointer; position: relative;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
+.p-name { font-weight: 700; font-size: 1.1rem; color: var(--text-main); }
+.p-score { font-family: var(--font-num); font-size: 2rem; font-weight: 800; margin-top: 5px; opacity: 0.6; }
+
+/* مؤشر الدور */
+.turn-indicator {
+    background: var(--clay-bg); padding: 5px 20px; border-radius: 20px;
+    box-shadow: var(--clay-shadow-in); font-weight: 700; color: var(--text-light);
+    transition: 0.3s;
 }
-.power-fab:active { box-shadow: inset 3px 3px 6px rgba(0,0,0,0.1); transform: scale(0.95); }
-.power-fab.active { color: #fff; background: var(--text-main); }
-.power-fab .badge {
-    position: absolute; top: -5px; right: -5px;
-    background: var(--p1-color); color: #fff; width: 20px; height: 20px;
-    border-radius: 50%; font-size: 0.7rem; display: flex; align-items: center; justify-content: center;
+.turn-indicator.p1-turn { color: var(--p1-color); background: #fff; box-shadow: var(--clay-shadow-out); }
+.turn-indicator.p2-turn { color: var(--p2-color); background: #fff; box-shadow: var(--clay-shadow-out); }
+
+/* أزرار القوة (Stack) */
+.powers-stack { display: flex; flex-direction: column; gap: 15px; width: 100%; }
+.power-btn {
+    border: none; background: #fff; padding: 12px; border-radius: 15px;
+    display: flex; align-items: center; justify-content: space-between;
+    box-shadow: 3px 3px 8px rgba(0,0,0,0.05); cursor: pointer;
+    font-size: 1.2rem; position: relative; transition: 0.2s;
+    opacity: 0.8;
+}
+.power-btn:hover { opacity: 1; transform: translateX(2px); }
+.power-btn.active { background: var(--text-main); color: #fff; opacity: 1; }
+.power-btn .badge { 
+    font-size: 0.8rem; font-weight: 700; background: #eee; 
+    width: 24px; height: 24px; border-radius: 50%; 
+    display: flex; align-items: center; justify-content: center; color: #555;
 }
 
-/* --- 8. النوافذ العائمة (Floating Modals) --- */
-.modal-overlay {
-    position: absolute !important; inset: 0 !important; z-index: 1000;
-    background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(10px);
-    display: flex; align-items: center; justify-content: center;
+/* تعديل القوى في الجوال (أفقي) */
+@media (max-width: 899px) {
+    .powers-stack { flex-direction: row; justify-content: center; }
+    .power-btn { width: 60px; height: 60px; justify-content: center; padding: 0; }
+    .power-btn .badge { position: absolute; top: -5px; right: -5px; }
 }
+
+/* --- 8. النوافذ (Modals) --- */
 .clay-modal {
-    width: 90%; max-width: 380px;
+    width: 90%; max-width: 400px;
     background: #fff; padding: 25px; border-radius: var(--radius-lg);
-    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-    text-align: center;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+    text-align: center; max-height: 85vh; display: flex; flex-direction: column;
 }
-.numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
-.numpad button {
-    height: 55px; border-radius: 12px; border: none; background: var(--clay-bg);
-    font-size: 1.4rem; font-family: var(--font-num); box-shadow: 3px 3px 6px rgba(0,0,0,0.05);
+.clay-modal.wide-modal { max-width: 500px; text-align: right; }
+
+/* الهيدر وزر الإغلاق */
+.modal-head-bar { 
+    display: flex; justify-content: space-between; align-items: center; 
+    margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;
 }
-.numpad button:active { box-shadow: inset 2px 2px 4px rgba(0,0,0,0.1); }
-.numpad .ok { background: var(--p2-color); color: #fff; }
-.numpad .del { color: var(--p1-color); }
+.close-modal-x {
+    background: none; border: none; font-size: 1.5rem; color: var(--text-light); cursor: pointer;
+}
+
+/* محتوى التعليمات */
+.help-content-scroll { overflow-y: auto; padding-left: 10px; text-align: right; }
+.help-section { margin-bottom: 20px; }
+.help-section h4 { color: var(--text-main); margin-bottom: 8px; font-weight: 800; }
+.help-section p { color: var(--text-light); line-height: 1.6; font-size: 0.9rem; }
+.powers-list-detail li, .modes-list-detail li {
+    margin-bottom: 10px; background: #f9f9f9; padding: 10px; border-radius: 10px;
+    list-style: none; font-size: 0.9rem; color: var(--text-light);
+}
+.powers-list-detail strong { color: var(--text-main); display: block; margin-bottom: 4px; }
