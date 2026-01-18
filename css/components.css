@@ -116,11 +116,10 @@
 /* --- 6. الرقعة (The Grid) - الإصلاح النهائي --- */
 .grid-frame {
     width: var(--grid-size); height: var(--grid-size);
-    background: #e2e8f0; /* لون الفراغات (Gap Color) */
+    background: #4a5568; /* رمادي غامق جداً بدلاً من الفاتح */
     border-radius: var(--radius-md);
     padding: var(--cell-gap);
     box-shadow: var(--clay-shadow-in);
-    /* توسيط */
     display: flex; align-items: center; justify-content: center;
 }
 .game-grid {
