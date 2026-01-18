@@ -11,8 +11,8 @@ import { AudioSys } from './audio.js';
 const App = {
     // حالة التطبيق المحلية
     state: {
-        currentMode: null,  // classic, clash, code, balance
-        pendingMove: null,  // {g, c} الحركة المعلقة
+        currentMode: null,  // classic, clash, code, balance, duality
+        pendingMove: null,  // {g, c} الحركة المعلقة بانتظار الحل
         currentQuestion: null,
         calcBuffer: [],     // مخزن أرقام الحاسبة
         activePower: null,  // القدرة المفعلة حالياً
@@ -21,14 +21,14 @@ const App = {
 
     // 1. نقطة الانطلاق
     init() {
-        // تهيئة الصوت عند أول نقرة (لتجاوز حظر المتصفحات)
+        // تهيئة الصوت عند أول تفاعل (لتجاوز حظر المتصفحات)
         document.body.addEventListener('click', () => AudioSys.init(), { once: true });
         
-        // جلب الإعدادات (اختياري)
+        // جلب رقم الدخول (اختياري)
         fetch('config.json')
             .then(res => res.json())
             .then(data => this.state.configPin = data.access_pin)
-            .catch(() => console.log('Using default PIN'));
+            .catch(() => console.log('Using default PIN: 0000'));
 
         this.bindEvents();
     },
@@ -47,15 +47,15 @@ const App = {
             }
         });
 
-        // --- الإعدادات ---
+        // --- التجهيز (اختيار الأفاتار) ---
         ['p1', 'p2'].forEach(pid => {
             document.getElementById(`${pid}-avatars`).addEventListener('click', (e) => {
                 if (e.target.classList.contains('av-btn')) {
                     AudioSys.click();
                     const val = e.target.dataset.val;
                     UI.updateAvatarSelection(pid, val);
-                    // تخزين مؤقت في المنطق
-                    GameLogic.state[pid].tempAvatar = val; 
+                    // تخزين مؤقت في كائن المنطق
+                    GameLogic.state[pid].avatar = val; 
                 }
             });
         });
@@ -65,6 +65,11 @@ const App = {
             // حفظ الأسماء
             GameLogic.state.p1.name = document.getElementById('p1-name').value || 'اللاعب 1';
             GameLogic.state.p2.name = document.getElementById('p2-name').value || 'اللاعب 2';
+            
+            // تعيين الأفاتار الافتراضي إذا لم يتم الاختيار
+            if (!GameLogic.state.p1.avatar) GameLogic.state.p1.avatar = 'X';
+            if (!GameLogic.state.p2.avatar) GameLogic.state.p2.avatar = 'O';
+
             UI.showScreen('screen-menu');
         });
 
@@ -80,21 +85,45 @@ const App = {
         });
 
         document.getElementById('btn-back-settings').addEventListener('click', () => UI.showScreen('screen-setup'));
+        document.getElementById('btn-show-help-main').addEventListener('click', () => UI.openModal('modal-help'));
 
         // --- اللعبة ---
+        // زر الخروج (يفتح نافذة تأكيد)
         document.getElementById('btn-exit-game').addEventListener('click', () => {
-            if (confirm('هل تود الخروج؟')) UI.showScreen('screen-menu');
+            AudioSys.click();
+            UI.openModal('modal-exit-confirm');
+        });
+        
+        // تأكيد الخروج
+        document.getElementById('btn-confirm-exit').addEventListener('click', () => {
+            UI.closeModal('modal-exit-confirm');
+            UI.showScreen('screen-menu');
+        });
+        document.getElementById('btn-cancel-exit').addEventListener('click', () => {
+            UI.closeModal('modal-exit-confirm');
         });
 
         document.getElementById('btn-help-game').addEventListener('click', () => UI.openModal('modal-help'));
+        document.getElementById('btn-close-help').addEventListener('click', () => UI.closeModal('modal-help'));
         
         // أزرار القدرات
-        document.querySelectorAll('.power-fab').forEach(btn => {
-            btn.addEventListener('click', () => this.handlePowerClick(btn.dataset.power, btn));
+        document.querySelectorAll('.power-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // التحقق من أن الزر يتبع اللاعب الحالي
+                const isP1Turn = GameLogic.state.turn === 'X';
+                const isBtnP1 = btn.classList.contains('p1');
+                
+                // إذا كان دور P1 وضغط زر P2 (أو العكس) -> تجاهل
+                if ((isP1Turn && !isBtnP1) || (!isP1Turn && isBtnP1)) {
+                    AudioSys.error();
+                    return;
+                }
+                
+                this.handlePowerClick(btn.dataset.power, btn);
+            });
         });
 
-        // --- النوافذ ---
-        document.querySelector('.close-modal').addEventListener('click', () => UI.closeModal('modal-help'));
+        // --- نوافذ النهاية ---
         document.getElementById('btn-rematch').addEventListener('click', () => {
             UI.closeModal('modal-win');
             this.startGame(this.state.currentMode);
@@ -153,7 +182,7 @@ const App = {
         this.state.pendingMove = { g, c };
         const levelData = GameLevels[this.state.currentMode];
         
-        // اختيار سؤال
+        // اختيار سؤال عشوائي
         let question;
         if (this.state.currentMode === 'balance') {
             const pool = Math.random() < 0.9 ? levelData.hard : levelData.easy;
@@ -162,7 +191,7 @@ const App = {
             question = levelData.pool[Math.floor(Math.random() * levelData.pool.length)];
         }
 
-        // إذا كانت المصفوفة فارغة (احتياط)، العب كلاسيكي
+        // حماية: إذا كانت الأسماء فارغة، العب كلاسيكي
         if (!question) {
             this.finalizeMove(g, c);
             return;
@@ -207,7 +236,7 @@ const App = {
             AudioSys.error();
             // اهتزاز وتصفير
             const screen = document.querySelector('.calc-screen');
-            screen.style.color = 'red';
+            screen.style.color = '#e74c3c'; // أحمر
             setTimeout(() => screen.style.color = 'var(--text-main)', 400);
             this.state.calcBuffer = [];
             UI.updateCalcInput(['']);
@@ -229,9 +258,9 @@ const App = {
         }
     },
 
-    // 7. القدرات
+    // 7. التعامل مع القدرات
     handlePowerClick(type, btn) {
-        if (btn.style.opacity === '0.3') return;
+        if (btn.style.opacity === '0.4') return; // زر معطل
 
         AudioSys.power();
 
@@ -245,7 +274,9 @@ const App = {
 
         // تفعيل القدرة
         this.state.activePower = type;
-        document.querySelectorAll('.power-fab').forEach(b => b.classList.remove('active'));
+        
+        // إزالة التفعيل من كل الأزرار الأخرى
+        document.querySelectorAll('.power-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
 
         // تنفيذ فوري للتجميد (لأنه لا يحتاج لاختيار خلية)
@@ -257,7 +288,8 @@ const App = {
                 btn.classList.remove('active');
             }
         } else {
-            UI.updateStatus(type === 'nuke' ? 'اختر مربعاً لتدميره' : 'اختر خلية لسرقتها');
+            // انتظار نقرة على الرقعة للممحاة أو الاستحواذ
+            UI.updateStatus(type === 'nuke' ? 'اختر مربعاً لتدميره ☢️' : 'اختر خلية لسرقتها ✋');
         }
     },
 
@@ -271,7 +303,7 @@ const App = {
             UI.updateGrid(GameLogic.state);
             UI.updateHUD(GameLogic.state);
             this.state.activePower = null;
-            document.querySelectorAll('.power-fab').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.power-btn').forEach(b => b.classList.remove('active'));
             UI.updateStatus('تم بنجاح!');
         } else {
             AudioSys.error();
