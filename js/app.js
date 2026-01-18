@@ -1,6 +1,6 @@
 /**
- * 🚀 MAIN CONTROLLER
- * نقطة التجميع: تربط الواجهة بالمنطق بالبيانات
+ * 🚀 MAIN CONTROLLER - TEAM EDITION
+ * نقطة التجميع: إدارة الفرق، التناوب، واللعب
  */
 
 import { GameLevels } from './data.js';
@@ -11,20 +11,24 @@ import { AudioSys } from './audio.js';
 const App = {
     // حالة التطبيق المحلية
     state: {
-        currentMode: null,  // classic, clash, code, balance, duality
-        pendingMove: null,  // {g, c} الحركة المعلقة بانتظار الحل
+        currentMode: null,
+        pendingMove: null,
         currentQuestion: null,
-        calcBuffer: [],     // مخزن أرقام الحاسبة
-        activePower: null,  // القدرة المفعلة حالياً
-        configPin: '0000'
+        calcBuffer: [],
+        activePower: null,
+        configPin: '0000',
+        
+        // القوائم المؤقتة (أثناء التجهيز)
+        tempRosters: {
+            p1: [],
+            p2: []
+        }
     },
 
     // 1. نقطة الانطلاق
     init() {
-        // تهيئة الصوت عند أول تفاعل (لتجاوز حظر المتصفحات)
         document.body.addEventListener('click', () => AudioSys.init(), { once: true });
         
-        // جلب رقم الدخول (اختياري)
         fetch('config.json')
             .then(res => res.json())
             .then(data => this.state.configPin = data.access_pin)
@@ -47,28 +51,56 @@ const App = {
             }
         });
 
-        // --- التجهيز (اختيار الأفاتار) ---
+        // --- إدارة القوائم (Rosters Logic) - جديد ---
+        
+        // إضافة لاعب للفريق 1
+        document.getElementById('btn-add-p1').addEventListener('click', () => {
+            this.addPlayerToRoster('p1');
+        });
+        // إضافة لاعب للفريق 2
+        document.getElementById('btn-add-p2').addEventListener('click', () => {
+            this.addPlayerToRoster('p2');
+        });
+
+        // حذف لاعب (Delegation)
+        ['p1', 'p2'].forEach(pid => {
+            document.getElementById(`${pid}-roster-list`).addEventListener('click', (e) => {
+                if (e.target.classList.contains('remove-player')) {
+                    AudioSys.click();
+                    const idx = parseInt(e.target.dataset.idx);
+                    this.state.tempRosters[pid].splice(idx, 1); // حذف من المصفوفة
+                    UI.renderRoster(pid, this.state.tempRosters[pid]); // إعادة الرسم
+                }
+            });
+        });
+
+        // --- اختيار الأفاتار ---
         ['p1', 'p2'].forEach(pid => {
             document.getElementById(`${pid}-avatars`).addEventListener('click', (e) => {
                 if (e.target.classList.contains('av-btn')) {
                     AudioSys.click();
                     const val = e.target.dataset.val;
                     UI.updateAvatarSelection(pid, val);
-                    // تخزين مؤقت في كائن المنطق
                     GameLogic.state[pid].avatar = val; 
                 }
             });
         });
 
+        // --- حفظ وانطلاق ---
         document.getElementById('btn-save-setup').addEventListener('click', () => {
             AudioSys.click();
-            // حفظ الأسماء
-            GameLogic.state.p1.name = document.getElementById('p1-name').value || 'اللاعب 1';
-            GameLogic.state.p2.name = document.getElementById('p2-name').value || 'اللاعب 2';
             
-            // تعيين الأفاتار الافتراضي إذا لم يتم الاختيار
-            if (!GameLogic.state.p1.avatar) GameLogic.state.p1.avatar = 'X';
-            if (!GameLogic.state.p2.avatar) GameLogic.state.p2.avatar = 'O';
+            // نقل القوائم إلى المنطق
+            GameLogic.state.p1.roster = [...this.state.tempRosters.p1];
+            GameLogic.state.p2.roster = [...this.state.tempRosters.p2];
+
+            // حماية: إذا كانت القائمة فارغة، أضف لاعباً افتراضياً
+            if (GameLogic.state.p1.roster.length === 0) GameLogic.state.p1.roster.push('لاعب X');
+            if (GameLogic.state.p2.roster.length === 0) GameLogic.state.p2.roster.push('لاعب O');
+
+            // حفظ أسماء الفرق (ثابتة أو حسب الأفاتار)
+            GameLogic.state.p1.name = `فريق (${GameLogic.state.p1.avatar || 'X'})`;
+            GameLogic.state.p2.name = `فريق (${GameLogic.state.p2.avatar || 'O'})`;
 
             UI.showScreen('screen-menu');
         });
@@ -88,13 +120,11 @@ const App = {
         document.getElementById('btn-show-help-main').addEventListener('click', () => UI.openModal('modal-help'));
 
         // --- اللعبة ---
-        // زر الخروج (يفتح نافذة تأكيد)
         document.getElementById('btn-exit-game').addEventListener('click', () => {
             AudioSys.click();
             UI.openModal('modal-exit-confirm');
         });
         
-        // تأكيد الخروج
         document.getElementById('btn-confirm-exit').addEventListener('click', () => {
             UI.closeModal('modal-exit-confirm');
             UI.showScreen('screen-menu');
@@ -109,11 +139,9 @@ const App = {
         // أزرار القدرات
         document.querySelectorAll('.power-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                // التحقق من أن الزر يتبع اللاعب الحالي
                 const isP1Turn = GameLogic.state.turn === 'X';
                 const isBtnP1 = btn.classList.contains('p1');
                 
-                // إذا كان دور P1 وضغط زر P2 (أو العكس) -> تجاهل
                 if ((isP1Turn && !isBtnP1) || (!isP1Turn && isBtnP1)) {
                     AudioSys.error();
                     return;
@@ -134,12 +162,28 @@ const App = {
         });
 
         // --- الحاسبة ---
-        const numpad = document.querySelector('.numpad');
-        numpad.addEventListener('click', (e) => {
+        document.querySelector('.numpad').addEventListener('click', (e) => {
             if (e.target.tagName === 'BUTTON') {
                 this.handleCalcInput(e.target.dataset.key);
             }
         });
+    },
+
+    // دالة مساعدة لإضافة لاعب
+    addPlayerToRoster(pid) {
+        const inputId = pid === 'p1' ? 'p1-input-name' : 'p2-input-name';
+        const input = document.getElementById(inputId);
+        const name = input.value.trim();
+
+        if (name) {
+            AudioSys.click();
+            this.state.tempRosters[pid].push(name);
+            input.value = ''; // مسح الحقل
+            input.focus();
+            UI.renderRoster(pid, this.state.tempRosters[pid]);
+        } else {
+            AudioSys.error(); // تنبيه إذا الحقل فارغ
+        }
     },
 
     // 3. بدء اللعبة
@@ -148,9 +192,7 @@ const App = {
         this.state.activePower = null;
         GameLogic.init();
         
-        // بناء الرقعة وتمرير دالة النقر
         UI.createGrid((g, c) => this.handleGridClick(g, c));
-        
         UI.updateGrid(GameLogic.state);
         UI.updateHUD(GameLogic.state);
         UI.showScreen('screen-game');
@@ -158,13 +200,11 @@ const App = {
 
     // 4. معالجة النقر على الرقعة
     handleGridClick(g, c) {
-        // أ. هل هناك قدرة مفعلة؟
         if (this.state.activePower) {
             this.executePower(this.state.activePower, g, c);
             return;
         }
 
-        // ب. هل الحركة صالحة؟
         if (!GameLogic.isValidMove(g, c)) {
             AudioSys.error();
             return;
@@ -172,17 +212,15 @@ const App = {
 
         AudioSys.click();
 
-        // ج. النمط الكلاسيكي (بدون رياضيات)
         if (this.state.currentMode === 'classic') {
             this.finalizeMove(g, c);
             return;
         }
 
-        // د. الأنماط الحسابية
+        // الأنماط الحسابية
         this.state.pendingMove = { g, c };
         const levelData = GameLevels[this.state.currentMode];
         
-        // اختيار سؤال عشوائي
         let question;
         if (this.state.currentMode === 'balance') {
             const pool = Math.random() < 0.9 ? levelData.hard : levelData.easy;
@@ -191,7 +229,6 @@ const App = {
             question = levelData.pool[Math.floor(Math.random() * levelData.pool.length)];
         }
 
-        // حماية: إذا كانت الأسماء فارغة، العب كلاسيكي
         if (!question) {
             this.finalizeMove(g, c);
             return;
@@ -213,7 +250,6 @@ const App = {
             this.verifyAnswer();
             return;
         } else {
-            // إضافة رقم (بحد أقصى 3 خانات)
             const current = this.state.calcBuffer.join('');
             if (current.length < 3) {
                 AudioSys.click();
@@ -234,16 +270,15 @@ const App = {
             this.finalizeMove(g, c);
         } else {
             AudioSys.error();
-            // اهتزاز وتصفير
             const screen = document.querySelector('.calc-screen');
-            screen.style.color = '#e74c3c'; // أحمر
+            screen.style.color = '#e74c3c';
             setTimeout(() => screen.style.color = 'var(--text-main)', 400);
             this.state.calcBuffer = [];
             UI.updateCalcInput(['']);
         }
     },
 
-    // 6. تنفيذ الحركة وتحديث الشاشة
+    // 6. تنفيذ الحركة
     finalizeMove(g, c) {
         const result = GameLogic.makeMove(g, c);
         
@@ -253,43 +288,37 @@ const App = {
         if (result === 'GAME_OVER') {
             AudioSys.win();
             const winner = GameLogic.state.winner;
-            const name = winner === 'X' ? GameLogic.state.p1.name : GameLogic.state.p2.name;
-            UI.showWinScreen(name);
+            const teamName = winner === 'X' ? GameLogic.state.p1.name : GameLogic.state.p2.name;
+            UI.showWinScreen(teamName);
         }
     },
 
     // 7. التعامل مع القدرات
     handlePowerClick(type, btn) {
-        if (btn.style.opacity === '0.4') return; // زر معطل
+        if (btn.style.opacity === '0.4') return;
 
         AudioSys.power();
 
-        // إلغاء التفعيل إذا ضغطت مرة أخرى
         if (this.state.activePower === type) {
             this.state.activePower = null;
             btn.classList.remove('active');
-            UI.updateStatus('تم إلغاء القدرة');
+            UI.updateStatus('تم الإلغاء');
             return;
         }
 
-        // تفعيل القدرة
         this.state.activePower = type;
-        
-        // إزالة التفعيل من كل الأزرار الأخرى
         document.querySelectorAll('.power-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
 
-        // تنفيذ فوري للتجميد (لأنه لا يحتاج لاختيار خلية)
         if (type === 'freeze') {
             if (GameLogic.useFreeze()) {
                 UI.updateHUD(GameLogic.state);
-                UI.updateStatus('❄️ تم تجميد الخصم!');
+                UI.updateStatus('❄️ تجميد!');
                 this.state.activePower = null;
                 btn.classList.remove('active');
             }
         } else {
-            // انتظار نقرة على الرقعة للممحاة أو الاستحواذ
-            UI.updateStatus(type === 'nuke' ? 'اختر مربعاً لتدميره ☢️' : 'اختر خلية لسرقتها ✋');
+            UI.updateStatus(type === 'nuke' ? 'اختر مربعاً ☢️' : 'اختر خلية ✋');
         }
     },
 
