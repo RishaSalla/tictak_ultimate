@@ -1,6 +1,6 @@
 /**
  * 🎨 UI MANAGER
- * مسؤول عن الرسم، التحريك، والتعامل مع عناصر DOM
+ * مسؤول عن الرسم، التحريك، والتعامل مع عناصر الشاشة
  */
 
 export const UI = {
@@ -9,10 +9,22 @@ export const UI = {
         screens: document.querySelectorAll('.screen'),
         gridContainer: document.getElementById('game-grid'),
         statusText: document.getElementById('game-status'),
-        hudP1: document.getElementById('hud-p1'),
-        hudP2: document.getElementById('hud-p2'),
+        turnText: document.getElementById('turn-text'),
+        
+        // لوحات اللاعبين الجديدة
+        panelP1: document.getElementById('panel-p1'),
+        panelP2: document.getElementById('panel-p2'),
+        
         scoreX: document.getElementById('score-x'),
         scoreO: document.getElementById('score-o'),
+        
+        // الأسماء والأفاتار في اللعبة
+        nameP1: document.getElementById('disp-name-p1'),
+        nameP2: document.getElementById('disp-name-p2'),
+        avP1: document.getElementById('disp-av-p1'),
+        avP2: document.getElementById('disp-av-p2'),
+
+        // الحاسبة والفوز
         calcQ: document.getElementById('calc-q'),
         calcInputs: document.getElementById('calc-inputs'),
         winnerName: document.getElementById('winner-name')
@@ -44,7 +56,7 @@ export const UI = {
         });
     },
 
-    // 3. بناء الرقعة (مرة واحدة فقط)
+    // 3. بناء الرقعة (مرة واحدة فقط عند البدء)
     createGrid(onClickCallback) {
         const grid = this.elements.gridContainer;
         grid.innerHTML = ''; // تنظيف
@@ -77,19 +89,19 @@ export const UI = {
         for (let g = 0; g < 9; g++) {
             const subEl = document.getElementById(`sub-${g}`);
             
-            // 1. حالة المربع الكبير (فائز/تعادل)
+            // أ. حالة المربع الكبير (فائز/تعادل)
             subEl.className = 'sub-grid'; // تصفير الكلاسات
             if (metaGrid[g] !== null) {
                 subEl.classList.add('won');
                 // إضافة لون الفائز كخلفية خفيفة
-                if (metaGrid[g] === 'X') subEl.style.backgroundColor = 'var(--p1-light)';
-                else if (metaGrid[g] === 'O') subEl.style.backgroundColor = 'var(--p2-light)';
-                else subEl.style.backgroundColor = '#ddd'; // تعادل
+                if (metaGrid[g] === 'X') subEl.style.backgroundColor = 'var(--p1-color)';
+                else if (metaGrid[g] === 'O') subEl.style.backgroundColor = 'var(--p2-color)';
+                else subEl.style.backgroundColor = '#cbd5e0'; // تعادل (رمادي)
             } else {
                 subEl.style.backgroundColor = '#fff';
             }
 
-            // 2. المنطقة النشطة (Active Zone)
+            // ب. المنطقة النشطة (Active Zone)
             // إذا لم يكن هناك فائز، والمربع الحالي هو الهدف (أو اللعب حر)
             if (!winner && metaGrid[g] === null) {
                 if (nextGrid === null || nextGrid === g) {
@@ -97,7 +109,7 @@ export const UI = {
                 }
             }
 
-            // 3. تحديث الخلايا الداخلية
+            // ج. تحديث الخلايا الداخلية
             const cells = subEl.children;
             for (let c = 0; c < 9; c++) {
                 const cell = cells[c];
@@ -113,67 +125,76 @@ export const UI = {
         }
     },
 
-    // 5. تحديث المعلومات (HUD)
+    // 5. تحديث المعلومات (HUD) - متوافق مع التقسيم الجديد
     updateHUD(state) {
         const { turn, p1, p2 } = state;
 
-        // تحديث النقاط
+        // تحديث النصوص
         this.elements.scoreX.textContent = p1.score;
         this.elements.scoreO.textContent = p2.score;
+        
+        // تحديث الأسماء والأفاتار (يتم مرة واحدة عادة، لكن للتأكيد)
+        this.elements.nameP1.textContent = p1.name;
+        this.elements.nameP2.textContent = p2.name;
+        // إذا كان هناك أفاتار مخزن
+        if(p1.avatar) this.elements.avP1.textContent = p1.avatar;
+        if(p2.avatar) this.elements.avP2.textContent = p2.avatar;
 
-        // تحديث الدور النشط
+        // تحديث مؤشر الدور (Highlight Panel)
+        const turnLabel = this.elements.turnText;
+        
         if (turn === 'X') {
-            this.elements.hudP1.classList.add('active');
-            this.elements.hudP2.classList.remove('active');
-            this.updateStatus(`دور ${p1.name}`, 'var(--p1-color)');
+            // تفعيل لوحة P1
+            this.elements.panelP1.style.boxShadow = '0 0 15px var(--p1-color)';
+            this.elements.panelP1.style.border = '2px solid var(--p1-color)';
+            this.elements.panelP2.style.boxShadow = 'none';
+            this.elements.panelP2.style.border = 'none';
+            
+            turnLabel.textContent = `دور ${p1.name}`;
+            turnLabel.className = 'turn-indicator p1-turn';
         } else {
-            this.elements.hudP2.classList.add('active');
-            this.elements.hudP1.classList.remove('active');
-            this.updateStatus(`دور ${p2.name}`, 'var(--p2-color)');
+            // تفعيل لوحة P2
+            this.elements.panelP2.style.boxShadow = '0 0 15px var(--p2-color)';
+            this.elements.panelP2.style.border = '2px solid var(--p2-color)';
+            this.elements.panelP1.style.boxShadow = 'none';
+            this.elements.panelP1.style.border = 'none';
+
+            turnLabel.textContent = `دور ${p2.name}`;
+            turnLabel.className = 'turn-indicator p2-turn';
         }
 
-        // تحديث عدادات القوى
+        // تحديث عدادات القوى (Badges)
         ['nuke', 'freeze', 'hack'].forEach(type => {
-            const count = turn === 'X' ? p1.powers[type] : p2.powers[type];
-            const badge = document.getElementById(`count-${type}`);
-            if (badge) badge.textContent = count;
-            
-            // تعطيل الأزرار إذا نفذت القوة
-            const btn = document.querySelector(`button[data-power="${type}"]`);
-            if (btn) {
-                if (count > 0) btn.style.opacity = '1';
-                else btn.style.opacity = '0.3';
-                btn.classList.remove('active'); // إزالة التفعيل السابق
+            // P1 Badges
+            const p1Badge = document.getElementById(`p1-${type}-count`);
+            if (p1Badge) {
+                p1Badge.textContent = p1.powers[type];
+                // تعطيل الزر إذا صفر
+                const btn = document.querySelector(`.power-btn.p1[data-power="${type}"]`);
+                if(btn) btn.style.opacity = p1.powers[type] > 0 ? '1' : '0.4';
+            }
+
+            // P2 Badges
+            const p2Badge = document.getElementById(`p2-${type}-count`);
+            if (p2Badge) {
+                p2Badge.textContent = p2.powers[type];
+                const btn = document.querySelector(`.power-btn.p2[data-power="${type}"]`);
+                if(btn) btn.style.opacity = p2.powers[type] > 0 ? '1' : '0.4';
             }
         });
     },
 
-    updateStatus(msg, color) {
+    updateStatus(msg) {
         const el = this.elements.statusText;
         el.textContent = msg;
-        if (color) el.style.color = color;
-        else el.style.color = 'var(--text-light)';
-        
-        // تأثير نبض بسيط
-        el.style.transform = 'scale(1.1)';
-        setTimeout(() => el.style.transform = 'scale(1)', 200);
+        el.classList.add('pulse');
+        setTimeout(() => el.classList.remove('pulse'), 1000);
     },
 
     // 6. النوافذ المنبثقة (Modals)
     openModal(id) {
         const modal = document.getElementById(id);
-        if (modal) {
-            modal.classList.remove('hidden');
-            // حركة دخول
-            const content = modal.querySelector('.clay-modal');
-            content.style.opacity = '0';
-            content.style.transform = 'scale(0.8)';
-            setTimeout(() => {
-                content.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-                content.style.opacity = '1';
-                content.style.transform = 'scale(1)';
-            }, 50);
-        }
+        if (modal) modal.classList.remove('hidden');
     },
 
     closeModal(id) {
@@ -183,13 +204,12 @@ export const UI = {
 
     // 7. إعداد الحاسبة
     setupCalculator(questionData) {
-        // عرض السؤال
-        let displayQ = questionData.q.replace(/\?/g, '<span style="color:var(--p1-color)">?</span>');
+        // تلوين علامة الاستفهام
+        let displayQ = questionData.q.replace(/\?/g, '<span style="color:var(--text-main); border-bottom:2px solid">?</span>');
         this.elements.calcQ.innerHTML = displayQ;
         
-        // تفريغ المدخلات
         this.elements.calcInputs.innerHTML = ''; 
-        this.updateCalcInput(['']); // خانة واحدة فارغة مبدئياً
+        this.updateCalcInput(['']); 
     },
 
     updateCalcInput(buffer) {
@@ -200,7 +220,6 @@ export const UI = {
             const span = document.createElement('span');
             span.className = 'calc-digit';
             span.textContent = val;
-            // تنسيق بسيط للأرقام
             span.style.fontSize = '2rem';
             span.style.fontWeight = 'bold';
             span.style.margin = '0 5px';
