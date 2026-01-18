@@ -111,3 +111,8 @@ body {
 .clay-footer, .powers-bar {
     padding-top: 20px; flex-shrink: 0; display: flex; justify-content: center;
 }
+
+/* إصلاح مشكلة ظهور التعليمات فوراً */
+.hidden, .modal-overlay.hidden {
+    display: none !important;
+}
