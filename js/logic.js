@@ -1,172 +1,178 @@
 /**
- * 🧠 GAME LOGIC ENGINE
- * محرك قوانين اللعبة (يعمل في الخلفية ويدير القوانين فقط)
+ * 🧠 GAME LOGIC ENGINE - TEAM EDITION
+ * محرك القوانين مع دعم نظام الفرق والتناوب
  */
 
 export const GameLogic = {
-    // حالة اللعبة (The State)
+    // حالة اللعبة
     state: {
-        grid: [],        // 9 مصفوفات فرعية (9x9)
-        metaGrid: [],    // مصفوفة المربعات الكبيرة (9 خانات)
-        turn: 'X',       // دور من؟ (X دائماً يبدأ)
-        nextGrid: null,  // المربع الذي يجب اللعب فيه (null = حر)
+        grid: [],        // 9x9
+        metaGrid: [],    // 3x3
+        turn: 'X',       // الدور الحالي للفريق
+        nextGrid: null,  // المربع المطلوب
         winner: null,    // الفائز النهائي
         
-        // بيانات اللاعبين وقدراتهم
-        p1: { name: 'اللاعب 1', symbol: 'X', score: 0, powers: { nuke: 1, freeze: 1, hack: 1 } },
-        p2: { name: 'اللاعب 2', symbol: 'O', score: 0, powers: { nuke: 1, freeze: 1, hack: 1 } }
+        // بيانات الفرق (تم تحديثها لتشمل القوائم)
+        p1: { 
+            name: 'فريق X', // اسم الفريق العام
+            roster: [],     // قائمة أسماء اللاعبين [أحمد، سارة..]
+            turnIndex: 0,   // مؤشر من عليه الدور حالياً
+            symbol: 'X', 
+            score: 0, 
+            powers: { nuke: 1, freeze: 1, hack: 1 },
+            avatar: 'X'
+        },
+        p2: { 
+            name: 'فريق O',
+            roster: [],
+            turnIndex: 0,
+            symbol: 'O', 
+            score: 0, 
+            powers: { nuke: 1, freeze: 1, hack: 1 },
+            avatar: 'O'
+        }
     },
 
-    // 1. تهيئة اللعبة (Reset)
+    // 1. تهيئة اللعبة
     init() {
-        // بناء مصفوفة فارغة
         this.state.grid = Array(9).fill(null).map(() => Array(9).fill(null));
         this.state.metaGrid = Array(9).fill(null);
         this.state.turn = 'X';
         this.state.nextGrid = null;
         this.state.winner = null;
         
-        // إعادة تعيين النقاط والقدرات (الأسماء تظل كما هي من الإعدادات)
-        this.resetPlayerStats(this.state.p1);
-        this.resetPlayerStats(this.state.p2);
+        // تصفير النقاط والقدرات (مع الحفاظ على القوائم)
+        this.resetTeamStats(this.state.p1);
+        this.resetTeamStats(this.state.p2);
     },
 
-    resetPlayerStats(p) {
+    resetTeamStats(p) {
         p.score = 0;
+        p.turnIndex = 0; // البدء من أول لاعب في القائمة
         p.powers = { nuke: 1, freeze: 1, hack: 1 };
     },
 
-    // 2. التحقق من صلاحية الحركة
+    // 2. معرفة اسم اللاعب الحالي (داخل الفريق)
+    getCurrentMember() {
+        const p = this.state.turn === 'X' ? this.state.p1 : this.state.p2;
+        
+        // إذا لم توجد قائمة أسماء، نستخدم اسم الفريق العام
+        if (!p.roster || p.roster.length === 0) {
+            return p.name;
+        }
+        
+        // تدوير الأسماء: (الدور % عدد اللاعبين)
+        // مثال: لو عندنا 3 لاعبين، والدور رقم 4، النتيجة 1 (اللاعب الثاني)
+        const memberName = p.roster[p.turnIndex % p.roster.length];
+        return memberName;
+    },
+
+    // 3. التحقق من الصلاحية
     isValidMove(gIndex, cIndex) {
         const s = this.state;
-        
-        // هل اللعبة انتهت؟
         if (s.winner) return false;
-
-        // هل المربع الكبير مغلق (محسوم أو مدمر)؟
         if (s.metaGrid[gIndex] !== null) return false;
-
-        // هل الخلية مشغولة؟
         if (s.grid[gIndex][cIndex] !== null) return false;
-
-        // هل اللاعب مقيد بمربع معين؟ (Rule of Focus)
-        // إذا كان nextGrid ليس null، يجب أن يلعب في نفس رقم المربع
         if (s.nextGrid !== null && s.nextGrid !== gIndex) return false;
-
         return true;
     },
 
-    // 3. تنفيذ الحركة
+    // 4. تنفيذ الحركة
     makeMove(gIndex, cIndex) {
         const s = this.state;
-        const currentPlayer = s.turn === 'X' ? s.p1 : s.p2;
+        const currentTeam = s.turn === 'X' ? s.p1 : s.p2;
 
         // تسجيل الحركة
         s.grid[gIndex][cIndex] = s.turn;
 
-        // هل فاز بالمربع الصغير؟
+        // فحص الفوز بالمربع الصغير
         if (this.checkWin(s.grid[gIndex])) {
             s.metaGrid[gIndex] = s.turn;
-            currentPlayer.score++; // نقطة للمربع
+            currentTeam.score++;
         } else if (this.isFull(s.grid[gIndex])) {
-            s.metaGrid[gIndex] = 'DRAW'; // تعادل (يحترق المربع)
+            s.metaGrid[gIndex] = 'DRAW';
         }
 
-        // هل فاز باللعبة الكبيرة؟
+        // فحص الفوز الكبير
         if (this.checkWin(s.metaGrid)) {
             s.winner = s.turn;
             return 'GAME_OVER';
         }
 
-        // تحديد الوجهة القادمة للخصم
-        // الخصم يجب أن يذهب للمربع رقم cIndex (حسب الخلية التي لُعب فيها)
-        // لكن لو المربع cIndex محسوم مسبقاً، يصبح اللعب حراً (Free Play)
+        // تحديد الوجهة القادمة
         if (s.metaGrid[cIndex] !== null) {
-            s.nextGrid = null; 
+            s.nextGrid = null; // لعب حر
         } else {
-            s.nextGrid = cIndex;
+            s.nextGrid = cIndex; // مقيد
         }
 
-        // تبديل الدور
         this.switchTurn();
         return 'CONTINUE';
     },
 
-    // 4. خوارزمية الفحص (Win Checker)
     checkWin(arr) {
         const wins = [
-            [0,1,2], [3,4,5], [6,7,8], // أفقي
-            [0,3,6], [1,4,7], [2,5,8], // عمودي
-            [0,4,8], [2,4,6]           // قطري
+            [0,1,2], [3,4,5], [6,7,8],
+            [0,3,6], [1,4,7], [2,5,8],
+            [0,4,8], [2,4,6]
         ];
         return wins.some(combo => combo.every(i => arr[i] === this.state.turn));
     },
 
-    isFull(arr) {
-        return arr.every(cell => cell !== null);
-    },
+    isFull(arr) { return arr.every(cell => cell !== null); },
 
+    // تبديل الدور + تحديث مؤشر لاعب الفريق
     switchTurn() {
+        const currentP = this.state.turn === 'X' ? this.state.p1 : this.state.p2;
+        
+        // تحريك المؤشر للاعب التالي في هذا الفريق للمرة القادمة
+        currentP.turnIndex++;
+        
+        // تسليم الدور للفريق الخصم
         this.state.turn = this.state.turn === 'X' ? 'O' : 'X';
     },
 
-    // 5. منطق القدرات الخاصة (Special Powers)
-    
-    // الممحاة: تنظف مربعاً كاملاً
+    // 5. القدرات الخاصة (نفس المنطق لكن تخصم من الفريق)
     useNuke(gIndex) {
         const s = this.state;
         const p = s.turn === 'X' ? s.p1 : s.p2;
-        
-        // شرط: المربع الكبير لم يحسم بعد، واللاعب يملك القدرة
         if (p.powers.nuke > 0 && s.metaGrid[gIndex] === null) {
-            s.grid[gIndex] = Array(9).fill(null); // مسح البيانات
+            s.grid[gIndex] = Array(9).fill(null);
             p.powers.nuke--;
-            
             this.switchTurn(); 
-            s.nextGrid = null; // اللعب حر بعد التفجير (لأن الهدف قد يكون تغير)
+            s.nextGrid = null;
             return true;
         }
         return false;
     },
 
-    // التجميد: يلعب مرة أخرى
     useFreeze() {
         const s = this.state;
         const p = s.turn === 'X' ? s.p1 : s.p2;
-
         if (p.powers.freeze > 0) {
             p.powers.freeze--;
-            // لا نبدل الدور (اللاعب يلعب مرة أخرى)
+            // لا نبدل الدور، لكن يجب تحديث مؤشر اللاعب؟ 
+            // لا، نفس اللاعب يكمل دوره الإضافي (مكافأة له)
             return true;
         }
         return false;
     },
 
-    // الاستحواذ: سرقة خلية
     useHack(gIndex, cIndex) {
         const s = this.state;
         const p = s.turn === 'X' ? s.p1 : s.p2;
         const opponent = s.turn === 'X' ? 'O' : 'X';
 
-        // الشروط: الخلية للخصم، والمربع الكبير مفتوح، ولديه رصيد
-        if (p.powers.hack > 0 && 
-            s.grid[gIndex][cIndex] === opponent && 
-            s.metaGrid[gIndex] === null) {
-            
-            s.grid[gIndex][cIndex] = s.turn; // تغيير الملكية
+        if (p.powers.hack > 0 && s.grid[gIndex][cIndex] === opponent && s.metaGrid[gIndex] === null) {
+            s.grid[gIndex][cIndex] = s.turn;
             p.powers.hack--;
-
-            // فحص الفوز بعد السرقة (قد يكمل صفاً ويفوز بالمربع)
             if (this.checkWin(s.grid[gIndex])) {
                 s.metaGrid[gIndex] = s.turn;
                 p.score++;
             }
-
             this.switchTurn();
-            // تحديد الوجهة (نفس منطق الحركة العادية)
             if (s.metaGrid[cIndex] !== null) s.nextGrid = null;
             else s.nextGrid = cIndex;
-
             return true;
         }
         return false;
