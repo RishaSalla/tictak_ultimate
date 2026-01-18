@@ -1,6 +1,5 @@
 /* =========================================
-   📐 LAYOUT ENGINE
-   هيكلة الصفحة، الاستجابة للشاشات، والمسرح
+   📐 LAYOUT ENGINE - FIXED
    ========================================= */
 
 /* 1. تهيئة الصفحة */
@@ -14,7 +13,7 @@ body {
     display: flex; align-items: center; justify-content: center;
 }
 
-/* 2. الخلفية المتحركة (Mesh Gradient) */
+/* 2. الخلفية المتحركة */
 .mesh-background {
     position: absolute; inset: 0; z-index: -1;
     overflow: hidden;
@@ -34,29 +33,28 @@ body {
     100% { transform: translate(40px, 60px) scale(1.05); }
 }
 
-/* 3. المنصة العائمة (The Glass Stage) */
+/* 3. المنصة العائمة */
 .glass-stage {
     position: relative;
     background: var(--glass-bg);
     backdrop-filter: blur(var(--blur));
     -webkit-backdrop-filter: blur(var(--blur));
     border: var(--glass-border);
-    box-shadow: 0 40px 100px rgba(0,0,0,0.1); /* ظل فخم */
-    overflow: hidden;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.1);
+    overflow: hidden; /* هذا ما كان يقص النوافذ سابقاً */
     display: flex; flex-direction: column;
     transition: all 0.5s ease;
+    z-index: 10; /* طبقة المنصة */
 }
 
-/* --- وضع اللابتوب (شاشة عريضة لتقسيم 3 كتل) --- */
+/* وضع اللابتوب */
 @media (min-width: 900px) {
     .glass-stage {
-        width: 1000px;  /* عريض جداً لاستيعاب التقسيم */
-        height: 700px;
+        width: 1000px; height: 700px;
         border-radius: var(--radius-lg);
     }
 }
-
-/* --- وضع التابلت والجوال --- */
+/* وضع الجوال */
 @media (max-width: 899px) {
     .glass-stage {
         width: 100%; height: 100%;
@@ -64,10 +62,9 @@ body {
     }
 }
 
-/* 4. الشاشات (Screens) */
+/* 4. الشاشات */
 .screen {
-    position: absolute; inset: 0;
-    padding: 20px;
+    position: absolute; inset: 0; padding: 20px;
     display: flex; flex-direction: column;
     opacity: 0; pointer-events: none;
     transform: translateY(10px);
@@ -77,72 +74,59 @@ body {
 .screen.active { opacity: 1; pointer-events: all; transform: translateY(0); }
 .screen.hidden { display: none !important; }
 
-/* 5. تنسيق صفحة اللعب الجديدة (3 Blocks Layout) */
+/* 5. تنسيق صفحة اللعب */
 .game-layout {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    padding: 10px;
-    height: 100%;
+    flex: 1; display: flex; align-items: center; justify-content: space-between;
+    gap: 20px; padding: 10px; height: 100%;
 }
-
-/* الألواح الجانبية (اللاعبين) */
 .player-panel {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-    padding: 20px;
-    background: rgba(255,255,255,0.4);
-    border-radius: var(--radius-md);
-    height: 90%;
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 20px; padding: 20px;
+    background: rgba(255,255,255,0.4); border-radius: var(--radius-md); height: 90%;
 }
-
 .board-container {
-    flex: 2; /* الرقعة تأخذ مساحة مزدوجة */
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
+    flex: 2; display: flex; flex-direction: column; align-items: center; justify-content: center;
 }
 
-/* استجابة صفحة اللعب للجوال (تحويلها لعمودي) */
+/* استجابة الجوال */
 @media (max-width: 899px) {
-    .game-layout {
-        flex-direction: column; /* فوق بعض */
-        justify-content: center;
-        gap: 10px;
-    }
+    .game-layout { flex-direction: column; justify-content: center; gap: 10px; }
     .player-panel {
-        flex-direction: row; /* المعلومات بجانب القوات */
-        width: 100%; height: auto;
-        padding: 10px;
-        justify-content: space-between;
+        flex-direction: row; width: 100%; height: auto;
+        padding: 10px; justify-content: space-between;
     }
     .board-container { flex: unset; margin: 10px 0; }
+}
+
+/* 6. النوافذ المنبثقة (MODAL OVERLAY FIX) - الحل هنا */
+.modal-overlay {
+    position: fixed; /* يحرر النافذة من أي حاوية */
+    inset: 0;        /* يغطي الشاشة بالكامل */
+    z-index: 9999;   /* فوق كل شيء بلا منازع */
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    
+    /* التوسط المثالي */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* الحركة */
+    opacity: 0; visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+/* عند التفعيل (تتم إضافته بالجافاسكريبت لاحقاً ولكن نجهزه هنا) */
+.modal-overlay:not(.hidden) {
+    opacity: 1; visibility: visible;
 }
 
 /* تنسيقات مساعدة */
 .center-content { align-items: center; justify-content: center; text-align: center; }
 .scroll-wrapper { flex: 1; overflow-y: auto; padding: 10px 5px; }
-
-/* الهيدر والفوتر */
 .clay-header {
     height: 50px; display: flex; justify-content: space-between; align-items: center;
     margin-bottom: 10px; flex-shrink: 0;
 }
 .clay-footer { padding-top: 15px; flex-shrink: 0; }
-
-/* إصلاح النوافذ (هام جداً) */
-.modal-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 2000; /* رقم عالي جداً ليظهر فوق الزجاج */
-    background: rgba(0, 0, 0, 0.4); /* تعتيم الخلفية */
-    display: flex;           /* الحل السحري للتوسط */
-    align-items: center;     /* توسيط عمودي */
-    justify-content: center; /* توسيط أفقي */
-    backdrop-filter: blur(5px); /* تمويه جميل للخلفية */
-}
