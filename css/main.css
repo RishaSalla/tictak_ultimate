@@ -15,3 +15,8 @@
 body {
     -webkit-overflow-scrolling: touch;
 }
+
+/* إصلاح مشكلة ظهور التعليمات فوراً */
+.hidden, .modal-overlay.hidden {
+    display: none !important;
+}
