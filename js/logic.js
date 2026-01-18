@@ -1,6 +1,6 @@
 /**
  * 🧠 GAME LOGIC ENGINE
- * محرك قوانين اللعبة (مفصول تماماً عن الواجهة)
+ * محرك قوانين اللعبة (يعمل في الخلفية ويدير القوانين فقط)
  */
 
 export const GameLogic = {
@@ -8,13 +8,13 @@ export const GameLogic = {
     state: {
         grid: [],        // 9 مصفوفات فرعية (9x9)
         metaGrid: [],    // مصفوفة المربعات الكبيرة (9 خانات)
-        turn: 'X',       // دور من؟
+        turn: 'X',       // دور من؟ (X دائماً يبدأ)
         nextGrid: null,  // المربع الذي يجب اللعب فيه (null = حر)
         winner: null,    // الفائز النهائي
         
         // بيانات اللاعبين وقدراتهم
-        p1: { name: 'P1', symbol: 'X', score: 0, powers: { nuke: 1, freeze: 1, hack: 1 } },
-        p2: { name: 'P2', symbol: 'O', score: 0, powers: { nuke: 1, freeze: 1, hack: 1 } }
+        p1: { name: 'اللاعب 1', symbol: 'X', score: 0, powers: { nuke: 1, freeze: 1, hack: 1 } },
+        p2: { name: 'اللاعب 2', symbol: 'O', score: 0, powers: { nuke: 1, freeze: 1, hack: 1 } }
     },
 
     // 1. تهيئة اللعبة (Reset)
@@ -26,12 +26,12 @@ export const GameLogic = {
         this.state.nextGrid = null;
         this.state.winner = null;
         
-        // إعادة تعيين النقاط والقدرات
-        this.resetPlayer(this.state.p1);
-        this.resetPlayer(this.state.p2);
+        // إعادة تعيين النقاط والقدرات (الأسماء تظل كما هي من الإعدادات)
+        this.resetPlayerStats(this.state.p1);
+        this.resetPlayerStats(this.state.p2);
     },
 
-    resetPlayer(p) {
+    resetPlayerStats(p) {
         p.score = 0;
         p.powers = { nuke: 1, freeze: 1, hack: 1 };
     },
@@ -50,6 +50,7 @@ export const GameLogic = {
         if (s.grid[gIndex][cIndex] !== null) return false;
 
         // هل اللاعب مقيد بمربع معين؟ (Rule of Focus)
+        // إذا كان nextGrid ليس null، يجب أن يلعب في نفس رقم المربع
         if (s.nextGrid !== null && s.nextGrid !== gIndex) return false;
 
         return true;
@@ -66,7 +67,7 @@ export const GameLogic = {
         // هل فاز بالمربع الصغير؟
         if (this.checkWin(s.grid[gIndex])) {
             s.metaGrid[gIndex] = s.turn;
-            currentPlayer.score++; // نقطة
+            currentPlayer.score++; // نقطة للمربع
         } else if (this.isFull(s.grid[gIndex])) {
             s.metaGrid[gIndex] = 'DRAW'; // تعادل (يحترق المربع)
         }
@@ -78,9 +79,10 @@ export const GameLogic = {
         }
 
         // تحديد الوجهة القادمة للخصم
-        // الخصم يجب أن يذهب للمربع رقم cIndex
+        // الخصم يجب أن يذهب للمربع رقم cIndex (حسب الخلية التي لُعب فيها)
+        // لكن لو المربع cIndex محسوم مسبقاً، يصبح اللعب حراً (Free Play)
         if (s.metaGrid[cIndex] !== null) {
-            s.nextGrid = null; // المربع المقصود مغلق، العب في أي مكان (حر)
+            s.nextGrid = null; 
         } else {
             s.nextGrid = cIndex;
         }
@@ -121,7 +123,7 @@ export const GameLogic = {
             p.powers.nuke--;
             
             this.switchTurn(); 
-            s.nextGrid = null; // اللعب حر بعد التفجير
+            s.nextGrid = null; // اللعب حر بعد التفجير (لأن الهدف قد يكون تغير)
             return true;
         }
         return false;
@@ -134,7 +136,7 @@ export const GameLogic = {
 
         if (p.powers.freeze > 0) {
             p.powers.freeze--;
-            // لا نبدل الدور (this.switchTurn محذوفة)
+            // لا نبدل الدور (اللاعب يلعب مرة أخرى)
             return true;
         }
         return false;
@@ -146,7 +148,7 @@ export const GameLogic = {
         const p = s.turn === 'X' ? s.p1 : s.p2;
         const opponent = s.turn === 'X' ? 'O' : 'X';
 
-        // الشروط: الخلية للخصم، والمربع الكبير مفتوح
+        // الشروط: الخلية للخصم، والمربع الكبير مفتوح، ولديه رصيد
         if (p.powers.hack > 0 && 
             s.grid[gIndex][cIndex] === opponent && 
             s.metaGrid[gIndex] === null) {
@@ -154,14 +156,14 @@ export const GameLogic = {
             s.grid[gIndex][cIndex] = s.turn; // تغيير الملكية
             p.powers.hack--;
 
-            // فحص الفوز بعد السرقة
+            // فحص الفوز بعد السرقة (قد يكمل صفاً ويفوز بالمربع)
             if (this.checkWin(s.grid[gIndex])) {
                 s.metaGrid[gIndex] = s.turn;
                 p.score++;
             }
 
             this.switchTurn();
-            // تحديد الوجهة
+            // تحديد الوجهة (نفس منطق الحركة العادية)
             if (s.metaGrid[cIndex] !== null) s.nextGrid = null;
             else s.nextGrid = cIndex;
 
