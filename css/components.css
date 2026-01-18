@@ -1,34 +1,31 @@
 /* =========================================
-   🧱 CLAY COMPONENTS - UPDATED
+   🧱 CLAY COMPONENTS - FINAL FIXES
    ========================================= */
 
-/* --- 1. العناوين والشعارات --- */
 .brand-logo {
     font-family: var(--font-num); font-weight: 800; font-size: 3.5rem;
     display: flex; align-items: center; justify-content: center; gap: 5px;
     margin-bottom: 10px; position: relative;
 }
-.x-color { color: var(--p1-color); text-shadow: 2px 2px 0px rgba(0,0,0,0.1); }
-.o-color { color: var(--p2-color); text-shadow: 2px 2px 0px rgba(0,0,0,0.1); }
+.x-color { color: var(--p1-color); }
+.o-color { color: var(--p2-color); }
 .badge {
     font-size: 0.7rem; background: var(--text-main); color: #fff;
     padding: 3px 8px; border-radius: 8px; position: absolute; top: 0; right: -15px;
-    transform: rotate(10deg); box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    transform: rotate(10deg);
 }
 .clay-heading { font-size: 1.6rem; color: var(--text-main); margin-bottom: 25px; font-weight: 700; }
 
-/* --- 2. الأزرار الطينية --- */
 .clay-btn {
     border: none; outline: none; cursor: pointer;
     font-family: var(--font-txt); font-weight: 700;
     border-radius: var(--radius-md); transition: all 0.2s ease;
     display: flex; align-items: center; justify-content: center; gap: 10px;
-    background: var(--clay-bg);
-    box-shadow: var(--clay-shadow-out);
+    background: var(--clay-bg); box-shadow: var(--clay-shadow-out);
     color: var(--text-main);
 }
 .clay-btn:active { transform: scale(0.97); box-shadow: var(--clay-shadow-in); }
-.clay-btn.primary { background: var(--text-main); color: #fff; box-shadow: 6px 6px 15px rgba(74, 78, 105, 0.4); }
+.clay-btn.primary { background: var(--text-main); color: #fff; }
 .clay-btn.secondary { background: #fff; color: var(--text-main); border: 1px solid #eee; }
 .clay-btn.big { padding: 16px 40px; font-size: 1.1rem; border-radius: 30px; width: 100%; }
 .clay-btn.full { width: 100%; padding: 14px; font-size: 1rem; }
@@ -44,7 +41,6 @@
 .icon-btn.small { width: 32px; height: 32px; font-size: 0.9rem; }
 .icon-btn:hover { color: var(--text-main); transform: translateY(-2px); }
 
-/* --- 3. الإدخال وقوائم الفرق (جديد) --- */
 .clay-input {
     width: 100%; padding: 12px; border: none; border-radius: var(--radius-sm);
     background: #f0f4f8; box-shadow: var(--clay-shadow-in);
@@ -57,26 +53,20 @@
     font-family: var(--font-num); color: var(--text-main);
 }
 
-/* تنسيق قائمة الأسماء (Roster) */
-.roster-container { margin-top: 10px; margin-bottom: 10px; text-align: right; }
+.roster-container { margin-top: 15px; margin-bottom: 10px; text-align: right; }
+.tiny-hint { font-size: 0.7rem; color: var(--text-light); margin-bottom: 5px; text-align: center; }
 .roster-input-group { display: flex; gap: 8px; align-items: center; }
 .roster-input-group .clay-input { text-align: right; padding: 8px; font-size: 0.9rem; }
-.roster-input-group .add-btn { flex-shrink: 0; background: #fff; color: var(--text-main); font-weight: bold; }
-
 .roster-list {
     list-style: none; padding: 0; margin-top: 8px;
     max-height: 80px; overflow-y: auto;
     background: rgba(255,255,255,0.5); border-radius: 8px;
-    box-shadow: inset 2px 2px 5px rgba(0,0,0,0.05);
 }
 .roster-list li {
     padding: 4px 8px; border-bottom: 1px solid rgba(0,0,0,0.05);
     font-size: 0.85rem; color: var(--text-main); display: flex; justify-content: space-between;
 }
-.roster-list li:last-child { border-bottom: none; }
-.roster-list li .remove-player { color: #e74c3c; cursor: pointer; font-weight: bold; }
 
-/* --- 4. بطاقات الإعداد --- */
 .clay-card {
     background: var(--clay-bg); border-radius: var(--radius-md);
     padding: 20px; margin-bottom: 15px;
@@ -85,8 +75,8 @@
 }
 .p1-theme { box-shadow: inset 4px 0 0 var(--p1-color), var(--clay-shadow-out); }
 .p2-theme { box-shadow: inset 4px 0 0 var(--p2-color), var(--clay-shadow-out); }
-
 .card-label { font-size: 0.85rem; color: var(--text-light); margin-bottom: 8px; font-weight: 700; }
+
 .avatars-row { display: flex; justify-content: center; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
 .av-btn {
     width: 45px; height: 45px; border-radius: 12px; border: none;
@@ -97,7 +87,6 @@
 .p1-theme .selected { border-color: var(--p1-color); background: #fff5f5; }
 .p2-theme .selected { border-color: var(--p2-color); background: #f0ffff; }
 
-/* --- 5. القائمة الرئيسية --- */
 .modes-wrapper { display: flex; flex-direction: column; gap: 15px; padding: 10px; height: 100%; }
 .mode-card.full-width {
     width: 100%; display: flex; align-items: center; gap: 20px;
@@ -117,13 +106,11 @@
 .mode-text h4 { font-size: 1rem; margin-bottom: 4px; color: var(--text-main); }
 .mode-text p { font-size: 0.7rem; color: var(--text-light); line-height: 1.3; }
 
-/* --- 6. الرقعة (إصلاح الوضوح) --- */
+/* --- الرقعة والرموز --- */
 .grid-frame {
     width: var(--grid-size); height: var(--grid-size);
-    /* الحل الجذري: إطار غامق جداً */
     background: #2d3748; 
-    border-radius: var(--radius-md);
-    padding: var(--cell-gap);
+    border-radius: var(--radius-md); padding: var(--cell-gap);
     box-shadow: var(--clay-shadow-in);
     display: flex; align-items: center; justify-content: center;
 }
@@ -133,51 +120,57 @@
     gap: var(--cell-gap);
 }
 .sub-grid {
-    /* لون الفراغات (الخطوط الداخلية) */
-    background: #cbd5e0; 
+    /* تغيير الخلفية لرمادي فاتح حسب طلبك */
+    background: #e2e8f0; 
     border-radius: 8px;
     display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr);
-    gap: 2px; padding: 2px; /* سماكة الخطوط الداخلية */
+    gap: 2px; padding: 2px;
     transition: 0.3s;
-}
-.sub-grid.won { opacity: 0.9; position: relative; }
-.sub-grid.won::after {
-    content: ''; position: absolute; inset: 0; 
-    display: flex; align-items: center; justify-content: center;
-    font-size: 4rem; font-family: var(--font-num); font-weight: 800; opacity: 0.4;
+    position: relative;
+    overflow: hidden; /* لمنع الرمز الكبير من الخروج */
 }
 
-/* المنطقة النشطة (واضحة جداً الآن) */
+/* استعادة الرمز الكبير عند الفوز */
+.sub-grid.won::after {
+    /* يأخذ الرمز من الجافاسكريبت مباشرة */
+    content: attr(data-symbol); 
+    position: absolute; inset: 0; 
+    display: flex; align-items: center; justify-content: center;
+    font-size: 5rem; /* رمز ضخم */
+    font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif; /* لضمان ظهور الإيموجي */
+    opacity: 0.3; /* شفاف */
+    z-index: 0;
+}
+
 .sub-grid.active-zone {
     transform: scale(1.02);
-    /* إطار ذهبي وتوهج */
     box-shadow: 0 0 15px rgba(245, 158, 11, 0.6); 
     border: 2px solid #f59e0b;
-    z-index: 5;
-    background: #fff; /* تبييض الخلفية لزيادة الانتباه */
+    z-index: 5; background: #fff;
 }
 
 .cell {
     display: flex; align-items: center; justify-content: center;
-    font-family: var(--font-num); font-weight: 800; font-size: 1.2rem;
+    font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif;
+    font-size: 1.4rem; /* تكبير الرمز داخل الخلية */
     cursor: pointer; border-radius: 4px; 
-    background: #fff; /* الخلايا بيضاء دائماً */
+    background: #fff;
+    z-index: 1; /* فوق الرمز الكبير */
 }
 .cell:hover { background: #f7fafc; }
 .cell.x { color: var(--p1-color); background: #fff5f5; }
 .cell.o { color: var(--p2-color); background: #f0ffff; }
 
-/* --- 7. الألواح الجانبية --- */
 .p-info { text-align: center; margin-bottom: 20px; }
 .avatar-circle {
     width: 70px; height: 70px; border-radius: 50%;
     background: #fff; display: flex; align-items: center; justify-content: center;
-    font-size: 2rem; margin: 0 auto 10px;
+    font-size: 2.5rem; /* تكبير الأفاتار */
+    margin: 0 auto 10px;
     box-shadow: var(--clay-shadow-out); border: 3px solid transparent;
 }
 .p1-panel .avatar-circle { color: var(--p1-color); border-color: var(--p1-color); }
 .p2-panel .avatar-circle { color: var(--p2-color); border-color: var(--p2-color); }
-
 .p-name { font-weight: 700; font-size: 1.1rem; color: var(--text-main); }
 .p-score { font-family: var(--font-num); font-size: 2rem; font-weight: 800; margin-top: 5px; opacity: 0.6; }
 
@@ -209,8 +202,6 @@
     .power-btn .badge { position: absolute; top: -5px; right: -5px; }
 }
 
-/* --- 8. النوافذ (Modals - Content Only) --- */
-/* (ملاحظة: التموضع يتم في layout.css، هنا التنسيق الداخلي فقط) */
 .clay-modal {
     width: 90%; max-width: 400px;
     background: #fff; padding: 25px; border-radius: var(--radius-lg);
@@ -226,6 +217,9 @@
 .help-content-scroll { overflow-y: auto; padding-left: 10px; text-align: right; }
 .help-section { margin-bottom: 20px; }
 .help-section h4 { color: var(--text-main); margin-bottom: 8px; font-weight: 800; }
-.help-section p { color: var(--text-light); line-height: 1.6; font-size: 0.9rem; }
-.powers-list-detail li { margin-bottom: 10px; background: #f9f9f9; padding: 10px; border-radius: 10px; list-style: none; font-size: 0.9rem; color: var(--text-light); }
+.help-section p { color: var(--text-main); line-height: 1.6; font-size: 0.9rem; } /* تصحيح لون النص ليظهر */
+.powers-list-detail li { 
+    margin-bottom: 10px; background: #f9f9f9; padding: 10px; border-radius: 10px; 
+    list-style: none; font-size: 0.9rem; color: var(--text-main); /* لون داكن للوصف */
+}
 .powers-list-detail strong { color: var(--text-main); display: block; margin-bottom: 4px; }
