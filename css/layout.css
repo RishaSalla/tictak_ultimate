@@ -136,4 +136,13 @@ body {
 .clay-footer { padding-top: 15px; flex-shrink: 0; }
 
 /* إصلاح النوافذ (هام جداً) */
-.modal-overlay.hidden { display: none !important; }
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000; /* رقم عالي جداً ليظهر فوق الزجاج */
+    background: rgba(0, 0, 0, 0.4); /* تعتيم الخلفية */
+    display: flex;           /* الحل السحري للتوسط */
+    align-items: center;     /* توسيط عمودي */
+    justify-content: center; /* توسيط أفقي */
+    backdrop-filter: blur(5px); /* تمويه جميل للخلفية */
+}
