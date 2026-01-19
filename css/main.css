@@ -117,3 +117,21 @@ img {
     top: 20px; left: 20px; 
     z-index: 2000; /* فوق كل شيء */
 }
+
+/* --- إصلاح حجم أيقونات القوى --- */
+.power-btn img {
+    width: 20px !important;  /* إجبار الحجم الصغير */
+    height: 20px !important;
+    min-width: 20px;
+    object-fit: contain;
+}
+
+/* تنسيق إضافي لزر الرجوع والرموز داخل اللعبة */
+.icon-sm { width: 16px; height: 16px; margin-left: 5px; }
+
+/* إصلاح حجم الصور داخل المربعات (للسيف والدرع) */
+.cell img {
+    width: 70%;
+    height: 70%;
+    filter: drop-shadow(0 0 5px currentColor);
+}
