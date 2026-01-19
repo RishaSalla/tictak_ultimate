@@ -1,132 +1,119 @@
 /* =========================================
-   📐 LAYOUT ENGINE - FIXED
+   📐 LAYOUT ENGINE - RETRO EXPANDED
+   توزيع المساحات الجديد: الرقعة هي المركز
    ========================================= */
 
-/* 1. تهيئة الصفحة */
-* { box-sizing: border-box; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; }
+* { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+    outline: none; 
+    -webkit-tap-highlight-color: transparent; 
+}
 
 body {
-    height: 100vh; width: 100vw; overflow: hidden;
+    height: 100vh; 
+    width: 100vw; 
+    overflow: hidden;
     font-family: var(--font-txt);
     color: var(--text-main);
-    background: #f0f4f8; 
-    display: flex; align-items: center; justify-content: center;
+    background: var(--bg-dark);
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
 }
 
-/* 2. الخلفية المتحركة */
-.mesh-background {
-    position: absolute; inset: 0; z-index: -1;
-    overflow: hidden;
-    background: radial-gradient(circle at 50% 50%, #fff, #f2f6f9);
-}
-.blob {
-    position: absolute; border-radius: 50%;
-    filter: blur(80px); opacity: 0.5;
-    animation: float 25s infinite alternate ease-in-out;
-}
-.blob-1 { width: 600px; height: 600px; background: var(--p1-color); top: -150px; left: -150px; }
-.blob-2 { width: 500px; height: 500px; background: var(--p2-color); bottom: -100px; right: -100px; animation-delay: -5s; }
-.blob-3 { width: 400px; height: 400px; background: #e0e0e0; top: 40%; left: 30%; opacity: 0.3; animation-delay: -10s; }
-
-@keyframes float {
-    0% { transform: translate(0, 0) scale(1); }
-    100% { transform: translate(40px, 60px) scale(1.05); }
-}
-
-/* 3. المنصة العائمة */
+/* المنصة العائمة (The Console) */
 .glass-stage {
     position: relative;
-    background: var(--glass-bg);
-    backdrop-filter: blur(var(--blur));
-    -webkit-backdrop-filter: blur(var(--blur));
-    border: var(--glass-border);
-    box-shadow: 0 40px 100px rgba(0,0,0,0.1);
-    overflow: hidden; /* هذا ما كان يقص النوافذ سابقاً */
-    display: flex; flex-direction: column;
-    transition: all 0.5s ease;
-    z-index: 10; /* طبقة المنصة */
+    width: 95vw;
+    height: 90vh;
+    max-width: 1200px;
+    background: var(--bg-panel);
+    border: 2px solid var(--btn-highlight);
+    border-radius: var(--radius-md);
+    box-shadow: 0 0 50px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
-/* وضع اللابتوب */
-@media (min-width: 900px) {
-    .glass-stage {
-        width: 1000px; height: 700px;
-        border-radius: var(--radius-lg);
-    }
-}
-/* وضع الجوال */
-@media (max-width: 899px) {
-    .glass-stage {
-        width: 100%; height: 100%;
-        border-radius: 0; border: none;
-    }
-}
-
-/* 4. الشاشات */
+/* الشاشات */
 .screen {
-    position: absolute; inset: 0; padding: 20px;
-    display: flex; flex-direction: column;
-    opacity: 0; pointer-events: none;
-    transform: translateY(10px);
-    transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-    z-index: 10;
+    position: absolute; 
+    inset: 0; 
+    padding: 20px;
+    display: flex; 
+    flex-direction: column;
+    opacity: 0; 
+    pointer-events: none;
+    transition: all 0.4s ease;
 }
-.screen.active { opacity: 1; pointer-events: all; transform: translateY(0); }
-.screen.hidden { display: none !important; }
 
-/* 5. تنسيق صفحة اللعب */
+.screen.active { opacity: 1; pointer-events: all; }
+
+/* 🎮 توزيع ساحة اللعب (The Arena Layout) */
 .game-layout {
-    flex: 1; display: flex; align-items: center; justify-content: space-between;
-    gap: 20px; padding: 10px; height: 100%;
+    flex: 1;
+    display: grid;
+    grid-template-columns: 180px 1fr 180px; /* اللوحات الجانبية نحيفة */
+    gap: 30px;
+    align-items: center;
+    padding: 20px;
 }
-.player-panel {
-    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 20px; padding: 20px;
-    background: rgba(255,255,255,0.4); border-radius: var(--radius-md); height: 90%;
-}
+
 .board-container {
-    flex: 2; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
 }
 
-/* استجابة الجوال */
+.player-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--text-muted);
+    border-radius: var(--radius-sm);
+    height: 80%;
+}
+
+/* استجابة الجوال (تصميم عمودي) */
 @media (max-width: 899px) {
-    .game-layout { flex-direction: column; justify-content: center; gap: 10px; }
-    .player-panel {
-        flex-direction: row; width: 100%; height: auto;
-        padding: 10px; justify-content: space-between;
+    .game-layout {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr auto;
+        gap: 10px;
     }
-    .board-container { flex: unset; margin: 10px 0; }
+    .player-panel {
+        flex-direction: row;
+        width: 100%;
+        height: auto;
+        justify-content: space-around;
+    }
+    .board-container { order: 2; }
 }
 
-/* 6. النوافذ المنبثقة (MODAL OVERLAY FIX) - الحل هنا */
+/* 📟 نظام النوافذ المنبثقة (Modal) */
 .modal-overlay {
-    position: fixed; /* يحرر النافذة من أي حاوية */
-    inset: 0;        /* يغطي الشاشة بالكامل */
-    z-index: 9999;   /* فوق كل شيء بلا منازع */
-    background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    
-    /* التوسط المثالي */
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(var(--blur-val));
     display: flex;
     align-items: center;
     justify-content: center;
-    
-    /* الحركة */
-    opacity: 0; visibility: hidden;
-    transition: all 0.3s ease;
+    visibility: hidden;
+    opacity: 0;
+    transition: 0.3s;
 }
 
-/* عند التفعيل (تتم إضافته بالجافاسكريبت لاحقاً ولكن نجهزه هنا) */
 .modal-overlay:not(.hidden) {
-    opacity: 1; visibility: visible;
+    visibility: visible;
+    opacity: 1;
 }
-
-/* تنسيقات مساعدة */
-.center-content { align-items: center; justify-content: center; text-align: center; }
-.scroll-wrapper { flex: 1; overflow-y: auto; padding: 10px 5px; }
-.clay-header {
-    height: 50px; display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 10px; flex-shrink: 0;
-}
-.clay-footer { padding-top: 15px; flex-shrink: 0; }
