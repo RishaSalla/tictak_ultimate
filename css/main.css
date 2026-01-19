@@ -1,57 +1,54 @@
 /* =========================================
-   🔗 MAIN ENTRY POINT - RETRO DARK
-   الملف المسؤول عن ربط جميع أجزاء التصميم
+   🔗 MAIN CSS - FINAL TOUCHES
+   المعالج النهائي للأيقونات والتنسيقات العامة
    ========================================= */
 
-/* استدعاء جميع الملفات بالترتيب الصحيح لضمان عدم التضارب */
-@import 'variables.css';
-@import 'animations.css';
-@import 'layout.css';
-@import 'components.css';
+/* 1. معالجة أيقونات الـ SVG (للقضاء على السواد في الخلفية الداكنة) */
+img, .mode-card img, .power-btn img {
+    width: 24px;
+    height: 24px;
+    /* تحويل الأيقونات إلى اللون الأبيض المضيء لتناسب ثيم الريترو */
+    filter: brightness(0) invert(1); 
+    opacity: 0.85;
+    transition: all 0.3s ease;
+    pointer-events: none; /* لمنع تداخل اللمس مع الأيقونة */
+}
 
-/* 1. إعدادات الصفحة العامة */
+/* توهج الأيقونة عند التفاعل */
+.mode-card:hover img, .power-btn.glow img {
+    filter: drop-shadow(0 0 8px var(--accent-color)) brightness(1.2);
+    opacity: 1;
+}
+
+/* 2. ضبط الهوامش العامة ومنع التمرير المشوه */
 html, body {
     margin: 0;
     padding: 0;
-    background-color: var(--bg-dark); /* ضمان عدم ظهور بياض عند التحميل */
-    overflow: hidden; /* منع التمرير الخارجي المشوه */
+    overflow: hidden; /* منع الارتجاج الجانبي */
+    background-color: var(--bg-dark); /* لون أمان عند التحميل */
 }
 
-/* 2. الفئات المساعدة الأساسية */
+/* 3. تنسيق شريط التمرير (Scrollbar) ليتناسب مع شكل الماكينة القديمة */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg-input);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--btn-bg);
+    border: 2px solid var(--bg-input);
+    border-radius: 4px;
+}
+
+/* 4. الحالات المساعدة */
 .hidden {
     display: none !important;
 }
 
-/* 3. تنسيق الخطوط العام */
+/* 5. تحسين ظهور النصوص العربية */
 body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
-}
-
-/* 4. معالجة الصور والأيقونات (SVG) لضمان التناسق */
-img.icon, .mode-icon img, .power-btn img {
-    width: 24px;
-    height: 24px;
-    filter: brightness(0) invert(1); /* تحويل الأيقونات السوداء إلى بيضاء لتناسب الثيم الداكن */
-    opacity: 0.8;
-    transition: 0.3s;
-}
-
-/* توهج الأيقونة عند التفعيل */
-.power-btn.glow img, .mode-card:hover img {
-    filter: drop-shadow(0 0 5px var(--accent-color)) brightness(1.2);
-    opacity: 1;
-}
-
-/* 5. تخصيص شريط التمرير (Scrollbar) للطابع العتيق */
-::-webkit-scrollbar {
-    width: 6px;
-}
-::-webkit-scrollbar-track {
-    background: var(--bg-dark);
-}
-::-webkit-scrollbar-thumb {
-    background: var(--btn-bg);
-    border-radius: 3px;
+    line-height: 1.5;
 }
