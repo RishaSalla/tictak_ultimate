@@ -1,142 +1,140 @@
 /**
- * 🧠 GAME LOGIC ENGINE - RETRO EDITION
- * محرك القوانين المطور للرقعة الكبيرة ونظام الفرق
+ * 🧠 GAME LOGIC ENGINE
+ * محرك القوانين والقوى والتحقق من الفوز
  */
 
 export const GameLogic = {
     state: {
-        grid: [],        // الرقعة 9x9
-        metaGrid: [],    // رقعة الفوز الكبيرة 3x3
-        turn: 'X',       // الفريق الحالي
-        nextGrid: null,  // المربع الموجه إليه الخصم
-        winner: null,    
-        
-        p1: { 
-            name: '', roster: [], turnIndex: 0, symbol: 'X', 
-            score: 0, powers: { nuke: 1, freeze: 1, hack: 1 }, avatar: 'X' 
-        },
-        p2: { 
-            name: '', roster: [], turnIndex: 0, symbol: 'O', 
-            score: 0, powers: { nuke: 1, freeze: 1, hack: 1 }, avatar: 'O' 
+        grid: [],       // 9x9 grid
+        metaGrid: [],   // 3x3 main grid
+        turn: 'X',      // X or O
+        nextGrid: null, // Constraint (0-8 or null for free move)
+        winner: null,
+        p1: { name: 'P1', score: 0, icon: 'X', powers: { nuke: true, freeze: true, hack: true } },
+        p2: { name: 'P2', score: 0, icon: 'O', powers: { nuke: true, freeze: true, hack: true } },
+        frozenGrid: null // For Freeze power
+    },
+
+    init(p1Data, p2Data) {
+        // تهيئة الشبكة الفارغة
+        this.state.grid = Array(9).fill(null).map(() => Array(9).fill(null));
+        this.state.metaGrid = Array(9).fill(null);
+        this.state.turn = 'X'; // الفريق الأول يبدأ دائماً
+        this.state.nextGrid = null;
+        this.state.winner = null;
+        this.state.frozenGrid = null;
+
+        // تحديث بيانات اللاعبين إذا وجدت
+        if (p1Data) {
+            this.state.p1 = { ...this.state.p1, ...p1Data, powers: { nuke: true, freeze: true, hack: true } };
+            this.state.p2 = { ...this.state.p2, ...p2Data, powers: { nuke: true, freeze: true, hack: true } };
         }
     },
 
-    init() {
-        this.state.grid = Array(9).fill(null).map(() => Array(9).fill(null));
-        this.state.metaGrid = Array(9).fill(null);
-        this.state.turn = 'X';
-        this.state.nextGrid = null;
-        this.state.winner = null;
-    },
-
-    // تحديد العضو الذي عليه الدور داخل الفريق
     getCurrentMember() {
-        const p = this.state.turn === 'X' ? this.state.p1 : this.state.p2;
-        if (!p.roster || p.roster.length === 0) return p.name;
-        return p.roster[p.turnIndex % p.roster.length];
+        return this.state.turn === 'X' ? this.state.p1 : this.state.p2;
     },
 
-    // التحقق من صلاحية الحركة قبل البدء
-    isValidMove(gIndex, cIndex) {
-        const s = this.state;
-        if (s.winner) return false;
-        // لا يمكن اللعب في مربع كبير تم الفوز به مسبقاً
-        if (s.metaGrid[gIndex] !== null) return false;
-        // لا يمكن اللعب في خلية محجوزة
-        if (s.grid[gIndex][cIndex] !== null) return false;
-        // شرط التوجيه: يجب اللعب في المربع المحدد إلا لو كان حراً (null)
-        if (s.nextGrid !== null && s.nextGrid !== gIndex) return false;
+    isValidMove(g, c) {
+        if (this.state.winner) return false;
+        
+        // التحقق من التجميد
+        if (this.state.frozenGrid === g) return false;
+
+        // التحقق من الخانة الفارغة
+        if (this.state.grid[g][c] !== null) return false;
+
+        // التحقق من القيد (Next Grid)
+        if (this.state.nextGrid !== null && this.state.nextGrid !== g) {
+            // إلا إذا كان المربع المحدد ممتلئاً (قاعدة الطريق المسدود)
+            if (this.state.metaGrid[this.state.nextGrid] === null) return false;
+        }
+
+        // لا يمكن اللعب في مربع تم الفوز به مسبقاً
+        if (this.state.metaGrid[g] !== null) return false;
+
         return true;
     },
 
-    makeMove(gIndex, cIndex) {
-        const s = this.state;
-        const currentTeam = s.turn === 'X' ? s.p1 : s.p2;
+    makeMove(g, c) {
+        const player = this.getCurrentMember();
+        this.state.grid[g][c] = this.state.turn;
 
-        s.grid[gIndex][cIndex] = s.turn;
-
-        // فحص الفوز بالمربع الصغير
-        if (this.checkWin(s.grid[gIndex])) {
-            s.metaGrid[gIndex] = s.turn;
-            currentTeam.score++;
-        } else if (this.isFull(s.grid[gIndex])) {
-            s.metaGrid[gIndex] = 'DRAW';
+        // التحقق من فوز المربع الصغير
+        if (this.checkWin(this.state.grid[g])) {
+            this.state.metaGrid[g] = this.state.turn;
+            player.score += 100;
         }
 
-        // فحص الفوز الكلي باللعبة
-        if (this.checkWin(s.metaGrid)) {
-            s.winner = s.turn;
+        // التحقق من فوز اللعبة بالكامل
+        if (this.checkWin(this.state.metaGrid)) {
+            this.state.winner = this.state.turn;
+            player.score += 1000;
             return 'GAME_OVER';
         }
 
-        /** * ⚖️ تحديد المربع القادم (The Golden Rule)
-         * إذا كان المربع الموجه إليه الخصم مكتملاً أو فاز به أحد، يصبح اللعب حراً
-         */
-        if (s.metaGrid[cIndex] !== null) {
-            s.nextGrid = null; 
+        // إلغاء التجميد بعد دور واحد
+        if (this.state.frozenGrid !== null) this.state.frozenGrid = null;
+
+        // تحديد المربع التالي
+        // إذا كان المربع التالي (c) محجوزاً أو ممتلئاً، يصبح اللعب حراً
+        if (this.state.metaGrid[c] !== null || this.isGridFull(this.state.grid[c])) {
+            this.state.nextGrid = null;
         } else {
-            s.nextGrid = cIndex;
+            this.state.nextGrid = c;
         }
 
         this.switchTurn();
         return 'CONTINUE';
     },
 
-    checkWin(arr) {
+    usePower(type, g, c) {
+        const player = this.getCurrentMember();
+        
+        // التحقق من توفر القوة
+        if (!player.powers[type]) return false;
+
+        switch (type) {
+            case 'nuke': // تدمير مربع كامل
+                if (this.state.metaGrid[g] !== null) return false; // لا يمكن تدمير مربع محسوم
+                this.state.grid[g] = Array(9).fill(null);
+                this.state.nextGrid = null; // كسر القيد
+                break;
+
+            case 'freeze': // تجميد مربع
+                this.state.frozenGrid = g;
+                break;
+
+            case 'hack': // سرقة خانة
+                if (this.state.grid[g][c] === null || this.state.grid[g][c] === this.state.turn) return false;
+                this.state.grid[g][c] = this.state.turn; // قلب الرمز
+                break;
+        }
+
+        player.powers[type] = false; // استهلاك القوة
+        player.score -= 50; // تكلفة استخدام القوة
+        this.switchTurn(); // القوة تستهلك الدور
+        return true;
+    },
+
+    switchTurn() {
+        this.state.turn = this.state.turn === 'X' ? 'O' : 'X';
+    },
+
+    checkWin(board) {
         const wins = [
             [0,1,2], [3,4,5], [6,7,8], // أفقي
             [0,3,6], [1,4,7], [2,5,8], // عمودي
             [0,4,8], [2,4,6]           // قطري
         ];
-        return wins.some(combo => combo.every(i => arr[i] === this.state.turn));
+        return wins.some(comb => {
+            return board[comb[0]] && 
+                   board[comb[0]] === board[comb[1]] && 
+                   board[comb[0]] === board[comb[2]];
+        });
     },
 
-    isFull(arr) { return arr.every(cell => cell !== null); },
-
-    switchTurn() {
-        const p = this.state.turn === 'X' ? this.state.p1 : this.state.p2;
-        p.turnIndex++; // تدوير الدور للعضو التالي
-        this.state.turn = this.state.turn === 'X' ? 'O' : 'X';
-    },
-
-    // القوات الخاصة (بدون أسئلة حسب طلبك)
-    useNuke(gIndex) {
-        const s = this.state;
-        const p = s.turn === 'X' ? s.p1 : s.p2;
-        if (p.powers.nuke > 0 && s.metaGrid[gIndex] === null) {
-            s.grid[gIndex] = Array(9).fill(null);
-            p.powers.nuke--;
-            this.switchTurn();
-            s.nextGrid = null;
-            return true;
-        }
-        return false;
-    },
-
-    useFreeze() {
-        const p = this.state.turn === 'X' ? this.state.p1 : this.state.p2;
-        if (p.powers.freeze > 0) {
-            p.powers.freeze--;
-            return true; // لا نبدل الدور هنا
-        }
-        return false;
-    },
-
-    useHack(gIndex, cIndex) {
-        const s = this.state;
-        const p = s.turn === 'X' ? s.p1 : s.p2;
-        const opponent = s.turn === 'X' ? 'O' : 'X';
-
-        if (p.powers.hack > 0 && s.grid[gIndex][cIndex] === opponent && s.metaGrid[gIndex] === null) {
-            s.grid[gIndex][cIndex] = s.turn;
-            p.powers.hack--;
-            if (this.checkWin(s.grid[gIndex])) {
-                s.metaGrid[gIndex] = s.turn;
-                p.score++;
-            }
-            this.switchTurn();
-            return true;
-        }
-        return false;
+    isGridFull(subGrid) {
+        return subGrid.every(cell => cell !== null);
     }
 };
