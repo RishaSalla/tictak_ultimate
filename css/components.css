@@ -1,70 +1,150 @@
-/* --- الخانات الميكانيكية (السوداء) --- */
+/* =========================================
+   🎛️ UI COMPONENTS
+   الأزرار، الخانات، والنوافذ
+   ========================================= */
+
+/* 1. خانات الإدخال الميكانيكية (تصميم أسود جذاب) */
 .clay-input {
-    background: var(--bg-input);
+    background: #000000;
     border: 2px solid var(--border-color);
-    color: var(--p1-color);
+    color: var(--p1-color); /* لون برتقالي للنص */
     font-family: var(--font-tech);
-    font-size: 1.2rem;
-    padding: 12px;
-    border-radius: 6px;
+    font-size: 1.4rem;
+    padding: 15px;
+    border-radius: 8px;
     text-align: center;
     width: 100%;
-    transition: 0.3s;
+    max-width: 350px; /* عرض مناسب */
+    transition: all 0.3s ease;
+    box-shadow: inset 0 2px 10px rgba(0,0,0,0.8);
 }
+
 .clay-input:focus {
     border-color: var(--p1-color);
-    box-shadow: 0 0 10px var(--p1-dim);
+    box-shadow: 0 0 15px var(--p1-dim), inset 0 2px 10px rgba(0,0,0,0.8);
+    outline: none;
 }
-.clay-input.small { font-size: 1rem; padding: 8px; }
 
-/* --- الأزرار الموحدة --- */
+/* 🔥 إصلاح مشكلة النقاط الصغيرة في الباسورد */
+input[type="password"] {
+    font-family: sans-serif !important; /* خط عادي لظهور النقاط كبيرة */
+    letter-spacing: 4px; /* مسافة بين النقاط */
+    font-weight: 900;
+}
+input::placeholder {
+    font-family: var(--font-ui);
+    letter-spacing: 0;
+    font-size: 1rem;
+    opacity: 0.5;
+}
+
+.clay-input.small { 
+    font-size: 1rem; 
+    padding: 10px; 
+    max-width: 100%;
+}
+
+/* 2. الأزرار الميكانيكية الموحدة */
 .mech-btn {
-    background: #2a2a30;
+    background: linear-gradient(180deg, #3a3a40 0%, #2a2a30 100%);
     color: var(--text-main);
     border: 1px solid var(--border-color);
-    padding: 12px 20px;
+    border-bottom: 4px solid #1a1a20; /* تأثير ثلاثي الأبعاد */
+    padding: 12px 25px;
     cursor: pointer;
+    font-family: var(--font-ui);
     font-weight: bold;
-    border-radius: 6px;
-    transition: 0.2s;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
+    font-size: 1rem;
+    border-radius: 8px;
+    transition: 0.1s;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
 }
-.mech-btn:hover { background: #3a3a40; }
-.mech-btn:active { transform: scale(0.98); }
-.mech-btn.primary { background: var(--p1-color); color: #000; border: none; }
-.mech-btn.block { width: 100%; margin-top: 10px; }
 
-/* --- مفتاح التبديل (Toggle) --- */
-.toggle-container {
-    display: flex; align-items: center; gap: 10px;
-    margin: 20px 0; font-weight: bold;
+.mech-btn:active {
+    transform: translateY(3px); /* هبوط الزر عند الضغط */
+    border-bottom-width: 1px;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
 }
+
+.mech-btn.primary {
+    background: var(--p1-color);
+    color: #000;
+    border-color: #cc7a00;
+    border-bottom-color: #995c00;
+    box-shadow: 0 0 10px var(--p1-dim);
+}
+.mech-btn.primary:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 0 20px var(--p1-dim);
+}
+
+.mech-btn.block { 
+    width: 100%; 
+    max-width: 350px; /* ليتناسب مع حقل الإدخال */
+    margin-top: 15px; 
+}
+
+/* 3. زر التعليمات العلوي (تنسيق الزر وليس نص فقط) */
+.nav-btn.top-left {
+    background: rgba(30, 30, 36, 0.9);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+.nav-btn.top-left:hover {
+    color: var(--text-main);
+    border-color: var(--p1-color);
+}
+
+/* 4. النوافذ المنبثقة (Modals Content) */
+.mech-modal {
+    background: var(--bg-panel);
+    border: 2px solid var(--border-color);
+    padding: 0; /* Header takes care of padding */
+    border-radius: 12px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+    width: 90%;
+    max-width: 500px;
+    overflow: hidden;
+    transform: scale(0.9);
+    animation: modal-pop 0.3s forwards;
+}
+
+.modal-header {
+    background: #000;
+    padding: 15px 20px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid var(--border-color);
+}
+.modal-header h3 { margin: 0; color: var(--p1-color); }
+.close-modal-btn {
+    background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer;
+}
+
+/* 5. مفتاح التبديل (Toggle Switch) */
 .switch {
-    position: relative; display: inline-block; width: 50px; height: 26px;
+    position: relative; display: inline-block; width: 60px; height: 30px;
 }
 .switch input { opacity: 0; width: 0; height: 0; }
 .slider {
     position: absolute; cursor: pointer; inset: 0;
-    background-color: #333; transition: .4s; border-radius: 34px;
+    background-color: #111; border: 1px solid #444;
+    transition: .4s; border-radius: 34px;
 }
 .slider:before {
-    position: absolute; content: ""; height: 20px; width: 20px;
-    left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%;
+    position: absolute; content: ""; height: 22px; width: 22px;
+    left: 4px; bottom: 3px; background-color: #888; transition: .4s; border-radius: 50%;
 }
-input:checked + .slider { background-color: var(--p1-color); }
-input:checked + .slider:before { transform: translateX(24px); }
-
-/* --- بطاقات الأنماط والفرق --- */
-.mode-card {
-    background: #25252b; border: 1px solid var(--border-color);
-    padding: 15px; border-radius: 8px; cursor: pointer;
-    display: flex; flex-direction: column; align-items: center; gap: 10px;
-    transition: 0.3s;
+input:checked + .slider { border-color: var(--p1-color); }
+input:checked + .slider:before { 
+    transform: translateX(28px); 
+    background-color: var(--p1-color);
+    box-shadow: 0 0 10px var(--p1-color);
 }
-.mode-card:hover { border-color: var(--p1-color); transform: translateY(-3px); }
-.team-card {
-    background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px;
-    border-left: 4px solid #555; width: 100%; margin-bottom: 10px;
-}
-.p1-border { border-color: var(--p1-color); }
-.p2-border { border-color: var(--p2-color); }
