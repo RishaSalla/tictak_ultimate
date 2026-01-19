@@ -3,139 +3,223 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Risha Games | XO Ultimate Retro</title>
+    <title>Risha Games | XO Ultimate</title>
     
-    <link rel="stylesheet" href="css/variables.css">   <link rel="stylesheet" href="css/animations.css">  <link rel="stylesheet" href="css/layout.css">      <link rel="stylesheet" href="css/components.css">  <link rel="stylesheet" href="css/main.css">        <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/main.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
+
+    <button id="global-help-btn" class="nav-btn top-left">
+        📜 التعليمات
+    </button>
+
     <main class="glass-stage">
-        <section id="screen-login" class="screen active">
-            <header class="screen-header">
-                <button class="icon-btn help-trigger" data-help="login">؟</button>
-            </header>
-            <div class="brand-logo">
-                <span class="x-glow">X</span><span class="o-glow">O</span>
-                <div class="retro-badge">ULTIMATE</div>
+        
+        <section id="screen-login" class="screen active center-flex">
+            <div class="brand-container">
+                <h1 class="brand-logo"><span class="p1-c">X</span><span class="p2-c">O</span> ULTIMATE</h1>
+                <div class="retro-badge">SYSTEM V.2.0</div>
             </div>
-            <h2 class="retro-heading">أدخل رمز الوصول</h2>
-            <div class="pin-box">
-                <input type="password" id="pin-input" placeholder="••••" maxlength="4" inputmode="numeric">
+            
+            <div class="login-box">
+                <label class="mech-label">أدخل رمز الوصول</label>
+                <input type="password" id="pin-input" class="clay-input" maxlength="8" placeholder="••••••••" inputmode="numeric">
+                <button id="btn-login" class="mech-btn primary block">تحقق من الهوية</button>
             </div>
-            <button class="clay-btn primary big" id="btn-login">تحقق من الهوية</button>
             <p id="login-msg" class="status-msg"></p>
         </section>
 
-        <section id="screen-setup" class="screen hidden">
-            <header class="clay-header">
-                <button class="icon-btn help-trigger" data-help="setup">؟</button>
-                <h3>تخصيص الفرق</h3>
-            </header>
-            <div class="setup-container">
-                <div class="mech-card p1-theme">
-                    <div class="card-label">الفريق الأول</div>
-                    <input type="text" id="p1-main-name" class="clay-input" placeholder="اسم الفريق..">
-                    <div class="roster-zone">
-                        <input type="text" id="p1-roster-input" class="clay-input small" placeholder="عضو جديد..">
-                        <button class="clay-btn small" id="btn-add-p1">+</button>
-                        <ul id="p1-roster-list" class="roster-list"></ul>
+        <section id="screen-setup" class="screen center-flex hidden">
+            <h2 class="screen-title">إعداد النظام</h2>
+            
+            <div class="toggle-container">
+                <span class="toggle-label">فردي</span>
+                <label class="switch">
+                    <input type="checkbox" id="team-mode-toggle">
+                    <span class="slider round"></span>
+                </label>
+                <span class="toggle-label">فرق</span>
+            </div>
+
+            <div class="setup-grid">
+                <div class="team-card p1-border">
+                    <div class="input-group">
+                        <label>اسم الفريق (1)</label>
+                        <input type="text" id="p1-name" class="clay-input" placeholder="الفريق البرتقالي">
+                    </div>
+                    <div class="input-group">
+                        <label>الرمز</label>
+                        <select id="p1-icon" class="clay-select">
+                            <option value="X">X (كلاسيكي)</option>
+                            <option value="sword">السيف ⚔️</option>
+                            <option value="bolt">الصاعقة ⚡</option>
+                        </select>
+                    </div>
+                    <div class="roster-box hidden" id="p1-roster-box">
+                        <input type="text" id="p1-member" class="clay-input small" placeholder="اسم العضو..">
+                        <button id="btn-add-p1" class="mech-btn small">+</button>
+                        <ul id="p1-list" class="roster-list"></ul>
                     </div>
                 </div>
-                <div class="mech-card p2-theme">
-                    <div class="card-label">الفريق الثاني</div>
-                    <input type="text" id="p2-main-name" class="clay-input" placeholder="اسم الفريق..">
-                    <div class="roster-zone">
-                        <input type="text" id="p2-roster-input" class="clay-input small" placeholder="عضو جديد..">
-                        <button class="clay-btn small" id="btn-add-p2">+</button>
-                        <ul id="p2-roster-list" class="roster-list"></ul>
+
+                <div class="team-card p2-border">
+                    <div class="input-group">
+                        <label>اسم الفريق (2)</label>
+                        <input type="text" id="p2-name" class="clay-input" placeholder="الفريق الأزرق">
+                    </div>
+                    <div class="input-group">
+                        <label>الرمز</label>
+                        <select id="p2-icon" class="clay-select">
+                            <option value="O">O (كلاسيكي)</option>
+                            <option value="shield">الدرع 🛡️</option>
+                            <option value="skull">الجمجمة 💀</option>
+                        </select>
+                    </div>
+                    <div class="roster-box hidden" id="p2-roster-box">
+                        <input type="text" id="p2-member" class="clay-input small" placeholder="اسم العضو..">
+                        <button id="btn-add-p2" class="mech-btn small">+</button>
+                        <ul id="p2-list" class="roster-list"></ul>
                     </div>
                 </div>
             </div>
-            <button class="clay-btn primary full" id="btn-save-setup">حفظ الإعدادات</button>
+
+            <div class="timer-setup">
+                <label>توقيت النقلة:</label>
+                <select id="timer-select" class="clay-select">
+                    <option value="0">بدون مؤقت ♾️</option>
+                    <option value="5">5 ثوانٍ 🔥</option>
+                    <option value="10">10 ثوانٍ ⏱️</option>
+                    <option value="20">20 ثانية 🐢</option>
+                </select>
+            </div>
+
+            <button id="btn-save-setup" class="mech-btn primary block">حفظ وبدء</button>
         </section>
 
-        <section id="screen-menu" class="screen hidden">
-            <header class="clay-header">
-                <button class="icon-btn help-trigger" data-help="modes">؟</button>
-                <h3>نظام التحدي</h3>
-            </header>
-            <div class="modes-grid">
-                <div class="mode-card" data-mode="classic">
-                    <img src="assets/icons/clash.svg"><h4>كلاسيك</h4>
-                </div>
-                <div class="mode-card" data-mode="clash">
-                    <img src="assets/icons/clash.svg"><h4>المواجهة</h4>
-                </div>
-                <div class="mode-card" data-mode="void">
-                    <img src="assets/icons/code.svg"><h4>المجهول</h4>
-                </div>
-                <div class="mode-card" data-mode="balance">
-                    <img src="assets/icons/balance.svg"><h4>الميزان</h4>
-                </div>
-                <div class="mode-card" data-mode="duality">
-                    <img src="assets/icons/duality.svg"><h4>الثنائيات</h4>
-                </div>
+        <section id="screen-menu" class="screen center-flex hidden">
+            <h2 class="screen-title">اختر بروتوكول التحدي</h2>
+            <div class="modes-grid-layout">
+                <button class="mode-card span-2" data-mode="classic">
+                    <img src="assets/icons/clash.svg" class="icon-lg">
+                    <span>كلاسيكي</span>
+                </button>
+                <button class="mode-card" data-mode="clash">
+                    <img src="assets/icons/clash.svg" class="icon-md">
+                    <span>المواجهة</span>
+                </button>
+                <button class="mode-card" data-mode="void">
+                    <img src="assets/icons/code.svg" class="icon-md">
+                    <span>المجهول</span>
+                </button>
+                <button class="mode-card" data-mode="balance">
+                    <img src="assets/icons/balance.svg" class="icon-md">
+                    <span>الميزان</span>
+                </button>
+                <button class="mode-card" data-mode="duality">
+                    <img src="assets/icons/duality.svg" class="icon-md">
+                    <span>الثنائيات</span>
+                </button>
             </div>
         </section>
 
         <section id="screen-game" class="screen hidden">
             <header class="game-header">
-                <button class="clay-btn small" id="btn-exit-game">انسحاب</button>
-                <div class="turn-indicator" id="turn-indicator">...</div>
-                <button class="icon-btn help-trigger" data-help="game">؟</button>
+                <button id="btn-back" class="nav-btn">
+                    <img src="assets/icons/back.svg" class="icon-sm"> رجوع
+                </button>
+                <div class="turn-display">
+                    <span id="turn-text">الدور لـ...</span>
+                    <div id="timer-bar" class="timer-bar"><div class="bar-fill"></div></div>
+                </div>
+                <div class="score-board">
+                    <span class="p1-score" id="score-p1">0</span> : <span class="p2-score" id="score-p2">0</span>
+                </div>
             </header>
-            <div class="game-layout">
-                <aside class="player-panel p1-side" id="panel-p1">
-                    <div class="p-avatar" id="disp-av-p1">X</div>
-                    <div class="p-name" id="disp-name-p1">P1</div>
-                    <div class="p-score" id="score-x">0</div>
-                    <div class="powers-mech">
-                        <button class="power-btn p1" data-power="nuke"><img src="assets/icons/nuke.svg"></button>
-                        <button class="power-btn p1" data-power="freeze"><img src="assets/icons/freeze.svg"></button>
-                        <button class="power-btn p1" data-power="hack"><img src="assets/icons/hack.svg"></button>
+
+            <div class="arena-container">
+                <aside class="side-panel p1-side">
+                    <div class="player-info">
+                        <img id="p1-avatar-img" class="avatar-icon">
+                        <span id="p1-display-name">P1</span>
+                    </div>
+                    <div class="powers-vertical">
+                        <button class="power-btn p1" data-power="nuke">
+                            <img src="assets/icons/nuke.svg"> <span>نووي</span>
+                        </button>
+                        <button class="power-btn p1" data-power="freeze">
+                            <img src="assets/icons/freeze.svg"> <span>تجميد</span>
+                        </button>
+                        <button class="power-btn p1" data-power="hack">
+                            <img src="assets/icons/hack.svg"> <span>هاك</span>
+                        </button>
                     </div>
                 </aside>
 
-                <div class="board-container">
-                    <div class="grid-frame">
-                        <div id="game-grid" class="game-grid"></div>
-                    </div>
+                <div class="grid-wrapper">
+                    <div id="game-grid" class="fixed-grid"></div>
                 </div>
 
-                <aside class="player-panel p2-side" id="panel-p2">
-                    <div class="p-avatar" id="disp-av-p2">O</div>
-                    <div class="p-name" id="disp-name-p2">P2</div>
-                    <div class="p-score" id="score-o">0</div>
-                    <div class="powers-mech">
-                        <button class="power-btn p2" data-power="nuke"><img src="assets/icons/nuke.svg"></button>
-                        <button class="power-btn p2" data-power="freeze"><img src="assets/icons/freeze.svg"></button>
-                        <button class="power-btn p2" data-power="hack"><img src="assets/icons/hack.svg"></button>
+                <aside class="side-panel p2-side">
+                    <div class="player-info">
+                        <img id="p2-avatar-img" class="avatar-icon">
+                        <span id="p2-display-name">P2</span>
+                    </div>
+                    <div class="powers-vertical">
+                        <button class="power-btn p2" data-power="nuke">
+                            <img src="assets/icons/nuke.svg"> <span>نووي</span>
+                        </button>
+                        <button class="power-btn p2" data-power="freeze">
+                            <img src="assets/icons/freeze.svg"> <span>تجميد</span>
+                        </button>
+                        <button class="power-btn p2" data-power="hack">
+                            <img src="assets/icons/hack.svg"> <span>هاك</span>
+                        </button>
                     </div>
                 </aside>
             </div>
+
+            <footer class="game-log-bar">
+                <span class="log-cursor">></span>
+                <span id="game-log-text">بانتظار بدء اللعب...</span>
+            </footer>
         </section>
     </main>
 
-    <div id="modal-calc" class="modal-overlay hidden">
-        <div class="clay-modal">
-            <div class="calc-screen" id="calc-q">...</div>
-            <div class="calc-input-row" id="calc-inputs"></div>
-            <div class="numpad">
-                <button data-key="1">1</button><button data-key="2">2</button><button data-key="3">3</button>
-                <button data-key="4">4</button><button data-key="5">5</button><button data-key="6">6</button>
-                <button data-key="7">7</button><button data-key="8">8</button><button data-key="9">9</button>
-                <button data-key="del" class="secondary">⌫</button><button data-key="0">0</button><button data-key="ok" class="primary">✔</button>
+    <div id="modal-instructions" class="modal-overlay hidden">
+        <div class="mech-modal wide">
+            <header class="modal-header">
+                <h3>دليل العمليات</h3>
+                <button class="close-modal-btn">✕</button>
+            </header>
+            <div class="tabs-container">
+                <button class="tab-btn active" data-tab="rules">القواعد</button>
+                <button class="tab-btn" data-tab="math">الرياضيات</button>
+                <button class="tab-btn" data-tab="powers">القوى</button>
             </div>
+            <div class="modal-body" id="help-body">
+                </div>
         </div>
     </div>
 
-    <div id="modal-help" class="modal-overlay hidden">
-        <div class="clay-modal wide">
-            <header class="modal-head">
-                <button class="icon-btn" id="btn-close-help">✕</button>
-                <h3>دليل التشغيل</h3>
-            </header>
-            <div id="help-content-area" class="help-scroll"></div>
+    <div id="modal-calc" class="modal-overlay hidden">
+        <div class="mech-modal calc-theme">
+            <div class="calc-lcd" id="calc-q">...</div>
+            <div class="calc-input-display" id="calc-inputs"></div>
+            <div class="numpad-grid">
+                <button data-key="7">7</button><button data-key="8">8</button><button data-key="9">9</button>
+                <button data-key="4">4</button><button data-key="5">5</button><button data-key="6">6</button>
+                <button data-key="1">1</button><button data-key="2">2</button><button data-key="3">3</button>
+                <button data-key="del" class="del-btn">⌫</button>
+                <button data-key="0">0</button>
+                <button data-key="ok" class="ok-btn">✔</button>
+            </div>
         </div>
     </div>
 
