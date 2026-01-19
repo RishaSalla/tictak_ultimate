@@ -1,6 +1,6 @@
 /**
  * 🎨 UI MANAGER - RETRO MECHANICAL EDITION
- * مدير الواجهة المسؤول عن الرقعة الكبيرة والأيقونات والاحتفالات
+ * مدير الواجهة المسؤول عن الرقعة الكبيرة وربط الأيقونات الشامل
  */
 
 import { GameLogic } from './logic.js';
@@ -14,9 +14,8 @@ export const UI = {
         helpContent: document.getElementById('help-content-area'),
         calcQ: document.getElementById('calc-q'),
         calcInputs: document.getElementById('calc-inputs'),
-        winnerName: document.getElementById('winner-name'),
         
-        // لوحات اللاعبين الجانبية
+        // لوحات المعلومات الجانبية
         p1Avatar: document.getElementById('disp-av-p1'),
         p2Avatar: document.getElementById('disp-av-p2'),
         p1Name: document.getElementById('disp-name-p1'),
@@ -25,9 +24,12 @@ export const UI = {
         p2Score: document.getElementById('score-o')
     },
 
-    // تنقل الشاشات
+    // تنقل الشاشات (تبديل الكلاسات لضمان المركزية)
     showScreen(screenId) {
-        this.elements.screens.forEach(s => s.classList.add('hidden'));
+        this.elements.screens.forEach(s => {
+            s.classList.add('hidden');
+            s.classList.remove('active');
+        });
         const target = document.getElementById(screenId);
         if (target) {
             target.classList.remove('hidden');
@@ -35,7 +37,7 @@ export const UI = {
         }
     },
 
-    // رسم الرقعة الكبيرة (The Giant Grid)
+    // بناء الرقعة الكبيرة (The Giant Grid)
     createGrid(onClickCallback) {
         const grid = this.elements.gridContainer;
         grid.innerHTML = ''; 
@@ -56,7 +58,7 @@ export const UI = {
         }
     },
 
-    // تحديث الحالة البصرية للرقعة
+    // تحديث الحالة البصرية للرقعة والأيقونات
     updateGrid(logicState) {
         const { grid, metaGrid, nextGrid, winner, p1, p2 } = logicState;
 
@@ -64,7 +66,14 @@ export const UI = {
             const subEl = document.getElementById(`sub-${g}`);
             subEl.className = 'sub-grid'; 
             
-            // 1. عرض الرمز الضخم عند الفوز بالمربع
+            // وميض النيون للمربع النشط
+            if (!winner && metaGrid[g] === null) {
+                if (nextGrid === null || nextGrid === g) {
+                    subEl.classList.add('active-zone');
+                }
+            }
+
+            // عرض الرموز الضخمة عند الفوز بمربع
             if (metaGrid[g] !== null) {
                 subEl.classList.add('won');
                 const winSymbol = metaGrid[g] === 'X' ? p1.avatar : p2.avatar;
@@ -72,14 +81,6 @@ export const UI = {
                 subEl.style.color = metaGrid[g] === 'X' ? 'var(--p1-color)' : 'var(--p2-color)';
             }
 
-            // 2. توهج المنطقة النشطة (Active Zone)
-            if (!winner && metaGrid[g] === null) {
-                if (nextGrid === null || nextGrid === g) {
-                    subEl.classList.add('active-zone');
-                }
-            }
-
-            // 3. تحديث الخلايا الصغيرة بالأيقونات
             const cells = subEl.children;
             for (let c = 0; c < 9; c++) {
                 const cell = cells[c];
@@ -90,7 +91,7 @@ export const UI = {
         }
     },
 
-    // تحديث لوحات المعلومات الجانبية
+    // تحديث اللوحات الجانبية (HUD)
     updateHUD(state) {
         const { turn, p1, p2 } = state;
         const currentMember = GameLogic.getCurrentMember();
@@ -99,14 +100,12 @@ export const UI = {
         this.elements.p2Name.textContent = p2.name;
         this.elements.p1Score.textContent = p1.score;
         this.elements.p2Score.textContent = p2.score;
-        this.elements.p1Avatar.textContent = p1.avatar;
-        this.elements.p2Avatar.textContent = p2.avatar;
-
+        
         this.elements.turnDisplay.textContent = `دور: ${currentMember}`;
         this.elements.turnDisplay.style.color = turn === 'X' ? 'var(--p1-color)' : 'var(--p2-color)';
     },
 
-    // إدارة النوافذ المنبثقة والتعليمات
+    // إدارة النوافذ والتعليمات
     openModal(id, helpKey = null) {
         if (helpKey) {
             this.elements.helpContent.innerHTML = `<p>${HelpData[helpKey]}</p>`;
@@ -116,15 +115,5 @@ export const UI = {
 
     closeModal(id) {
         document.getElementById(id).classList.add('hidden');
-    },
-
-    // إعداد شاشة الحاسبة الميكانيكية
-    setupCalculator(question) {
-        this.elements.calcQ.textContent = question.q;
-        this.elements.calcInputs.innerHTML = '';
-    },
-
-    updateCalcDisplay(buffer) {
-        this.elements.calcInputs.textContent = buffer.join('') || '_';
     }
 };
