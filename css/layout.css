@@ -1,23 +1,19 @@
 /* =========================================
-   📐 LAYOUT SYSTEM (CORRECTED)
-   إصلاح التمركز + عزل النوافذ المنبثقة
+   📐 LAYOUT SYSTEM (FINAL UPDATED)
+   الهيكل، التمركز، والشبكة الثابتة
    ========================================= */
 
-/* 1. إعدادات الصفحة والتوسيط */
 body {
     margin: 0; padding: 0;
     width: 100vw; height: 100vh;
     background-color: var(--bg-dark);
     color: var(--text-main);
     font-family: var(--font-ui);
-    /* التوسيط الإجباري للحاوية */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden; /* لمنع أي تمرير غير مرغوب */
+    display: flex; justify-content: center; align-items: center;
+    overflow: hidden;
 }
 
-/* 2. الحاوية الزجاجية الكبيرة */
+/* 1. الحاوية الزجاجية الكبيرة */
 .glass-stage {
     position: relative;
     width: 95%; max-width: 1100px;
@@ -27,151 +23,121 @@ body {
     box-shadow: 0 0 50px rgba(0,0,0,0.6);
     border-radius: 12px;
     overflow: hidden; 
-    /* ضمان أن العناصر الداخلية تتمركز */
     display: flex; flex-direction: column;
 }
 
-/* 3. نظام الطبقات للشاشات (Screens) */
+/* 2. نظام الطبقات (Screens) */
 .screen {
-    position: absolute;
-    inset: 0; /* تغطي كامل الحاوية */
+    position: absolute; inset: 0;
     width: 100%; height: 100%;
     background: var(--bg-panel);
     display: flex; flex-direction: column;
     z-index: 10;
-    opacity: 0; 
-    pointer-events: none; /* تمنع الضغط عليها وهي مخفية */
+    opacity: 0; pointer-events: none;
     transition: opacity 0.3s ease;
     padding: 20px;
-    box-sizing: border-box; /* لحساب الحواف بدقة */
+    box-sizing: border-box;
 }
+.screen.active { opacity: 1; pointer-events: all; z-index: 20; }
+.center-flex { justify-content: center; align-items: center; text-align: center; }
 
-.screen.active {
-    opacity: 1;
-    pointer-events: all;
-    z-index: 20;
-}
-
-/* كلاس مساعد للتوسيط داخل الشاشات */
-.center-flex {
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
-
-/* 4. إصلاح الكارثة: النوافذ المنبثقة (Modals) */
-/* هذا الكود الناقص هو الذي كان يسبب ظهور العناصر مبعثرة */
+/* 3. النوافذ المنبثقة (Modal Overlay) */
 .modal-overlay {
-    position: fixed; /* خروج من التدفق العادي للصفحة */
-    top: 0; left: 0;
+    position: fixed; top: 0; left: 0;
     width: 100vw; height: 100vh;
-    background: rgba(0, 0, 0, 0.85); /* خلفية معتمة */
+    background: rgba(0, 0, 0, 0.85);
     backdrop-filter: blur(5px);
-    z-index: 1000; /* طبقة عليا جداً */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    opacity: 0;
-    pointer-events: none;
+    z-index: 1000;
+    display: flex; justify-content: center; align-items: center;
+    opacity: 0; pointer-events: none;
     transition: opacity 0.3s ease;
 }
+.modal-overlay:not(.hidden) { opacity: 1; pointer-events: all; }
 
-/* حالة الظهور للنافذة */
-.modal-overlay:not(.hidden) {
-    opacity: 1;
-    pointer-events: all;
-}
-
-/* 5. تخطيط صفحة الأنماط */
+/* 4. تخطيط صفحة الأنماط */
 .modes-grid-layout {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    width: 100%; max-width: 500px;
-    margin: 0 auto; /* توسيط الكتلة */
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 15px; width: 100%; max-width: 500px; margin: 0 auto;
 }
 .mode-card.span-2 { grid-column: span 2; }
+.mode-card {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+}
 
-/* 6. تخطيط ساحة اللعب */
-.arena-container {
-    display: flex;
+/* 5. تخطيط ساحة اللعب والهيدر (محدث) */
+.game-header {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr; /* يسار - وسط - يمين */
     align-items: center;
-    justify-content: center;
-    gap: 20px;
-    height: 100%; width: 100%;
+    padding: 0 20px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #333;
+    background: rgba(0,0,0,0.3);
+    min-height: 50px;
 }
-.grid-wrapper {
-    /* حاوية الرقعة */
-    display: flex; justify-content: center; align-items: center;
+#btn-back { justify-self: start; }
+.turn-display { justify-self: center; text-align: center; width: 100%; }
+.score-board { justify-self: end; font-family: var(--font-tech); font-size: 1.2rem; }
+
+.arena-container {
+    display: flex; align-items: center; justify-content: center;
+    gap: 20px; height: 100%; width: 100%;
 }
+.side-panel {
+    width: 100px; display: flex; flex-direction: column;
+    align-items: center; gap: 15px;
+}
+.grid-wrapper { display: flex; justify-content: center; align-items: center; }
+
+/* 6. الشبكة الثابتة (Rigid Grid System) */
 .fixed-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    width: var(--arena-size); /* استخدام المتغير */
+    width: var(--arena-size);
     height: var(--arena-size);
-    gap: 8px;
+    gap: 5px;
     background: #000;
-    padding: 8px;
+    padding: 5px;
     border-radius: 8px;
+    /* تثبيت الأبعاد */
+    min-width: var(--arena-size);
+    max-width: var(--arena-size);
 }
-.side-panel {
-    width: 120px;
-    display: flex; flex-direction: column;
-    align-items: center; gap: 15px;
-}
-
-/* --- 7. تكملة الرقعة (GRID STRUCTURE) --- */
-
 
 .sub-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 2px;
-    background: var(--bg-panel); /* لون الفواصل */
-    border: 1px solid #333;
-    border-radius: 4px;
-    overflow: hidden;
+    gap: 1px;
+    background: #333;
+    width: 100%; height: 100%;
+    border-radius: 4px; overflow: hidden;
 }
 
 .cell {
-    background: #1a1a1a; /* لون المربع الصغير */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--font-tech);
-    font-size: 1.5rem;
+    background: #121214;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    overflow: hidden; /* يقطع أي صورة تخرج عن الحدود */
+    width: 100%; height: 100%;
     cursor: pointer;
-    transition: background 0.2s;
     user-select: none;
-    position: relative; /* مهم للرموز */
 }
+.cell:hover { background: #1f1f25; }
 
-.cell:hover {
-    background: #252525;
+/* تنسيق المحتوى داخل الخلية */
+.cell img, .cell span {
+    max-width: 70%; 
+    max-height: 70%;
+    pointer-events: none;
+    display: block;
 }
+.cell span { font-size: 1.8rem; font-weight: bold; line-height: 1; }
 
-/* تمييز المنطقة النشطة (Active Zone) */
+/* المناطق النشطة والفوز */
 .active-zone {
     box-shadow: inset 0 0 15px var(--p1-dim);
     border: 1px solid var(--p1-color);
     background: rgba(255, 158, 100, 0.05);
 }
-
-/* تأثير الفوز بالمربع */
-.sub-grid.won {
-    position: relative;
-}
-.sub-grid.won::after {
-    content: attr(data-symbol);
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 4rem;
-    font-weight: bold;
-    color: inherit;
-    background: rgba(0,0,0,0.85); /* تغطية المربعات الصغيرة */
-    z-index: 5;
-    text-shadow: 0 0 20px currentColor;
-}
+.sub-grid.won { position: relative; }
