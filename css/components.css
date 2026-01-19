@@ -148,3 +148,62 @@ input:checked + .slider:before {
     background-color: var(--p1-color);
     box-shadow: 0 0 10px var(--p1-color);
 }
+
+/* --- شبكة اختيار الأيقونات والمؤقت (NEW) --- */
+.icon-selector, .timer-selector {
+    display: flex; gap: 10px; justify-content: center; margin: 10px 0 20px 0;
+}
+.icon-option, .timer-option {
+    background: #000; border: 1px solid #444;
+    width: 50px; height: 50px; border-radius: 8px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: 0.2s; color: #fff; font-weight: bold; font-family: var(--font-tech);
+}
+.icon-option img { width: 24px; height: 24px; filter: invert(1); }
+.icon-option:hover { border-color: #888; transform: translateY(-2px); }
+
+/* حالة الاختيار النشط */
+.icon-option.selected, .timer-option.selected {
+    border-color: var(--p1-color);
+    background: rgba(255, 158, 100, 0.1);
+    box-shadow: 0 0 10px var(--p1-dim);
+}
+
+/* التباعد في بطاقة الفريق */
+.team-card {
+    display: flex; flex-direction: column; gap: 10px; /* متنفس */
+    padding: 20px;
+}
+.sub-label { font-size: 0.9rem; color: #888; margin-top: 5px; display: block; }
+
+
+/* --- إصلاح الحاسبة (Calculator Fix) --- */
+.mech-modal.calc-theme {
+    width: 300px; padding: 20px;
+}
+.calc-lcd {
+    background: #000; color: var(--accent-gold);
+    font-family: var(--font-tech); font-size: 1.5rem;
+    padding: 10px; border-radius: 4px; text-align: right;
+    border: 1px solid #333; margin-bottom: 5px;
+    min-height: 40px;
+}
+.calc-input-display {
+    color: #fff; text-align: right; font-size: 1.2rem; margin-bottom: 15px;
+    height: 30px; border-bottom: 1px solid #444;
+}
+
+/* الشبكة المنتظمة للأزرار */
+.numpad-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 أعمدة متساوية */
+    gap: 8px;
+}
+.numpad-grid button {
+    background: #2a2a30; border: 1px solid #444;
+    color: #fff; padding: 15px 0; border-radius: 6px;
+    font-size: 1.2rem; cursor: pointer;
+}
+.numpad-grid button:active { background: #111; }
+.numpad-grid .ok-btn { background: var(--p1-color); color: #000; font-weight: bold; }
+.numpad-grid .del-btn { background: #ff4444; color: #fff; }
