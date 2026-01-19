@@ -119,3 +119,59 @@ body {
     display: flex; flex-direction: column;
     align-items: center; gap: 15px;
 }
+
+/* --- 7. تكملة الرقعة (GRID STRUCTURE) --- */
+
+
+.sub-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: var(--bg-panel); /* لون الفواصل */
+    border: 1px solid #333;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.cell {
+    background: #1a1a1a; /* لون المربع الصغير */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-tech);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    user-select: none;
+    position: relative; /* مهم للرموز */
+}
+
+.cell:hover {
+    background: #252525;
+}
+
+/* تمييز المنطقة النشطة (Active Zone) */
+.active-zone {
+    box-shadow: inset 0 0 15px var(--p1-dim);
+    border: 1px solid var(--p1-color);
+    background: rgba(255, 158, 100, 0.05);
+}
+
+/* تأثير الفوز بالمربع */
+.sub-grid.won {
+    position: relative;
+}
+.sub-grid.won::after {
+    content: attr(data-symbol);
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    font-weight: bold;
+    color: inherit;
+    background: rgba(0,0,0,0.85); /* تغطية المربعات الصغيرة */
+    z-index: 5;
+    text-shadow: 0 0 20px currentColor;
+}
