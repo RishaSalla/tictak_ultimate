@@ -1,54 +1,119 @@
-/* --- معالجة الأيقونات (SVG) --- */
-img { pointer-events: none; }
-/* تحويل الأيقونات السوداء إلى الأبيض/الرمادي */
-.icon-lg, .icon-md, .icon-sm, .power-btn img {
-    filter: brightness(0) invert(0.8); 
-    transition: 0.3s;
+/* =========================================
+   🔧 MAIN UTILITIES & ICONS FIX
+   إخفاء العناصر بقوة + معالجة الأيقونات
+   ========================================= */
+
+/* 1. السلاح النووي للإخفاء (للقضاء على الأشباح) */
+.hidden {
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
 }
+
+/* 2. معالجة أيقونات SVG (إصلاح المربعات البيضاء) */
+/* المشكلة كانت أن الأيقونات سوداء على خلفية سوداء أو غير محملة */
+img {
+    pointer-events: none; /* منع سحب الصور */
+}
+
+/* تحويل الأيقونات إلى الأبيض الساطع (Retro White) */
+.icon-lg, .icon-md, .icon-sm, .power-btn img, .mode-card img {
+    filter: brightness(0) invert(1) drop-shadow(0 0 2px rgba(255,255,255,0.5)); 
+    transition: 0.3s;
+    opacity: 0.9;
+}
+
+/* حالة التفاعل مع الأيقونات */
 .mode-card:hover img, .power-btn:hover img {
-    filter: brightness(0) invert(1) drop-shadow(0 0 5px white);
+    filter: brightness(0) invert(1) drop-shadow(0 0 8px var(--p1-color));
+    opacity: 1;
+    transform: scale(1.1);
 }
-.icon-lg { width: 40px; height: 40px; }
+
+/* أحجام الأيقونات القياسية */
+.icon-lg { width: 48px; height: 48px; margin-bottom: 10px; }
 .icon-md { width: 32px; height: 32px; }
-.icon-sm { width: 18px; height: 18px; }
+.icon-sm { width: 18px; height: 18px; margin-left: 5px; }
 
-/* --- الأيقونات الجانبية للقوى --- */
-.powers-vertical {
-    display: flex; flex-direction: column; gap: 10px; width: 100%;
+/* 3. تنسيق العناوين والشعارات (لإصلاح النصوص الصغيرة) */
+.brand-container {
+    text-align: center;
+    margin-bottom: 30px;
 }
-.power-btn {
-    background: transparent; border: 1px solid var(--border-color);
-    padding: 8px; border-radius: 6px; cursor: pointer;
-    display: flex; align-items: center; gap: 10px;
-    color: var(--text-muted); font-size: 0.8rem;
-    transition: 0.3s;
-}
-.power-btn:hover { border-color: var(--text-main); color: var(--text-main); }
-.power-btn img { width: 20px; height: 20px; }
 
-/* --- شريط السجل السفلي --- */
+.brand-logo {
+    font-family: var(--font-ui);
+    font-size: 3rem; 
+    letter-spacing: 4px; 
+    font-weight: 900;
+    margin: 0;
+    text-transform: uppercase;
+    text-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+.p1-c { color: var(--p1-color); text-shadow: 0 0 15px var(--p1-dim); }
+.p2-c { color: var(--p2-color); text-shadow: 0 0 15px var(--p2-dim); }
+
+.retro-badge {
+    background: var(--text-muted); 
+    color: #000;
+    padding: 4px 10px; 
+    font-family: var(--font-tech);
+    font-size: 0.7rem; 
+    font-weight: bold;
+    border-radius: 4px;
+    display: inline-block; 
+    margin-top: 5px;
+    letter-spacing: 2px;
+}
+
+/* 4. الشريط السفلي للسجل (Game Log) */
 .game-log-bar {
-    margin-top: auto; width: 100%;
-    background: #000; border-top: 1px solid var(--border-color);
-    padding: 8px 15px;
-    font-family: var(--font-tech); font-size: 0.9rem; color: var(--accent-gold);
-    display: flex; align-items: center; gap: 10px;
+    margin-top: auto; 
+    width: 100%;
+    background: #000; 
+    border-top: 1px solid var(--border-color);
+    padding: 10px 15px;
+    font-family: var(--font-tech); 
+    font-size: 0.85rem; 
+    color: var(--accent-gold);
+    display: flex; 
+    align-items: center; 
+    gap: 10px;
+    box-shadow: inset 0 10px 20px rgba(0,0,0,0.5);
 }
 .log-cursor { animation: flash-red 1s infinite; }
 
-/* --- شاشة الدخول (تنسيق خاص للوقو) --- */
-.brand-logo {
-    font-size: 2.5rem; letter-spacing: 2px; font-weight: 800;
+/* 5. أيقونات القوى الجانبية */
+.powers-vertical {
+    display: flex; flex-direction: column; gap: 8px; width: 100%;
 }
-.p1-c { color: var(--p1-color); } .p2-c { color: var(--p2-color); }
-.retro-badge {
-    background: var(--text-muted); color: #000;
-    padding: 2px 8px; font-size: 0.8rem; border-radius: 4px;
-    display: inline-block; margin-top: 5px;
+.power-btn {
+    background: rgba(0,0,0,0.3); 
+    border: 1px solid var(--border-color);
+    padding: 8px; 
+    border-radius: 6px; 
+    cursor: pointer;
+    display: flex; align-items: center; gap: 10px;
+    color: var(--text-muted); 
+    font-size: 0.75rem; font-weight: bold;
+    transition: 0.2s;
 }
+.power-btn:hover { 
+    border-color: var(--text-main); 
+    color: var(--text-main); 
+    background: rgba(255,255,255,0.05);
+}
+.power-btn.active {
+    border-color: var(--p1-color);
+    box-shadow: 0 0 10px var(--p1-dim);
+    background: rgba(255, 158, 100, 0.1);
+}
+.power-btn.disabled { opacity: 0.3; filter: grayscale(1); }
 
-/* --- زر التعليمات العائم --- */
-.nav-btn.top-left {
-    position: fixed; top: 15px; left: 15px; z-index: 100;
-    background: rgba(0,0,0,0.6); border: 1px solid #444;
+/* 6. زر التعليمات العائم (تثبيت مكانه) */
+#global-help-btn {
+    position: fixed; 
+    top: 20px; left: 20px; 
+    z-index: 2000; /* فوق كل شيء */
 }
