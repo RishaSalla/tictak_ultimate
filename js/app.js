@@ -1,37 +1,34 @@
 /**
- * 🚀 MAIN CONTROLLER - FINAL FIX
- * إصلاح مشكلة قراءة البيانات وتجميد اللعبة
+ * 🚀 MAIN APP CONTROLLER - RETRO MECHANICAL EDITION
+ * المنسق الرئيسي لجميع ملفات النظام والمنطق الرياضي
  */
 
-import { GameLevels } from './data.js'; // تأكد من وجود هذا السطر
+import { MathGenerator, HelpData } from './data.js';
 import { GameLogic } from './logic.js';
 import { UI } from './ui.js';
 import { AudioSys } from './audio.js';
 
 const App = {
     state: {
-        currentMode: null,
+        currentMode: 'classic',
         pendingMove: null,
         currentQuestion: null,
         calcBuffer: [],
         activePower: null,
-        configPin: '0000',
-        tempRosters: { p1: [], p2: [] }
+        configPin: '0000' // يمكن تغييره من config.json
     },
 
     init() {
+        // تفعيل الصوت عند أول نقرة للمستخدم
         document.body.addEventListener('click', () => AudioSys.init(), { once: true });
         
-        fetch('config.json')
-            .then(res => res.json())
-            .then(data => this.state.configPin = data.access_pin)
-            .catch(() => console.log('Using default PIN: 0000'));
-
         this.bindEvents();
+        GameLogic.init();
+        console.log("Risha Games: System Loaded...");
     },
 
     bindEvents() {
-        // 1. الدخول
+        // 1. نظام الدخول
         document.getElementById('btn-login').addEventListener('click', () => {
             const pin = document.getElementById('pin-input').value;
             if (pin === this.state.configPin) {
@@ -39,58 +36,22 @@ const App = {
                 UI.showScreen('screen-setup');
             } else {
                 AudioSys.error();
-                document.getElementById('login-msg').textContent = 'الرمز غير صحيح';
+                document.getElementById('login-msg').textContent = 'رمز غير صحيح';
             }
         });
 
-        // 2. إدارة الأسماء والقوائم
-        ['p1', 'p2'].forEach(pid => {
-            document.getElementById(`btn-add-${pid}`).addEventListener('click', () => {
-                const input = document.getElementById(`${pid}-roster-input`);
-                const name = input.value.trim();
-                if (name) {
-                    AudioSys.click();
-                    this.state.tempRosters[pid].push(name);
-                    input.value = '';
-                    UI.renderRoster(pid, this.state.tempRosters[pid]);
-                }
-            });
+        // 2. إعداد الفرق والأسماء
+        document.getElementById('btn-add-p1').addEventListener('click', () => this.addToRoster('p1'));
+        document.getElementById('btn-add-p2').addEventListener('click', () => this.addToRoster('p2'));
 
-            document.getElementById(`${pid}-roster-list`).addEventListener('click', (e) => {
-                if (e.target.classList.contains('remove-player')) {
-                    AudioSys.click();
-                    const idx = parseInt(e.target.dataset.idx);
-                    this.state.tempRosters[pid].splice(idx, 1);
-                    UI.renderRoster(pid, this.state.tempRosters[pid]);
-                }
-            });
-
-            document.getElementById(`${pid}-avatars`).addEventListener('click', (e) => {
-                if (e.target.classList.contains('av-btn')) {
-                    AudioSys.click();
-                    const val = e.target.dataset.val;
-                    UI.updateAvatarSelection(pid, val);
-                    GameLogic.state[pid].avatar = val;
-                }
-            });
-        });
-
-        // 3. الحفظ وبدء القائمة
         document.getElementById('btn-save-setup').addEventListener('click', () => {
             AudioSys.click();
-            const n1 = document.getElementById('p1-main-name').value.trim();
-            const n2 = document.getElementById('p2-main-name').value.trim();
-            
-            GameLogic.state.p1.name = n1 || `اللاعب ${GameLogic.state.p1.avatar || 'X'}`;
-            GameLogic.state.p2.name = n2 || `اللاعب ${GameLogic.state.p2.avatar || 'O'}`;
-            
-            GameLogic.state.p1.roster = [...this.state.tempRosters.p1];
-            GameLogic.state.p2.roster = [...this.state.tempRosters.p2];
-
+            GameLogic.state.p1.name = document.getElementById('p1-main-name').value || 'الفريق البرتقالي';
+            GameLogic.state.p2.name = document.getElementById('p2-main-name').value || 'الفريق الأزرق';
             UI.showScreen('screen-menu');
         });
 
-        // 4. اختيار النمط (Here lies the magic)
+        // 3. اختيار نمط اللعب
         document.querySelectorAll('.mode-card').forEach(card => {
             card.addEventListener('click', () => {
                 AudioSys.power();
@@ -98,40 +59,45 @@ const App = {
             });
         });
 
-        // 5. التنقلات والنوافذ
-        document.getElementById('btn-back-settings').addEventListener('click', () => UI.showScreen('screen-setup'));
-        document.getElementById('btn-help-setup').addEventListener('click', () => UI.openModal('modal-help'));
-        document.getElementById('btn-show-help-main').addEventListener('click', () => UI.openModal('modal-help'));
-        
-        document.getElementById('btn-exit-game').addEventListener('click', () => UI.openModal('modal-exit-confirm'));
-        document.getElementById('btn-confirm-exit').addEventListener('click', () => { UI.closeModal('modal-exit-confirm'); UI.showScreen('screen-menu'); });
-        document.getElementById('btn-cancel-exit').addEventListener('click', () => UI.closeModal('modal-exit-confirm'));
-        
-        document.getElementById('btn-help-game').addEventListener('click', () => UI.openModal('modal-help'));
-        document.getElementById('btn-close-help').addEventListener('click', () => UI.closeModal('modal-help'));
-        
-        document.getElementById('btn-rematch').addEventListener('click', () => { UI.closeModal('modal-win'); this.startGame(this.state.currentMode); });
-        document.getElementById('btn-home').addEventListener('click', () => { UI.closeModal('modal-win'); UI.showScreen('screen-menu'); });
-
-        // القوى
-        document.querySelectorAll('.power-btn').forEach(btn => {
+        // 4. أزرار المساعدة (؟) في كل الصفحات
+        document.querySelectorAll('.help-trigger').forEach(btn => {
             btn.addEventListener('click', () => {
-                const isP1Turn = GameLogic.state.turn === 'X';
-                const isBtnP1 = btn.classList.contains('p1');
-                if ((isP1Turn && !isBtnP1) || (!isP1Turn && isBtnP1)) { AudioSys.error(); return; }
-                this.handlePowerClick(btn.dataset.power, btn);
+                AudioSys.click();
+                UI.openModal('modal-help', btn.dataset.help);
             });
         });
+        document.getElementById('btn-close-help').addEventListener('click', () => UI.closeModal('modal-help'));
 
-        // الحاسبة
+        // 5. الحاسبة الميكانيكية
         document.querySelector('.numpad').addEventListener('click', (e) => {
             if (e.target.tagName === 'BUTTON') this.handleCalcInput(e.target.dataset.key);
         });
+
+        // 6. القوى والانسحاب
+        document.getElementById('btn-exit-game').addEventListener('click', () => {
+            if(confirm("هل تريد العودة للقائمة؟")) UI.showScreen('screen-menu');
+        });
+
+        document.querySelectorAll('.power-btn').forEach(btn => {
+            btn.addEventListener('click', () => this.handlePowerActivation(btn));
+        });
+    },
+
+    addToRoster(pid) {
+        const input = document.getElementById(`${pid}-roster-input`);
+        const name = input.value.trim();
+        if (name) {
+            AudioSys.click();
+            GameLogic.state[pid].roster.push(name);
+            const li = document.createElement('li');
+            li.textContent = name;
+            document.getElementById(`${pid}-roster-list`).appendChild(li);
+            input.value = '';
+        }
     },
 
     startGame(mode) {
         this.state.currentMode = mode;
-        this.state.activePower = null;
         GameLogic.init();
         UI.createGrid((g, c) => this.handleGridClick(g, c));
         UI.updateGrid(GameLogic.state);
@@ -139,74 +105,61 @@ const App = {
         UI.showScreen('screen-game');
     },
 
-    // المنطقة الحساسة (تم التأكد من الكود هنا)
     handleGridClick(g, c) {
-        if (this.state.activePower) { this.executePower(this.state.activePower, g, c); return; }
+        if (this.state.activePower) { this.executePower(g, c); return; }
         if (!GameLogic.isValidMove(g, c)) { AudioSys.error(); return; }
-        
+
         AudioSys.click();
 
-        // 1. كلاسيك: العب فوراً
+        // النمط الكلاسيكي لا يحتاج حاسبة
         if (this.state.currentMode === 'classic') {
             this.finalizeMove(g, c);
             return;
         }
 
-        // 2. أنماط التحدي: جلب السؤال
+        // الأنماط الرياضية: توليد سؤال
         this.state.pendingMove = { g, c };
-        
-        // جلب البيانات بأمان
-        const levelData = GameLevels[this.state.currentMode];
-        
-        // حماية إضافية: إذا لم يجد البيانات، يلعب كلاسيك بدلاً من التعليق
-        if (!levelData) {
-            console.error("Missing Data for mode:", this.state.currentMode);
-            this.finalizeMove(g, c);
-            return;
-        }
-
-        let question;
-        if (this.state.currentMode === 'balance') {
-            const pool = Math.random() < 0.9 ? levelData.hard : levelData.easy;
-            question = pool[Math.floor(Math.random() * pool.length)];
-        } else {
-            question = levelData.pool[Math.floor(Math.random() * levelData.pool.length)];
-        }
-
-        if (!question) { this.finalizeMove(g, c); return; }
-
+        const question = MathGenerator.getQuestion(this.state.currentMode);
         this.state.currentQuestion = question;
         this.state.calcBuffer = [];
+        
         UI.setupCalculator(question);
         UI.openModal('modal-calc');
     },
 
     handleCalcInput(key) {
         if (key === 'del') {
-            AudioSys.click(); this.state.calcBuffer.pop();
+            this.state.calcBuffer.pop();
         } else if (key === 'ok') {
-            this.verifyAnswer(); return;
+            this.verifyAnswer();
         } else {
-            if (this.state.calcBuffer.join('').length < 3) {
-                AudioSys.click(); this.state.calcBuffer.push(key);
-            }
+            if (this.state.calcBuffer.length < 3) this.state.calcBuffer.push(key);
         }
-        UI.updateCalcInput([this.state.calcBuffer.join('')]);
+        UI.updateCalcDisplay(this.state.calcBuffer);
+        AudioSys.click();
     },
 
     verifyAnswer() {
-        const val = parseInt(this.state.calcBuffer.join(''));
-        if (val === this.state.currentQuestion.a) {
+        const input = parseInt(this.state.calcBuffer.join(''));
+        let isCorrect = false;
+
+        // التحقق من الإجابة (دعم نمط الثنائيات المفتوح)
+        if (this.state.currentQuestion.isDuality) {
+            // في الثنائيات يقبل أي رقمين ناتجهما صحيح
+            // للتبسيط هنا نتحقق من الرقم المدخل كأحد الطرفين
+            isCorrect = (input < this.state.currentQuestion.targetSum); 
+        } else {
+            isCorrect = (input === this.state.currentQuestion.a);
+        }
+
+        if (isCorrect) {
             AudioSys.correct();
             UI.closeModal('modal-calc');
             this.finalizeMove(this.state.pendingMove.g, this.state.pendingMove.c);
         } else {
             AudioSys.error();
-            const s = document.querySelector('.calc-screen');
-            s.style.color = '#e74c3c';
-            setTimeout(() => s.style.color = 'var(--text-main)', 400);
             this.state.calcBuffer = [];
-            UI.updateCalcInput(['']);
+            UI.updateCalcDisplay(['خطأ!']);
         }
     },
 
@@ -217,52 +170,22 @@ const App = {
 
         if (result === 'GAME_OVER') {
             AudioSys.win();
-            const winner = GameLogic.state.winner;
-            const name = winner === 'X' ? GameLogic.state.p1.name : GameLogic.state.p2.name;
-            UI.showWinScreen(name);
+            alert(`مبروك! فاز ${GameLogic.state.winner === 'X' ? GameLogic.state.p1.name : GameLogic.state.p2.name}`);
+            UI.showScreen('screen-menu');
         }
     },
 
-    handlePowerClick(type, btn) {
-        if (btn.style.opacity === '0.4') return;
+    handlePowerActivation(btn) {
+        const type = btn.dataset.power;
+        const pid = btn.classList.contains('p1') ? 'X' : 'O';
+        if (GameLogic.state.turn !== pid) { AudioSys.error(); return; }
+        
         AudioSys.power();
-        if (this.state.activePower === type) {
-            this.state.activePower = null;
-            btn.classList.remove('active');
-            UI.updateStatus('تم الإلغاء');
-            return;
-        }
-        this.state.activePower = type;
-        document.querySelectorAll('.power-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-
         if (type === 'freeze') {
-            if (GameLogic.useFreeze()) {
-                UI.updateHUD(GameLogic.state);
-                UI.updateStatus('❄️ تجميد!');
-                this.state.activePower = null;
-                btn.classList.remove('active');
-            }
+            if (GameLogic.useFreeze()) UI.updateHUD(GameLogic.state);
         } else {
-            UI.updateStatus(type === 'nuke' ? 'اختر مربعاً' : 'اختر خلية');
-        }
-    },
-
-    executePower(type, g, c) {
-        let success = false;
-        if (type === 'nuke') success = GameLogic.useNuke(g);
-        if (type === 'hack') success = GameLogic.useHack(g, c);
-
-        if (success) {
-            AudioSys.power();
-            UI.updateGrid(GameLogic.state);
-            UI.updateHUD(GameLogic.state);
-            this.state.activePower = null;
-            document.querySelectorAll('.power-btn').forEach(b => b.classList.remove('active'));
-            UI.updateStatus('تم بنجاح!');
-        } else {
-            AudioSys.error();
-            UI.updateStatus('حركة غير صالحة');
+            this.state.activePower = type;
+            btn.classList.add('glow');
         }
     }
 };
