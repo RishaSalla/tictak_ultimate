@@ -1,28 +1,63 @@
+/**
+ * 🔊 AUDIO SYSTEM - RETRO MECHANICAL EDITION
+ * أصوات ميكانيكية حادة للطقطقة والتنبيهات
+ */
+
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 let ctx = null;
 
-// تشغيل نغمة آمنة لا توقف اللعبة
-const playToneSafe = (freq, type, duration) => {
+const playTone = (freq, type, duration, volume = 0.1) => {
     try {
         if (!ctx) ctx = new AudioContext();
+        if (ctx.state === 'suspended') ctx.resume();
+
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
+
         osc.type = type;
         osc.frequency.setValueAtTime(freq, ctx.currentTime);
-        gain.gain.setValueAtTime(0.1, ctx.currentTime);
+
+        gain.gain.setValueAtTime(volume, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
+
         osc.connect(gain);
         gain.connect(ctx.destination);
+
         osc.start();
         osc.stop(ctx.currentTime + duration);
-    } catch (e) {}
+    } catch (e) {
+        console.warn("Audio error:", e);
+    }
 };
 
 export const AudioSys = {
-    init: () => { try { if(!ctx) ctx = new AudioContext(); if(ctx.state==='suspended') ctx.resume(); } catch(e){} },
-    click: () => playToneSafe(600, 'sine', 0.1),
-    error: () => playToneSafe(150, 'sawtooth', 0.2),
-    correct: () => { playToneSafe(523, 'sine', 0.1); setTimeout(()=>playToneSafe(659,'sine',0.2),100); },
-    power: () => playToneSafe(300, 'square', 0.3),
-    win: () => playToneSafe(523, 'triangle', 0.5)
+    // تفعيل النظام عند أول ضغطة
+    init: () => { 
+        try { 
+            if(!ctx) ctx = new AudioContext(); 
+        } catch(e){} 
+    },
+
+    // طقطقة أزرار لوحة المفاتيح الميكانيكية
+    click: () => playTone(800, 'square', 0.05, 0.05),
+
+    // تنبيه الخطأ (تردد منخفض)
+    error: () => playTone(120, 'sawtooth', 0.3, 0.15),
+
+    // نغمة النجاح (تردد مزدوج)
+    correct: () => { 
+        playTone(600, 'sine', 0.1, 0.1); 
+        setTimeout(() => playTone(900, 'sine', 0.2, 0.1), 80); 
+    },
+
+    // صوت تفعيل القوى الخاصة أو الأنماط
+    power: () => playTone(400, 'triangle', 0.4, 0.1),
+
+    // نغمة الفوز الكبيرة
+    win: () => {
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((f, i) => {
+            setTimeout(() => playTone(f, 'square', 0.4, 0.1), i * 150);
+        });
+    }
 };
