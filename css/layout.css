@@ -1,70 +1,121 @@
-/* --- إعدادات الصفحة والتوسيط --- */
+/* =========================================
+   📐 LAYOUT SYSTEM (CORRECTED)
+   إصلاح التمركز + عزل النوافذ المنبثقة
+   ========================================= */
+
+/* 1. إعدادات الصفحة والتوسيط */
 body {
     margin: 0; padding: 0;
     width: 100vw; height: 100vh;
     background-color: var(--bg-dark);
     color: var(--text-main);
     font-family: var(--font-ui);
-    display: flex; justify-content: center; align-items: center;
-    overflow: hidden;
+    /* التوسيط الإجباري للحاوية */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* لمنع أي تمرير غير مرغوب */
 }
 
-/* الحاوية الزجاجية الكبيرة */
+/* 2. الحاوية الزجاجية الكبيرة */
 .glass-stage {
     position: relative;
     width: 95%; max-width: 1100px;
     height: 90vh;
     background: var(--bg-panel);
     border: 1px solid var(--border-color);
-    box-shadow: 0 0 40px rgba(0,0,0,0.5);
+    box-shadow: 0 0 50px rgba(0,0,0,0.6);
     border-radius: 12px;
-    overflow: hidden; /* يمنع خروج العناصر */
+    overflow: hidden; 
+    /* ضمان أن العناصر الداخلية تتمركز */
+    display: flex; flex-direction: column;
 }
 
-/* --- نظام الطبقات (يمنع التراكب) --- */
+/* 3. نظام الطبقات للشاشات (Screens) */
 .screen {
-    position: absolute; inset: 0;
+    position: absolute;
+    inset: 0; /* تغطي كامل الحاوية */
+    width: 100%; height: 100%;
     background: var(--bg-panel);
     display: flex; flex-direction: column;
     z-index: 10;
-    opacity: 0; pointer-events: none;
+    opacity: 0; 
+    pointer-events: none; /* تمنع الضغط عليها وهي مخفية */
     transition: opacity 0.3s ease;
     padding: 20px;
+    box-sizing: border-box; /* لحساب الحواف بدقة */
 }
-.screen.active { opacity: 1; pointer-events: all; z-index: 20; }
-.screen.hidden { display: none !important; }
-.center-flex { justify-content: center; align-items: center; }
 
-/* --- تخطيط صفحة الأنماط (الشبكة الجديدة) --- */
+.screen.active {
+    opacity: 1;
+    pointer-events: all;
+    z-index: 20;
+}
+
+/* كلاس مساعد للتوسيط داخل الشاشات */
+.center-flex {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+/* 4. إصلاح الكارثة: النوافذ المنبثقة (Modals) */
+/* هذا الكود الناقص هو الذي كان يسبب ظهور العناصر مبعثرة */
+.modal-overlay {
+    position: fixed; /* خروج من التدفق العادي للصفحة */
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0, 0, 0, 0.85); /* خلفية معتمة */
+    backdrop-filter: blur(5px);
+    z-index: 1000; /* طبقة عليا جداً */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+/* حالة الظهور للنافذة */
+.modal-overlay:not(.hidden) {
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* 5. تخطيط صفحة الأنماط */
 .modes-grid-layout {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* عمودين */
+    grid-template-columns: 1fr 1fr;
     gap: 15px;
     width: 100%; max-width: 500px;
+    margin: 0 auto; /* توسيط الكتلة */
 }
-.mode-card.span-2 { grid-column: span 2; } /* الكلاسيكي يأخذ العرض كامل */
+.mode-card.span-2 { grid-column: span 2; }
 
-/* --- تخطيط ساحة اللعب الثابتة --- */
+/* 6. تخطيط ساحة اللعب */
 .arena-container {
-    display: flex; align-items: center; justify-content: center;
-    gap: 20px; height: 100%; width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    height: 100%; width: 100%;
 }
 .grid-wrapper {
-    width: var(--arena-size); height: var(--arena-size);
+    /* حاوية الرقعة */
     display: flex; justify-content: center; align-items: center;
 }
-/* الشبكة الثابتة */
 .fixed-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    width: 100%; height: 100%;
+    width: var(--arena-size); /* استخدام المتغير */
+    height: var(--arena-size);
     gap: 8px;
     background: #000;
     padding: 8px;
     border-radius: 8px;
 }
-/* الأعمدة الجانبية */
 .side-panel {
-    width: 120px; display: flex; flex-direction: column;
+    width: 120px;
+    display: flex; flex-direction: column;
     align-items: center; gap: 15px;
 }
