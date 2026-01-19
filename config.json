@@ -1,5 +1,14 @@
 {
-  "access_pin": "0000",
-  "version": "2.0.0",
-  "admin_contact": "aljohani.osamaa@gmail.com"
+    "app_name": "Risha Games | XO Ultimate",
+    "version": "2.0.0 Retro-Mech",
+    "security": {
+        "default_pin": "12345678",
+        "max_attempts": 5,
+        "pin_length": 8
+    },
+    "game_settings": {
+        "allow_teams": true,
+        "timer_options": [0, 5, 10, 20],
+        "default_icons": ["X", "O", "sword", "shield", "skull", "bolt"]
+    }
 }
