@@ -1,6 +1,6 @@
 /**
- * 🚀 MAIN APP CONTROLLER
- * المتحكم الرئيسي: المؤقت، الأحداث، والربط
+ * 🚀 MAIN APP CONTROLLER (UPDATED)
+ * إدارة الاختيارات الجديدة + المنطق
  */
 
 import { MathGenerator, HelpData } from './data.js';
@@ -21,25 +21,22 @@ const App = {
     },
 
     async init() {
-        // تحميل الإعدادات
         try {
             const res = await fetch('config.json');
             const data = await res.json();
             this.config.pin = data.security.default_pin;
-        } catch(e) { console.log('Config default used'); }
+        } catch(e) { console.log('Config loaded'); }
 
-        // تهيئة الصوت
         document.body.addEventListener('click', () => AudioSys.init(), { once: true });
-        
         this.bindEvents();
         UI.showScreen('screen-login');
         
-        // تأثير الآلة الكاتبة في حقل الرمز
-        document.getElementById('pin-input').addEventListener('input', () => AudioSys.typewriter());
+        const pinInput = document.getElementById('pin-input');
+        if(pinInput) pinInput.addEventListener('input', () => AudioSys.typewriter());
     },
 
     bindEvents() {
-        // 1. الدخول
+        // 1. تسجيل الدخول
         document.getElementById('btn-login').addEventListener('click', () => {
             const input = document.getElementById('pin-input').value;
             if (input === this.config.pin) {
@@ -51,26 +48,49 @@ const App = {
             }
         });
 
-        // 2. تبديل وضع الفرق
+        // 2. تفعيل أزرار الاختيار (الأيقونات والمؤقت)
+        const setupSelector = (containerId) => {
+            const container = document.getElementById(containerId);
+            if(!container) return;
+            container.addEventListener('click', (e) => {
+                const btn = e.target.closest('button');
+                if (!btn) return;
+                container.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                AudioSys.click();
+            });
+        };
+        setupSelector('p1-icon-selector');
+        setupSelector('p2-icon-selector');
+        setupSelector('timer-selector');
+
+        // تبديل وضع الفرق
         document.getElementById('team-mode-toggle').addEventListener('change', (e) => {
-            const rosters = document.querySelectorAll('.roster-box');
-            rosters.forEach(r => e.target.checked ? r.classList.remove('hidden') : r.classList.add('hidden'));
+            document.querySelectorAll('.roster-box').forEach(r => 
+                e.target.checked ? r.classList.remove('hidden') : r.classList.add('hidden')
+            );
             AudioSys.click();
         });
 
-        // 3. حفظ الإعدادات وبدء اللعبة
+        // 3. حفظ الإعدادات (قراءة البيانات من الأزرار المختارة)
         document.getElementById('btn-save-setup').addEventListener('click', () => {
             AudioSys.correct();
-            this.config.timer = parseInt(document.getElementById('timer-select').value);
             
-            // حفظ بيانات اللاعبين
+            // دالة لجلب القيمة من الزر المختار
+            const getVal = (id) => {
+                const sel = document.querySelector(`#${id} .selected`);
+                return sel ? sel.dataset.val : (id.includes('p1') ? 'X' : 'O');
+            };
+            
+            this.config.timer = parseInt(getVal('timer-selector')) || 0;
+            
             const p1 = {
                 name: document.getElementById('p1-name').value || 'الفريق 1',
-                icon: document.getElementById('p1-icon').value
+                icon: getVal('p1-icon-selector')
             };
             const p2 = {
                 name: document.getElementById('p2-name').value || 'الفريق 2',
-                icon: document.getElementById('p2-icon').value
+                icon: getVal('p2-icon-selector')
             };
             
             GameLogic.init(p1, p2);
@@ -86,25 +106,27 @@ const App = {
             });
         });
 
-        // 5. التحكم داخل اللعبة
+        // 5. داخل اللعبة
         document.getElementById('btn-back').addEventListener('click', () => {
-            if(confirm('هل تريد إنهاء المباراة والعودة للقائمة؟')) {
+            if(confirm('إنهاء المباراة؟')) {
                 this.stopTimer();
                 UI.showScreen('screen-menu');
             }
         });
 
-        // القوى الخاصة
         document.querySelectorAll('.power-btn').forEach(btn => {
             btn.addEventListener('click', () => this.activatePower(btn));
         });
 
-        // 6. التعليمات والحاسبة
+        // 6. النوافذ والحاسبة
         document.getElementById('global-help-btn').addEventListener('click', () => {
-            document.getElementById('help-body').innerHTML = HelpData.rules; // افتراضي
             document.getElementById('modal-instructions').classList.remove('hidden');
         });
+        document.querySelectorAll('.close-modal-btn').forEach(btn => {
+            btn.addEventListener('click', () => btn.closest('.modal-overlay').classList.add('hidden'));
+        });
         
+        // أزرار التبويب في التعليمات
         document.querySelectorAll('.tab-btn').forEach(tab => {
             tab.addEventListener('click', (e) => {
                 document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
@@ -113,16 +135,13 @@ const App = {
             });
         });
 
-        document.querySelectorAll('.close-modal-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                btn.closest('.modal-overlay').classList.add('hidden');
-            });
-        });
-
         // أزرار الحاسبة
-        document.querySelector('.numpad-grid').addEventListener('click', (e) => {
-            if(e.target.tagName === 'BUTTON') this.handleCalcInput(e.target.dataset.key);
-        });
+        const numpad = document.querySelector('.numpad-grid');
+        if(numpad) {
+            numpad.addEventListener('click', (e) => {
+                if(e.target.tagName === 'BUTTON') this.handleCalcInput(e.target.dataset.key);
+            });
+        }
     },
 
     startGame() {
@@ -130,50 +149,40 @@ const App = {
         UI.updateGrid(GameLogic.state);
         UI.updateHUD(GameLogic.state);
         UI.showScreen('screen-game');
-        UI.log('بدأت المباراة! حظاً موفقاً.');
-        AudioSys.win(); // نغمة البدء
         this.startTurnTimer();
     },
 
     handleGridClick(g, c) {
-        // إذا كان هناك قوة مفعلة
         if (this.state.activePower) {
             if (GameLogic.usePower(this.state.activePower, g, c)) {
                 AudioSys.glitch();
-                UI.log(`تم استخدام القوة: ${this.state.activePower.toUpperCase()}`);
                 this.state.activePower = null;
                 document.querySelectorAll('.power-btn').forEach(b => b.classList.remove('active'));
                 this.endTurn();
             } else {
                 AudioSys.error();
-                UI.log('لا يمكن استخدام القوة هنا!');
             }
             return;
         }
 
         if (!GameLogic.isValidMove(g, c)) {
             AudioSys.error();
-            UI.log('حركة غير مسموحة!');
             return;
         }
 
         AudioSys.click();
 
-        // النمط الكلاسيكي
         if (this.state.mode === 'classic') {
             this.executeMove(g, c);
-            return;
+        } else {
+            this.state.pendingMove = { g, c };
+            this.state.currentQ = MathGenerator.getQuestion(this.state.mode);
+            this.state.calcBuffer = [];
+            document.getElementById('calc-q').textContent = this.state.currentQ.q;
+            document.getElementById('calc-inputs').textContent = '_';
+            document.getElementById('modal-calc').classList.remove('hidden');
+            this.pauseTimer();
         }
-
-        // الأنماط الرياضية
-        this.state.pendingMove = { g, c };
-        this.state.currentQ = MathGenerator.getQuestion(this.state.mode);
-        this.state.calcBuffer = [];
-        
-        document.getElementById('calc-q').textContent = this.state.currentQ.q;
-        document.getElementById('calc-inputs').textContent = '_';
-        document.getElementById('modal-calc').classList.remove('hidden');
-        this.pauseTimer(); // إيقاف المؤقت أثناء الحل
     },
 
     executeMove(g, c) {
@@ -183,8 +192,10 @@ const App = {
         if (result === 'GAME_OVER') {
             AudioSys.win();
             this.stopTimer();
-            setTimeout(() => alert(`مبروك! الفائز هو ${GameLogic.state.winner}`), 100);
-            UI.showScreen('screen-menu');
+            setTimeout(() => {
+                alert(`الفائز: ${GameLogic.state.winner}`);
+                UI.showScreen('screen-menu');
+            }, 500);
         } else {
             this.endTurn();
         }
@@ -195,78 +206,50 @@ const App = {
         this.startTurnTimer();
     },
 
-    // --- منطق المؤقت ---
+    activatePower(btn) {
+        const type = btn.dataset.power;
+        const pid = btn.classList.contains('p1') ? 'X' : 'O';
+        if (GameLogic.state.turn !== pid) { AudioSys.error(); return; }
+        this.state.activePower = type;
+        document.querySelectorAll('.power-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    },
+
+    // --- المؤقت ---
     startTurnTimer() {
         this.stopTimer();
-        if (this.config.timer === 0) return; // بدون مؤقت
-
+        if (this.config.timer === 0) return;
         this.state.timeLeft = this.config.timer;
         UI.updateTimer(100);
-        
         this.state.timerInterval = setInterval(() => {
             this.state.timeLeft--;
             const percent = (this.state.timeLeft / this.config.timer) * 100;
             UI.updateTimer(percent);
-            
-            if (this.state.timeLeft <= 3) AudioSys.tick();
-
             if (this.state.timeLeft <= 0) {
                 this.stopTimer();
                 AudioSys.error();
-                UI.log('انتهى الوقت! انتقل الدور.');
                 GameLogic.switchTurn();
                 this.endTurn();
             }
         }, 1000);
     },
-
-    stopTimer() {
-        if (this.state.timerInterval) clearInterval(this.state.timerInterval);
-    },
-    
+    stopTimer() { if (this.state.timerInterval) clearInterval(this.state.timerInterval); },
     pauseTimer() { this.stopTimer(); },
-    resumeTimer() { if (this.config.timer > 0) this.startTurnTimer(); }, // إعادة تشغيل بسيط
 
-    // --- منطق القوى ---
-    activatePower(btn) {
-        const type = btn.dataset.power;
-        const pid = btn.classList.contains('p1') ? 'X' : 'O';
-        
-        if (GameLogic.state.turn !== pid) {
-            AudioSys.error();
-            UI.log('ليس دورك لاستخدام القوة!');
-            return;
-        }
-
-        this.state.activePower = type;
-        document.querySelectorAll('.power-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        UI.log(`اختر هدفاً لقوة: ${type}`);
-    },
-
-    // --- منطق الحاسبة ---
+    // --- الحاسبة ---
     handleCalcInput(key) {
         AudioSys.typewriter();
-        if (key === 'del') {
-            this.state.calcBuffer.pop();
-        } else if (key === 'ok') {
-            this.verifyMath();
-            return;
-        } else {
-            if (this.state.calcBuffer.length < 5) this.state.calcBuffer.push(key);
-        }
+        if (key === 'del') this.state.calcBuffer.pop();
+        else if (key === 'ok') this.verifyMath();
+        else if (this.state.calcBuffer.length < 5) this.state.calcBuffer.push(key);
         document.getElementById('calc-inputs').textContent = this.state.calcBuffer.join('') || '_';
     },
 
     verifyMath() {
         const input = parseInt(this.state.calcBuffer.join(''));
         let correct = false;
-        
-        if (this.state.currentQ.isDuality) {
-             correct = (input < this.state.currentQ.targetSum); // منطق مبسط للثنائيات
-        } else {
-            correct = (input === this.state.currentQ.a);
-        }
+        if (this.state.currentQ.isDuality) correct = (input < this.state.currentQ.targetSum);
+        else correct = (input === this.state.currentQ.a);
 
         if (correct) {
             AudioSys.correct();
@@ -274,7 +257,6 @@ const App = {
             this.executeMove(this.state.pendingMove.g, this.state.pendingMove.c);
         } else {
             AudioSys.error();
-            UI.log('إجابة خاطئة! حاول مرة أخرى.');
             this.state.calcBuffer = [];
             document.getElementById('calc-inputs').textContent = 'Error';
         }
