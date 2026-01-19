@@ -1,6 +1,6 @@
 /**
- * 🎨 UI MANAGER
- * مسؤول عن الرسم، السجل، وتحديث القوى
+ * 🎨 UI MANAGER (UPDATED)
+ * رسم SVG، الشبكة، والتحديثات
  */
 
 import { GameLogic } from './logic.js';
@@ -34,12 +34,10 @@ export const UI = {
     initGrid(callback) {
         const gridEl = this.elements.grid;
         gridEl.innerHTML = '';
-        
         for (let g = 0; g < 9; g++) {
             const sub = document.createElement('div');
             sub.className = 'sub-grid';
             sub.id = `sub-${g}`;
-            
             for (let c = 0; c < 9; c++) {
                 const cell = document.createElement('div');
                 cell.className = 'cell';
@@ -59,33 +57,58 @@ export const UI = {
             const sub = document.getElementById(`sub-${g}`);
             sub.className = 'sub-grid';
             
-            // حالة الفوز بالمربع
+            // إزالة أي طبقة فوز سابقة
+            const oldOverlay = sub.querySelector('.win-overlay');
+            if (oldOverlay) oldOverlay.remove();
+
+            // 1. حالة الفوز بالمربع (رسم SVG)
             if (metaGrid[g] !== null) {
                 sub.classList.add('won');
-                sub.setAttribute('data-symbol', metaGrid[g] === 'X' ? p1.icon : p2.icon);
-                sub.style.color = metaGrid[g] === 'X' ? 'var(--p1-color)' : 'var(--p2-color)';
+                const winIcon = metaGrid[g] === 'X' ? p1.icon : p2.icon;
+                const color = metaGrid[g] === 'X' ? 'var(--p1-color)' : 'var(--p2-color)';
+                
+                const overlay = document.createElement('div');
+                overlay.className = 'win-overlay';
+                overlay.style.position = 'absolute'; overlay.style.inset = '0';
+                overlay.style.background = 'rgba(0,0,0,0.85)';
+                overlay.style.display = 'flex'; overlay.style.alignItems = 'center'; overlay.style.justifyContent = 'center';
+                overlay.style.zIndex = '5';
+                
+                if (['X', 'O'].includes(winIcon)) {
+                    overlay.textContent = winIcon;
+                    overlay.style.fontSize = '4rem'; overlay.style.fontWeight = 'bold';
+                    overlay.style.color = color;
+                } else {
+                    const img = document.createElement('img');
+                    img.src = `assets/icons/${winIcon}.svg`;
+                    img.style.width = '60%'; img.style.height = '60%';
+                    img.style.filter = 'drop-shadow(0 0 10px currentColor)';
+                    overlay.style.color = color;
+                    overlay.appendChild(img);
+                }
+                sub.appendChild(overlay);
             } 
-            // حالة المنطقة النشطة
+            // 2. المنطقة النشطة
             else if (!winner && (nextGrid === null || nextGrid === g)) {
                 sub.classList.add('active-zone');
             }
 
-            // حالة التجميد
             if (frozenGrid === g) sub.classList.add('frozen');
 
             // تحديث الخلايا
             Array.from(sub.children).forEach((cell, c) => {
+                if(cell.classList.contains('win-overlay')) return;
                 const val = grid[g][c];
-                cell.innerHTML = ''; // تنظيف
+                cell.innerHTML = '';
                 if (val) {
                     const icon = val === 'X' ? p1.icon : p2.icon;
-                    // استخدام الأيقونات المخصصة أو النصوص
                     if (['X', 'O'].includes(icon)) {
-                        cell.textContent = icon;
+                        const span = document.createElement('span');
+                        span.textContent = icon;
+                        cell.appendChild(span);
                     } else {
                         const img = document.createElement('img');
                         img.src = `assets/icons/${icon}.svg`;
-                        img.className = 'icon-md';
                         cell.appendChild(img);
                     }
                     cell.style.color = val === 'X' ? 'var(--p1-color)' : 'var(--p2-color)';
@@ -104,40 +127,37 @@ export const UI = {
         this.elements.turnText.textContent = `الدور: ${cur.name}`;
         this.elements.turnText.style.color = state.turn === 'X' ? 'var(--p1-color)' : 'var(--p2-color)';
 
-        // تحديث حالة أزرار القوى
+        // تحديث أزرار القوى
         ['p1', 'p2'].forEach(pid => {
             const powers = state[pid].powers;
             document.querySelectorAll(`.power-btn.${pid}`).forEach(btn => {
                 const type = btn.dataset.power;
                 if (!powers[type]) {
                     btn.classList.add('disabled');
-                    btn.style.opacity = '0.3';
-                    btn.style.pointerEvents = 'none';
+                    btn.style.opacity = '0.3'; btn.style.pointerEvents = 'none';
                 } else {
                     btn.classList.remove('disabled');
-                    btn.style.opacity = '1';
-                    btn.style.pointerEvents = 'all';
+                    btn.style.opacity = '1'; btn.style.pointerEvents = 'all';
                 }
             });
         });
     },
 
-    log(msg) {
-        this.elements.logText.textContent = msg;
-        this.elements.logText.classList.remove('typing');
-        void this.elements.logText.offsetWidth; // Trigger reflow
-        this.elements.logText.classList.add('typing');
-    },
-
     updateTimer(percent) {
-        this.elements.timerBar.firstElementChild.style.width = `${percent}%`;
-        if (percent < 30) this.elements.timerBar.firstElementChild.style.background = 'red';
-        else this.elements.timerBar.firstElementChild.style.background = 'var(--accent-gold)';
+        const bar = this.elements.timerBar.firstElementChild;
+        if(bar) {
+            bar.style.width = `${percent}%`;
+            bar.style.background = percent < 30 ? 'red' : 'var(--accent-gold)';
+        }
     },
 
     setAvatars(p1Icon, p2Icon) {
         const getSrc = (i) => ['X', 'O'].includes(i) ? 'assets/icons/code.svg' : `assets/icons/${i}.svg`;
         this.elements.p1Avatar.src = getSrc(p1Icon);
         this.elements.p2Avatar.src = getSrc(p2Icon);
+    },
+    
+    log(msg) {
+        if(this.elements.logText) this.elements.logText.textContent = msg;
     }
 };
