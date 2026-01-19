@@ -37,71 +37,67 @@
         </section>
 
         <section id="screen-setup" class="screen center-flex hidden">
-            <h2 class="screen-title">إعداد النظام</h2>
+    <h2 class="screen-title">إعداد النظام</h2>
+    
+    <div class="toggle-container">
+        <span class="toggle-label">فردي</span>
+        <label class="switch">
+            <input type="checkbox" id="team-mode-toggle">
+            <span class="slider round"></span>
+        </label>
+        <span class="toggle-label">فرق</span>
+    </div>
+
+    <div class="setup-grid">
+        <div class="team-card p1-border">
+            <label>اسم الفريق (1)</label>
+            <input type="text" id="p1-name" class="clay-input" placeholder="الفريق البرتقالي">
             
-            <div class="toggle-container">
-                <span class="toggle-label">فردي</span>
-                <label class="switch">
-                    <input type="checkbox" id="team-mode-toggle">
-                    <span class="slider round"></span>
-                </label>
-                <span class="toggle-label">فرق</span>
+            <label class="sub-label">اختر الرمز المقاتل:</label>
+            <div class="icon-selector" id="p1-icon-selector">
+                <button class="icon-option selected" data-val="X">X</button>
+                <button class="icon-option" data-val="sword"><img src="assets/icons/sword.svg"></button>
+                <button class="icon-option" data-val="bolt"><img src="assets/icons/bolt.svg"></button>
             </div>
 
-            <div class="setup-grid">
-                <div class="team-card p1-border">
-                    <div class="input-group">
-                        <label>اسم الفريق (1)</label>
-                        <input type="text" id="p1-name" class="clay-input" placeholder="الفريق البرتقالي">
-                    </div>
-                    <div class="input-group">
-                        <label>الرمز</label>
-                        <select id="p1-icon" class="clay-select">
-                            <option value="X">X (كلاسيكي)</option>
-                            <option value="sword">السيف ⚔️</option>
-                            <option value="bolt">الصاعقة ⚡</option>
-                        </select>
-                    </div>
-                    <div class="roster-box hidden" id="p1-roster-box">
-                        <input type="text" id="p1-member" class="clay-input small" placeholder="اسم العضو..">
-                        <button id="btn-add-p1" class="mech-btn small">+</button>
-                        <ul id="p1-list" class="roster-list"></ul>
-                    </div>
-                </div>
+            <div class="roster-box hidden" id="p1-roster-box">
+                <input type="text" id="p1-member" class="clay-input small" placeholder="اسم العضو..">
+                <button id="btn-add-p1" class="mech-btn small">+</button>
+                <ul id="p1-list" class="roster-list"></ul>
+            </div>
+        </div>
 
-                <div class="team-card p2-border">
-                    <div class="input-group">
-                        <label>اسم الفريق (2)</label>
-                        <input type="text" id="p2-name" class="clay-input" placeholder="الفريق الأزرق">
-                    </div>
-                    <div class="input-group">
-                        <label>الرمز</label>
-                        <select id="p2-icon" class="clay-select">
-                            <option value="O">O (كلاسيكي)</option>
-                            <option value="shield">الدرع 🛡️</option>
-                            <option value="skull">الجمجمة 💀</option>
-                        </select>
-                    </div>
-                    <div class="roster-box hidden" id="p2-roster-box">
-                        <input type="text" id="p2-member" class="clay-input small" placeholder="اسم العضو..">
-                        <button id="btn-add-p2" class="mech-btn small">+</button>
-                        <ul id="p2-list" class="roster-list"></ul>
-                    </div>
-                </div>
+        <div class="team-card p2-border">
+            <label>اسم الفريق (2)</label>
+            <input type="text" id="p2-name" class="clay-input" placeholder="الفريق الأزرق">
+            
+            <label class="sub-label">اختر الرمز المقاتل:</label>
+            <div class="icon-selector" id="p2-icon-selector">
+                <button class="icon-option selected" data-val="O">O</button>
+                <button class="icon-option" data-val="shield"><img src="assets/icons/shield.svg"></button>
+                <button class="icon-option" data-val="skull"><img src="assets/icons/skull.svg"></button>
             </div>
 
-            <div class="timer-setup">
-                <label>توقيت النقلة:</label>
-                <select id="timer-select" class="clay-select">
-                    <option value="0">بدون مؤقت ♾️</option>
-                    <option value="5">5 ثوانٍ 🔥</option>
-                    <option value="10">10 ثوانٍ ⏱️</option>
-                    <option value="20">20 ثانية 🐢</option>
-                </select>
+            <div class="roster-box hidden" id="p2-roster-box">
+                <input type="text" id="p2-member" class="clay-input small" placeholder="اسم العضو..">
+                <button id="btn-add-p2" class="mech-btn small">+</button>
+                <ul id="p2-list" class="roster-list"></ul>
             </div>
+        </div>
+    </div>
 
-            <button id="btn-save-setup" class="mech-btn primary block">حفظ وبدء</button>
-        </section>
+    <div class="timer-setup">
+        <label>توقيت النقلة (ثواني):</label>
+        <div class="timer-selector" id="timer-selector">
+            <button class="timer-option selected" data-val="0">♾️</button>
+            <button class="timer-option" data-val="5">05</button>
+            <button class="timer-option" data-val="10">10</button>
+            <button class="timer-option" data-val="20">20</button>
+        </div>
+    </div>
+
+    <button id="btn-save-setup" class="mech-btn primary block">حفظ وبدء المعركة</button>
+</section>
 
         <section id="screen-menu" class="screen center-flex hidden">
             <h2 class="screen-title">اختر بروتوكول التحدي</h2>
