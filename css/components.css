@@ -1,174 +1,70 @@
-/* =========================================
-   🧱 UNIFIED COMPONENTS - MECHANICAL STYLE
-   نظام الأزرار الموحد وتنسيق العناصر الميكانيكي
-   ========================================= */
-
-/* 1. نظام الأزرار الموحد (The Master Button) */
-.clay-btn, .icon-btn, .av-btn, .power-btn, .mode-card {
-    border: none;
-    outline: none;
-    cursor: pointer;
-    font-family: var(--font-txt);
-    font-weight: 800;
-    border-radius: var(--radius-sm);
-    background: var(--btn-bg);
-    color: var(--text-main);
-    /* تصميم ميكانيكي بارز (Beveled Edge) */
-    box-shadow: 
-        0 4px 0 var(--btn-shadow),
-        inset 0 1px 0 var(--btn-highlight);
-    transition: all 0.1s active;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-shadow: 0 0 5px rgba(0,0,0,0.5);
-}
-
-.clay-btn:active, .icon-btn:active, .av-btn:active, .power-btn:active, .mode-card:active {
-    transform: translateY(2px);
-    box-shadow: 
-        0 2px 0 var(--btn-shadow),
-        inset 0 1px 0 var(--btn-highlight);
-}
-
-/* التميز اللوني للأزرار الأساسية */
-.clay-btn.primary { color: var(--p1-color); border: 1px solid var(--p1-color); }
-.clay-btn.secondary { color: var(--p2-color); border: 1px solid var(--p2-color); }
-
-/* 2. الحاسبة الميكانيكية (The Calculator) */
-.clay-modal {
-    width: 95%;
-    max-width: 450px;
-    background: var(--calc-bg);
-    border: 4px solid var(--btn-bg);
-    padding: 25px;
-    border-radius: var(--radius-md);
-    box-shadow: 0 0 100px rgba(0,0,0,0.8);
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.calc-screen {
-    background: var(--calc-screen);
-    border: 2px inset rgba(0,0,0,0.5);
-    padding: 20px;
-    border-radius: var(--radius-sm);
-    font-family: var(--font-num);
-    font-size: 2.2rem;
-    color: var(--p1-color); /* توهج كهرماني */
-    text-shadow: 0 0 10px var(--p1-glow);
-    text-align: center;
-    min-height: 80px;
-}
-
-.numpad {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-}
-
-.numpad button {
-    height: 65px;
-    font-size: 1.5rem;
-    font-family: var(--font-num);
-}
-
-/* 3. الرقعة الكبيرة (The Giant Grid) */
-.grid-frame {
-    width: var(--grid-size);
-    height: var(--grid-size);
-    background: #000;
-    border: 3px solid var(--text-muted);
-    padding: var(--cell-gap);
-    border-radius: var(--radius-sm);
-    box-shadow: 0 0 30px rgba(0,0,0,0.5);
-}
-
-.game-grid {
-    width: 100%;
-    height: 100%;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    gap: var(--cell-gap);
-}
-
-.sub-grid {
-    background: var(--bg-panel);
-    border: 1px solid var(--text-muted);
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2px;
-    padding: 2px;
-    transition: 0.3s;
-}
-
-.sub-grid.active-zone {
-    border-color: var(--p1-color);
-    box-shadow: inset 0 0 15px var(--p1-glow);
-}
-
-/* الرمز الكبير عند الفوز بالمربع */
-.sub-grid.won::after {
-    content: attr(data-symbol);
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 6rem; /* ضخم جداً */
-    opacity: 0.8;
-    z-index: 10;
-    text-shadow: 0 0 20px currentColor;
-}
-
-.cell {
-    background: var(--bg-dark);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.8rem;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.cell:hover { background: var(--btn-bg); }
-
-
-
-/* --- تصحيحات حقول الإدخال --- */
+/* --- الخانات الميكانيكية (السوداء) --- */
 .clay-input {
-    width: 100%;
-    max-width: 300px;
     background: var(--bg-input);
-    border: 2px solid var(--btn-shadow);
+    border: 2px solid var(--border-color);
     color: var(--p1-color);
-    padding: 15px;
-    border-radius: var(--radius-sm);
-    font-family: var(--font-num);
-    font-size: 1.5rem;
+    font-family: var(--font-tech);
+    font-size: 1.2rem;
+    padding: 12px;
+    border-radius: 6px;
     text-align: center;
-    outline: none;
-    box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+    width: 100%;
     transition: 0.3s;
 }
-
 .clay-input:focus {
     border-color: var(--p1-color);
-    box-shadow: 0 0 15px var(--p1-glow);
+    box-shadow: 0 0 10px var(--p1-dim);
 }
+.clay-input.small { font-size: 1rem; padding: 8px; }
 
-.pin-box {
-    margin: 20px 0;
-    display: flex;
-    justify-content: center;
+/* --- الأزرار الموحدة --- */
+.mech-btn {
+    background: #2a2a30;
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    padding: 12px 20px;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 6px;
+    transition: 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
 }
+.mech-btn:hover { background: #3a3a40; }
+.mech-btn:active { transform: scale(0.98); }
+.mech-btn.primary { background: var(--p1-color); color: #000; border: none; }
+.mech-btn.block { width: 100%; margin-top: 10px; }
 
-.clay-btn.big {
-    padding: 15px 40px;
-    font-size: 1.2rem;
-    letter-spacing: 1px;
-    width: auto;
-    min-width: 200px;
+/* --- مفتاح التبديل (Toggle) --- */
+.toggle-container {
+    display: flex; align-items: center; gap: 10px;
+    margin: 20px 0; font-weight: bold;
 }
+.switch {
+    position: relative; display: inline-block; width: 50px; height: 26px;
+}
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider {
+    position: absolute; cursor: pointer; inset: 0;
+    background-color: #333; transition: .4s; border-radius: 34px;
+}
+.slider:before {
+    position: absolute; content: ""; height: 20px; width: 20px;
+    left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%;
+}
+input:checked + .slider { background-color: var(--p1-color); }
+input:checked + .slider:before { transform: translateX(24px); }
+
+/* --- بطاقات الأنماط والفرق --- */
+.mode-card {
+    background: #25252b; border: 1px solid var(--border-color);
+    padding: 15px; border-radius: 8px; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    transition: 0.3s;
+}
+.mode-card:hover { border-color: var(--p1-color); transform: translateY(-3px); }
+.team-card {
+    background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px;
+    border-left: 4px solid #555; width: 100%; margin-bottom: 10px;
+}
+.p1-border { border-color: var(--p1-color); }
+.p2-border { border-color: var(--p2-color); }
