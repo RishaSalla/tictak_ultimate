@@ -1,6 +1,6 @@
 /* =========================================
-   📐 LAYOUT SYSTEM (FINAL UPDATED)
-   الهيكل، التمركز، والشبكة الثابتة
+   📐 LAYOUT SYSTEM (GRID STABILIZED)
+   الهيكل، التمركز، والشبكة الصخرية
    ========================================= */
 
 body {
@@ -13,7 +13,7 @@ body {
     overflow: hidden;
 }
 
-/* 1. الحاوية الزجاجية الكبيرة */
+/* 1. الحاوية الزجاجية */
 .glass-stage {
     position: relative;
     width: 95%; max-width: 1100px;
@@ -26,7 +26,7 @@ body {
     display: flex; flex-direction: column;
 }
 
-/* 2. نظام الطبقات (Screens) */
+/* 2. نظام الطبقات */
 .screen {
     position: absolute; inset: 0;
     width: 100%; height: 100%;
@@ -41,7 +41,7 @@ body {
 .screen.active { opacity: 1; pointer-events: all; z-index: 20; }
 .center-flex { justify-content: center; align-items: center; text-align: center; }
 
-/* 3. النوافذ المنبثقة (Modal Overlay) */
+/* 3. النوافذ المنبثقة */
 .modal-overlay {
     position: fixed; top: 0; left: 0;
     width: 100vw; height: 100vh;
@@ -54,24 +54,14 @@ body {
 }
 .modal-overlay:not(.hidden) { opacity: 1; pointer-events: all; }
 
-/* 4. تخطيط صفحة الأنماط */
-.modes-grid-layout {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 15px; width: 100%; max-width: 500px; margin: 0 auto;
-}
-.mode-card.span-2 { grid-column: span 2; }
-.mode-card {
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
-}
-
-/* 5. تخطيط ساحة اللعب والهيدر (محدث) */
+/* 4. تخطيط ساحة اللعب والهيدر */
 .game-header {
     width: 100%;
     display: grid;
-    grid-template-columns: 1fr 2fr 1fr; /* يسار - وسط - يمين */
+    grid-template-columns: 1fr 2fr 1fr; /* تقسيم ثلاثي متساوي */
     align-items: center;
-    padding: 0 20px;
-    margin-bottom: 10px;
+    padding: 0 10px;
+    margin-bottom: 5px;
     border-bottom: 1px solid #333;
     background: rgba(0,0,0,0.3);
     min-height: 50px;
@@ -90,17 +80,17 @@ body {
 }
 .grid-wrapper { display: flex; justify-content: center; align-items: center; }
 
-/* 6. الشبكة الثابتة (Rigid Grid System) */
+/* 5. الشبكة الصخرية (Absolute Positioning Logic) */
 .fixed-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     width: var(--arena-size);
     height: var(--arena-size);
-    gap: 5px;
+    gap: 6px;
     background: #000;
-    padding: 5px;
+    padding: 6px;
     border-radius: 8px;
-    /* تثبيت الأبعاد */
+    /* أبعاد مقدسة يمنع تغييرها */
     min-width: var(--arena-size);
     max-width: var(--arena-size);
 }
@@ -109,30 +99,34 @@ body {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 1px;
-    background: #333;
+    background: #333; /* خطوط الشبكة الداخلية */
     width: 100%; height: 100%;
-    border-radius: 4px; overflow: hidden;
+    border-radius: 4px; 
+    overflow: hidden;
+    position: relative;
 }
 
+/* الخلية: مجرد إطار مكاني */
 .cell {
     background: #121214;
-    display: flex; align-items: center; justify-content: center;
-    position: relative;
-    overflow: hidden; /* يقطع أي صورة تخرج عن الحدود */
+    position: relative; /* لتثبيت المحتوى داخله */
     width: 100%; height: 100%;
     cursor: pointer;
     user-select: none;
 }
 .cell:hover { background: #1f1f25; }
 
-/* تنسيق المحتوى داخل الخلية */
+/* المحتوى: يطفو فوق الخلية ولا يلمس حدودها */
 .cell img, .cell span {
-    max-width: 70%; 
-    max-height: 70%;
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%); /* توسيط مطلق */
+    max-width: 65%; 
+    max-height: 65%;
     pointer-events: none;
     display: block;
 }
-.cell span { font-size: 1.8rem; font-weight: bold; line-height: 1; }
+.cell span { font-size: 1.6rem; font-weight: bold; line-height: 1; }
 
 /* المناطق النشطة والفوز */
 .active-zone {
@@ -140,4 +134,18 @@ body {
     border: 1px solid var(--p1-color);
     background: rgba(255, 158, 100, 0.05);
 }
-.sub-grid.won { position: relative; }
+
+/* طبقة الفوز بالمربع الكبير */
+.win-overlay {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.9);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 5;
+}
+
+/* شبكة الأنماط */
+.modes-grid-layout {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 15px; width: 100%; max-width: 500px; margin: 0 auto;
+}
+.mode-card.span-2 { grid-column: span 2; }
