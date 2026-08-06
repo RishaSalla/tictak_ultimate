@@ -1,6 +1,6 @@
 /**
  * 🚀 MAIN APP CONTROLLER (FINAL LOGIC)
- * إدارة الثنائيات + الربط الكامل + إصلاح بوابة القوى + المحرك الديناميكي
+ * إدارة الثنائيات + الربط الكامل + إصلاح نافذة الخروج والتصفير الشامل
  */
 
 import { MathGenerator, HelpData } from './data.js';
@@ -12,33 +12,33 @@ const App = {
     config: { pin: '12345678', timer: 0 },
     state: {
         mode: 'classic',
-        mathConfig: { min: 1, max: 12, ops: ['+'] }, // تخزين إعدادات الرياضيات
+        mathConfig: { min: 1, max: 12, ops: ['+'] }, 
         timerInterval: null,
         timeLeft: 0,
         pendingMove: null, 
         currentQ: null,
         calcBuffer: [],
         activePower: null,
+        // حفظ بيانات اللاعبين لإعادة ضبط اللعبة عند الخروج
+        p1: null,
+        p2: null,
         // متغيرات خاصة لطور الثنائيات
         dualityStep: 0, 
         dualityVal1: null 
     },
 
     async init() {
-        // محاولة تحميل الإعدادات أو استخدام الافتراضي
         try {
             const res = await fetch('config.json');
             const data = await res.json();
             this.config.pin = data.security.default_pin;
         } catch(e) { console.log('Config loaded default'); }
 
-        // تفعيل الصوت عند أول نقرة
         document.body.addEventListener('click', () => AudioSys.init(), { once: true });
         
         this.bindEvents();
         UI.showScreen('screen-login');
         
-        // صوت الآلة الكاتبة في حقل الباسورد
         const pinInput = document.getElementById('pin-input');
         if(pinInput) pinInput.addEventListener('input', () => AudioSys.typewriter());
     },
@@ -63,7 +63,6 @@ const App = {
             container.addEventListener('click', (e) => {
                 const btn = e.target.closest('button');
                 if (!btn) return;
-                // إزالة التحديد السابق
                 container.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
                 btn.classList.add('selected');
                 AudioSys.click();
@@ -73,7 +72,6 @@ const App = {
         setupSelector('p2-icon-selector');
         setupSelector('timer-selector');
 
-        // مفتاح تبديل الفرق
         document.getElementById('team-mode-toggle').addEventListener('change', (e) => {
             document.querySelectorAll('.roster-box').forEach(r => 
                 e.target.checked ? r.classList.remove('hidden') : r.classList.add('hidden')
@@ -85,7 +83,6 @@ const App = {
         document.getElementById('btn-save-setup').addEventListener('click', () => {
             AudioSys.correct();
             
-            // دالة مساعدة لجلب القيمة المختارة
             const getVal = (id) => {
                 const sel = document.querySelector(`#${id} .selected`);
                 return sel ? sel.dataset.val : (id.includes('p1') ? 'X' : 'O');
@@ -102,6 +99,10 @@ const App = {
                 icon: getVal('p2-icon-selector')
             };
             
+            // حفظ اللاعبين في الذاكرة لتسهيل إعادة الضبط لاحقاً
+            this.state.p1 = p1;
+            this.state.p2 = p2;
+
             GameLogic.init(p1, p2);
             UI.setAvatars(p1.icon, p2.icon);
             UI.showScreen('screen-menu');
@@ -114,10 +115,8 @@ const App = {
                 AudioSys.click();
                 
                 if (this.state.mode === 'classic') {
-                    // الكلاسيكي لا يحتاج رياضيات، يبدأ فوراً
                     this.startGame();
                 } else {
-                    // إظهار نافذة الرياضيات لباقي الأطوار
                     document.getElementById('modal-math-setup').classList.remove('hidden');
                 }
             });
@@ -126,13 +125,11 @@ const App = {
         // --- منطق نافذة إعدادات الرياضيات الديناميكية ---
         const mathSetupModal = document.getElementById('modal-math-setup');
         if (mathSetupModal) {
-            // إغلاق النافذة والعودة
             document.getElementById('btn-close-math-setup').addEventListener('click', () => {
                 mathSetupModal.classList.add('hidden');
                 AudioSys.click();
             });
 
-            // اختيار العمليات (السماح باختيار متعدد)
             document.querySelectorAll('.op-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.target.classList.toggle('selected');
@@ -140,13 +137,11 @@ const App = {
                 });
             });
 
-            // زر عشوائي (الكل)
             document.getElementById('btn-math-random').addEventListener('click', () => {
                 document.querySelectorAll('.op-btn').forEach(btn => btn.classList.add('selected'));
                 AudioSys.click();
             });
 
-            // تأكيد بدء المعركة بعد حفظ الإعدادات
             document.getElementById('btn-confirm-math-setup').addEventListener('click', () => {
                 let min = parseInt(document.getElementById('math-range-min').value) || 1;
                 let max = parseInt(document.getElementById('math-range-max').value) || 12;
@@ -156,10 +151,8 @@ const App = {
                     selectedOps.push(btn.dataset.op);
                 });
 
-                // حماية: إذا نسي اللاعب تحديد عملية، نجبره على الجمع كافتراضي
                 if (selectedOps.length === 0) selectedOps = ['+'];
 
-                // حفظ الإعدادات في ذاكرة اللعبة
                 this.state.mathConfig = { min, max, ops: selectedOps };
                 
                 mathSetupModal.classList.add('hidden');
@@ -168,12 +161,42 @@ const App = {
             });
         }
 
-        // 5. التحكم داخل اللعبة
+        // 5. التحكم داخل اللعبة (نافذة الخروج المخصصة والتصفير الشامل)
+        const modalExit = document.getElementById('modal-exit');
+        
         document.getElementById('btn-back').addEventListener('click', () => {
-            if(confirm('هل أنت متأكد من الانسحاب؟')) {
-                this.stopTimer();
-                UI.showScreen('screen-menu');
+            modalExit.classList.remove('hidden');
+            AudioSys.click();
+        });
+
+        document.getElementById('btn-cancel-exit').addEventListener('click', () => {
+            modalExit.classList.add('hidden');
+            AudioSys.click();
+        });
+
+        document.getElementById('btn-close-exit').addEventListener('click', () => {
+            modalExit.classList.add('hidden');
+            AudioSys.click();
+        });
+
+        document.getElementById('btn-confirm-exit').addEventListener('click', () => {
+            modalExit.classList.add('hidden');
+            this.stopTimer();
+            AudioSys.click();
+            
+            // تصفير اللوحة بالكامل باستخدام بيانات اللاعبين المحفوظة
+            if (this.state.p1 && this.state.p2) {
+                GameLogic.init(this.state.p1, this.state.p2);
             }
+            
+            // إلغاء أي قوى معلقة
+            this.state.activePower = null;
+            document.querySelectorAll('.power-btn').forEach(b => b.classList.remove('active'));
+            
+            // تحديث الواجهة والعودة للقائمة
+            UI.updateGrid(GameLogic.state);
+            UI.updateHUD(GameLogic.state);
+            UI.showScreen('screen-menu');
         });
 
         // تفعيل القوى
@@ -189,7 +212,6 @@ const App = {
             btn.addEventListener('click', () => btn.closest('.modal-overlay').classList.add('hidden'));
         });
         
-        // تبويبات التعليمات
         document.querySelectorAll('.tab-btn').forEach(tab => {
             tab.addEventListener('click', (e) => {
                 document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
@@ -212,8 +234,8 @@ const App = {
         UI.updateGrid(GameLogic.state);
         UI.updateHUD(GameLogic.state);
         UI.showScreen('screen-game');
-        UI.log('المعركة بدأت! استعد.');
-        AudioSys.win(); // نغمة البدء
+        UI.log('اللعبة بدأت! استعد.');
+        AudioSys.win(); 
         this.startTurnTimer();
     },
 
@@ -221,7 +243,6 @@ const App = {
         let isPowerMove = false;
         let powerType = null;
 
-        // 1. معالجة القوى الخاصة (تحقق مبدئي فقط)
         if (this.state.activePower) {
             isPowerMove = true;
             powerType = this.state.activePower;
@@ -229,7 +250,6 @@ const App = {
             const state = GameLogic.state;
             let validTarget = false;
             
-            // التحقق من صحة الهدف برمجياً قبل إظهار السؤال الرياضي
             if (powerType === 'nuke' && state.metaGrid[g] === null) validTarget = true;
             if (powerType === 'freeze') validTarget = true;
             if (powerType === 'hack' && state.grid[g][c] !== null && state.grid[g][c] !== state.turn) validTarget = true;
@@ -240,7 +260,6 @@ const App = {
                 return;
             }
         } 
-        // 2. التحقق من صلاحية الحركة العادية
         else {
             if (!GameLogic.isValidMove(g, c)) {
                 AudioSys.error();
@@ -250,7 +269,6 @@ const App = {
 
         AudioSys.click();
 
-        // 3. النمط الكلاسيكي (بدون رياضيات ينفذ فوراً)
         if (this.state.mode === 'classic') {
             if (isPowerMove) {
                 this.executePower(powerType, g, c);
@@ -258,22 +276,18 @@ const App = {
                 this.executeMove(g, c);
             }
         } 
-        // 4. الأنماط الرياضية (توجيه للنافذة المنبثقة)
         else {
             this.state.pendingMove = { g, c, isPowerMove, powerType };
-            // نمرر إعدادات الرياضيات التي اختارها اللاعب للمحرك
             this.state.currentQ = MathGenerator.getQuestion(this.state.mode, this.state.mathConfig);
             this.state.calcBuffer = [];
             
-            // إعدادات خاصة لنمط الثنائيات
             this.state.dualityStep = 0;
             this.state.dualityVal1 = null;
 
-            // عرض السؤال وتصفير الشاشة
             document.getElementById('calc-q').textContent = this.state.currentQ.q;
             document.getElementById('calc-inputs').textContent = '_';
             document.getElementById('modal-calc').classList.remove('hidden');
-            this.pauseTimer(); // إيقاف الوقت أثناء الحل
+            this.pauseTimer(); 
         }
     },
 
@@ -298,7 +312,6 @@ const App = {
             AudioSys.glitch();
             UI.log(`تم تفعيل: ${type.toUpperCase()}`);
             
-            // تحديث الواجهة فوراً لعكس تغييرات القوى
             UI.updateGrid(GameLogic.state);
 
             this.state.activePower = null;
@@ -339,7 +352,6 @@ const App = {
         UI.log(`اختر مربعاً لتطبيق ${type}`);
     },
 
-    // --- نظام المؤقت ---
     startTurnTimer() {
         this.stopTimer();
         if (this.config.timer === 0) return;
@@ -367,7 +379,6 @@ const App = {
     stopTimer() { if (this.state.timerInterval) clearInterval(this.state.timerInterval); },
     pauseTimer() { this.stopTimer(); },
 
-    // --- نظام الحاسبة ومعالجة الإدخال ---
     handleCalcInput(key) {
         AudioSys.typewriter();
 
@@ -393,7 +404,6 @@ const App = {
         const currentVal = this.state.calcBuffer.join('') || '_';
         
         if (this.state.currentQ.isDuality && this.state.dualityStep === 1) {
-            // جلب رمز العملية الفعلي بدلاً من تثبيت علامة الجمع (+)
             const op = this.state.currentQ.dualityOp || '+';
             document.getElementById('calc-inputs').textContent = `${this.state.dualityVal1} ${op} ${currentVal}`;
         } else {
@@ -401,7 +411,6 @@ const App = {
         }
     },
 
-    // منطق خاص لزر "OK" في الثنائيات (يدعم جميع العمليات الآن)
     handleDualitySubmit() {
         const val = parseInt(this.state.calcBuffer.join(''));
         if (isNaN(val)) return; 
@@ -414,14 +423,13 @@ const App = {
             this.updateCalcDisplay();
         } 
         else {
-            // تنفيذ العملية الحسابية الصحيحة بناءً على ما ولده المحرك
             const op = this.state.currentQ.dualityOp;
             let result = 0;
             
             if (op === '+') result = this.state.dualityVal1 + val;
             else if (op === '-') result = this.state.dualityVal1 - val;
             else if (op === '*') result = this.state.dualityVal1 * val;
-            else if (op === '/') result = val !== 0 ? this.state.dualityVal1 / val : 0; // منع القسمة على صفر
+            else if (op === '/') result = val !== 0 ? this.state.dualityVal1 / val : 0;
             
             if (result === this.state.currentQ.targetSum) {
                 this.onMathSuccess();
