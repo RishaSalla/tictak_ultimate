@@ -188,6 +188,41 @@
         </section>
     </main>
 
+    <!-- النافذة المنبثقة: إعدادات الرياضيات الديناميكية -->
+    <div id="modal-math-setup" class="modal-overlay hidden">
+        <div class="mech-modal">
+            <header class="modal-header">
+                <h3>إعدادات التحدي الرياضي</h3>
+                <button class="close-modal-btn" id="btn-close-math-setup">✕</button>
+            </header>
+            <div class="modal-body" style="text-align: center;">
+                
+                <div style="margin-bottom: 20px;">
+                    <label class="sub-label" style="display: block; margin-bottom: 10px;">نطاق الأرقام:</label>
+                    <div style="display: flex; justify-content: center; gap: 10px;">
+                        <input type="number" id="math-range-min" class="clay-input small" placeholder="من" value="1" min="1" max="99" style="width: 80px; text-align: center;">
+                        <span style="color: var(--text-muted); align-self: center;">إلى</span>
+                        <input type="number" id="math-range-max" class="clay-input small" placeholder="إلى" value="12" min="2" max="100" style="width: 80px; text-align: center;">
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label class="sub-label" style="display: block; margin-bottom: 10px;">العمليات الحسابية:</label>
+                    <div class="icon-selector" id="math-op-selector" style="justify-content: center; margin-bottom: 15px;">
+                        <button class="icon-option selected op-btn" data-op="+">(+)</button>
+                        <button class="icon-option op-btn" data-op="-">(-)</button>
+                        <button class="icon-option op-btn" data-op="*">(×)</button>
+                        <button class="icon-option op-btn" data-op="/">(÷)</button>
+                    </div>
+                    <button id="btn-math-random" class="mech-btn small">عشوائي (الكل)</button>
+                </div>
+
+                <button id="btn-confirm-math-setup" class="mech-btn primary block" style="margin-top: 10px;">تأكيد وبدء المعركة</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- النافذة المنبثقة: التعليمات -->
     <div id="modal-instructions" class="modal-overlay hidden">
         <div class="mech-modal wide">
             <header class="modal-header">
@@ -204,6 +239,7 @@
         </div>
     </div>
 
+    <!-- النافذة المنبثقة: الحاسبة (وقت اللعب) -->
     <div id="modal-calc" class="modal-overlay hidden">
         <div class="mech-modal calc-theme">
             <div class="calc-lcd" id="calc-q">...</div>
