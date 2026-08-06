@@ -41,7 +41,7 @@
         </section>
 
         <section id="screen-setup" class="screen center-flex hidden">
-    <h2 class="screen-title">إعداد النظام</h2>
+    <h2 class="screen-title">إعدادات اللعبة</h2>
     
     <div class="toggle-container">
         <span class="toggle-label">فردي</span>
@@ -57,7 +57,7 @@
             <label>اسم الفريق (1)</label>
             <input type="text" id="p1-name" class="clay-input" placeholder="الفريق البرتقالي">
             
-            <label class="sub-label">اختر الرمز المقاتل:</label>
+            <label class="sub-label">اختر الرمز:</label>
             <div class="icon-selector" id="p1-icon-selector">
                 <button class="icon-option selected" data-val="X">X</button>
                 <button class="icon-option" data-val="sword"><img src="assets/icons/sword.svg"></button>
@@ -75,7 +75,7 @@
             <label>اسم الفريق (2)</label>
             <input type="text" id="p2-name" class="clay-input" placeholder="الفريق الأزرق">
             
-            <label class="sub-label">اختر الرمز المقاتل:</label>
+            <label class="sub-label">اختر الرمز:</label>
             <div class="icon-selector" id="p2-icon-selector">
                 <button class="icon-option selected" data-val="O">O</button>
                 <button class="icon-option" data-val="shield"><img src="assets/icons/shield.svg"></button>
@@ -100,11 +100,11 @@
         </div>
     </div>
 
-    <button id="btn-save-setup" class="mech-btn primary block">حفظ وبدء المعركة</button>
+    <button id="btn-save-setup" class="mech-btn primary block">حفظ وبدء اللعبة</button>
 </section>
 
         <section id="screen-menu" class="screen center-flex hidden">
-            <h2 class="screen-title">اختر بروتوكول التحدي</h2>
+            <h2 class="screen-title">اختر نمط اللعب</h2>
             <div class="modes-grid-layout">
                 <button class="mode-card span-2" data-mode="classic">
                     <img src="assets/icons/clash.svg" class="icon-lg">
@@ -192,11 +192,11 @@
         </section>
     </main>
 
-    <!-- النافذة المنبثقة: إعدادات الرياضيات الديناميكية -->
+    <!-- النافذة المنبثقة: إعدادات الرياضيات -->
     <div id="modal-math-setup" class="modal-overlay hidden">
         <div class="mech-modal">
             <header class="modal-header">
-                <h3>إعدادات التحدي الرياضي</h3>
+                <h3>إعدادات الرياضيات</h3>
                 <button class="close-modal-btn" id="btn-close-math-setup">✕</button>
             </header>
             <div class="modal-body" style="text-align: center;">
@@ -221,7 +221,24 @@
                     <button id="btn-math-random" class="mech-btn small">عشوائي (الكل)</button>
                 </div>
 
-                <button id="btn-confirm-math-setup" class="mech-btn primary block" style="margin-top: 10px;">تأكيد وبدء المعركة</button>
+                <button id="btn-confirm-math-setup" class="mech-btn primary block" style="margin-top: 10px;">تأكيد وبدء اللعبة</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- النافذة المنبثقة: تأكيد الخروج (الجديدة) -->
+    <div id="modal-exit" class="modal-overlay hidden">
+        <div class="mech-modal" style="width: 350px; text-align: center;">
+            <header class="modal-header">
+                <h3>تأكيد الخروج</h3>
+                <button class="close-modal-btn" id="btn-close-exit">✕</button>
+            </header>
+            <div class="modal-body">
+                <p style="margin-bottom: 20px; color: #fff;">هل أنت متأكد من رغبتك في إنهاء اللعبة والعودة للقائمة؟</p>
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <button id="btn-confirm-exit" class="mech-btn" style="background: #ff4444; color: #fff; border-color: #cc0000; flex: 1;">نعم، خروج</button>
+                    <button id="btn-cancel-exit" class="mech-btn" style="flex: 1;">لا، إكمال اللعبة</button>
+                </div>
             </div>
         </div>
     </div>
@@ -230,7 +247,7 @@
     <div id="modal-instructions" class="modal-overlay hidden">
         <div class="mech-modal wide">
             <header class="modal-header">
-                <h3>دليل العمليات</h3>
+                <h3>دليل اللعبة</h3>
                 <button class="close-modal-btn">✕</button>
             </header>
             <div class="tabs-container">
