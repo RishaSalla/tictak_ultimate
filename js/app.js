@@ -1,6 +1,6 @@
 /**
  * 🚀 MAIN APP CONTROLLER (FINAL LOGIC)
- * إدارة الثنائيات + الربط الكامل
+ * إدارة الثنائيات + الربط الكامل + إصلاح بوابة القوى
  */
 
 import { MathGenerator, HelpData } from './data.js';
@@ -14,7 +14,7 @@ const App = {
         mode: 'classic',
         timerInterval: null,
         timeLeft: 0,
-        pendingMove: null,
+        pendingMove: null, // سيحمل الآن: {g, c, isPowerMove, powerType}
         currentQ: null,
         calcBuffer: [],
         activePower: null,
@@ -165,36 +165,49 @@ const App = {
     },
 
     handleGridClick(g, c) {
-        // 1. معالجة القوى الخاصة
+        let isPowerMove = false;
+        let powerType = null;
+
+        // 1. معالجة القوى الخاصة (تحقق مبدئي فقط)
         if (this.state.activePower) {
-            if (GameLogic.usePower(this.state.activePower, g, c)) {
-                AudioSys.glitch();
-                UI.log(`تم تفعيل: ${this.state.activePower.toUpperCase()}`);
-                this.state.activePower = null;
-                document.querySelectorAll('.power-btn').forEach(b => b.classList.remove('active'));
-                this.endTurn();
-            } else {
+            isPowerMove = true;
+            powerType = this.state.activePower;
+            
+            const state = GameLogic.state;
+            let validTarget = false;
+            
+            // التحقق من صحة الهدف برمجياً قبل إظهار السؤال الرياضي
+            if (powerType === 'nuke' && state.metaGrid[g] === null) validTarget = true;
+            if (powerType === 'freeze') validTarget = true;
+            if (powerType === 'hack' && state.grid[g][c] !== null && state.grid[g][c] !== state.turn) validTarget = true;
+
+            if (!validTarget) {
                 AudioSys.error();
                 UI.log('هدف غير صالح للقوة!');
+                return;
             }
-            return;
-        }
-
-        // 2. التحقق من صلاحية الحركة
-        if (!GameLogic.isValidMove(g, c)) {
-            AudioSys.error();
-            return;
+        } 
+        // 2. التحقق من صلاحية الحركة العادية
+        else {
+            if (!GameLogic.isValidMove(g, c)) {
+                AudioSys.error();
+                return;
+            }
         }
 
         AudioSys.click();
 
-        // 3. النمط الكلاسيكي (بدون رياضيات)
+        // 3. النمط الكلاسيكي (بدون رياضيات ينفذ فوراً)
         if (this.state.mode === 'classic') {
-            this.executeMove(g, c);
+            if (isPowerMove) {
+                this.executePower(powerType, g, c);
+            } else {
+                this.executeMove(g, c);
+            }
         } 
-        // 4. الأنماط الرياضية
+        // 4. الأنماط الرياضية (توجيه للنافذة المنبثقة)
         else {
-            this.state.pendingMove = { g, c };
+            this.state.pendingMove = { g, c, isPowerMove, powerType };
             this.state.currentQ = MathGenerator.getQuestion(this.state.mode);
             this.state.calcBuffer = [];
             
@@ -223,6 +236,24 @@ const App = {
             }, 500);
         } else {
             this.endTurn();
+        }
+    },
+
+    executePower(type, g, c) {
+        if (GameLogic.usePower(type, g, c)) {
+            AudioSys.glitch();
+            UI.log(`تم تفعيل: ${type.toUpperCase()}`);
+            
+            // تحديث الواجهة فوراً لعكس تغييرات القوى (كالاختراق ومسح المربع)
+            UI.updateGrid(GameLogic.state);
+
+            this.state.activePower = null;
+            document.querySelectorAll('.power-btn').forEach(b => b.classList.remove('active'));
+            this.endTurn();
+        } else {
+            AudioSys.error();
+            UI.log('فشل تفعيل القوة!');
+            this.startTurnTimer();
         }
     },
 
@@ -357,7 +388,13 @@ const App = {
     onMathSuccess() {
         AudioSys.correct();
         document.getElementById('modal-calc').classList.add('hidden');
-        this.executeMove(this.state.pendingMove.g, this.state.pendingMove.c);
+        
+        // التفريق بين تنفيذ حركة عادية أو قوة بعد الحل الصحيح
+        if (this.state.pendingMove.isPowerMove) {
+            this.executePower(this.state.pendingMove.powerType, this.state.pendingMove.g, this.state.pendingMove.c);
+        } else {
+            this.executeMove(this.state.pendingMove.g, this.state.pendingMove.c);
+        }
     },
 
     onMathFail() {
