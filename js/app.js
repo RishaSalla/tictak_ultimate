@@ -1,6 +1,6 @@
 /**
  * 🚀 MAIN APP CONTROLLER (FINAL LOGIC)
- * إدارة الثنائيات + الربط الكامل + إصلاح بوابة القوى
+ * إدارة الثنائيات + الربط الكامل + إصلاح بوابة القوى + المحرك الديناميكي
  */
 
 import { MathGenerator, HelpData } from './data.js';
@@ -12,9 +12,10 @@ const App = {
     config: { pin: '12345678', timer: 0 },
     state: {
         mode: 'classic',
+        mathConfig: { min: 1, max: 12, ops: ['+'] }, // تخزين إعدادات الرياضيات
         timerInterval: null,
         timeLeft: 0,
-        pendingMove: null, // سيحمل الآن: {g, c, isPowerMove, powerType}
+        pendingMove: null, 
         currentQ: null,
         calcBuffer: [],
         activePower: null,
@@ -106,17 +107,69 @@ const App = {
             UI.showScreen('screen-menu');
         });
 
-        // 4. اختيار نمط اللعب
+        // 4. اختيار نمط اللعب ونافذة الإعدادات الرياضية
         document.querySelectorAll('.mode-card').forEach(btn => {
             btn.addEventListener('click', () => {
                 this.state.mode = btn.dataset.mode;
-                this.startGame();
+                AudioSys.click();
+                
+                if (this.state.mode === 'classic') {
+                    // الكلاسيكي لا يحتاج رياضيات، يبدأ فوراً
+                    this.startGame();
+                } else {
+                    // إظهار نافذة الرياضيات لباقي الأطوار
+                    document.getElementById('modal-math-setup').classList.remove('hidden');
+                }
             });
         });
 
+        // --- منطق نافذة إعدادات الرياضيات الديناميكية ---
+        const mathSetupModal = document.getElementById('modal-math-setup');
+        if (mathSetupModal) {
+            // إغلاق النافذة والعودة
+            document.getElementById('btn-close-math-setup').addEventListener('click', () => {
+                mathSetupModal.classList.add('hidden');
+                AudioSys.click();
+            });
+
+            // اختيار العمليات (السماح باختيار متعدد)
+            document.querySelectorAll('.op-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.target.classList.toggle('selected');
+                    AudioSys.click();
+                });
+            });
+
+            // زر عشوائي (الكل)
+            document.getElementById('btn-math-random').addEventListener('click', () => {
+                document.querySelectorAll('.op-btn').forEach(btn => btn.classList.add('selected'));
+                AudioSys.click();
+            });
+
+            // تأكيد بدء المعركة بعد حفظ الإعدادات
+            document.getElementById('btn-confirm-math-setup').addEventListener('click', () => {
+                let min = parseInt(document.getElementById('math-range-min').value) || 1;
+                let max = parseInt(document.getElementById('math-range-max').value) || 12;
+                
+                let selectedOps = [];
+                document.querySelectorAll('.op-btn.selected').forEach(btn => {
+                    selectedOps.push(btn.dataset.op);
+                });
+
+                // حماية: إذا نسي اللاعب تحديد عملية، نجبره على الجمع كافتراضي
+                if (selectedOps.length === 0) selectedOps = ['+'];
+
+                // حفظ الإعدادات في ذاكرة اللعبة
+                this.state.mathConfig = { min, max, ops: selectedOps };
+                
+                mathSetupModal.classList.add('hidden');
+                AudioSys.correct();
+                this.startGame();
+            });
+        }
+
         // 5. التحكم داخل اللعبة
         document.getElementById('btn-back').addEventListener('click', () => {
-            // نافذة تأكيد بسيطة
             if(confirm('هل أنت متأكد من الانسحاب؟')) {
                 this.stopTimer();
                 UI.showScreen('screen-menu');
@@ -208,7 +261,8 @@ const App = {
         // 4. الأنماط الرياضية (توجيه للنافذة المنبثقة)
         else {
             this.state.pendingMove = { g, c, isPowerMove, powerType };
-            this.state.currentQ = MathGenerator.getQuestion(this.state.mode);
+            // نمرر إعدادات الرياضيات التي اختارها اللاعب للمحرك
+            this.state.currentQ = MathGenerator.getQuestion(this.state.mode, this.state.mathConfig);
             this.state.calcBuffer = [];
             
             // إعدادات خاصة لنمط الثنائيات
@@ -244,7 +298,7 @@ const App = {
             AudioSys.glitch();
             UI.log(`تم تفعيل: ${type.toUpperCase()}`);
             
-            // تحديث الواجهة فوراً لعكس تغييرات القوى (كالاختراق ومسح المربع)
+            // تحديث الواجهة فوراً لعكس تغييرات القوى
             UI.updateGrid(GameLogic.state);
 
             this.state.activePower = null;
@@ -272,7 +326,6 @@ const App = {
             return;
         }
 
-        // إلغاء التفعيل إذا ضغط مرة أخرى
         if (this.state.activePower === type) {
             this.state.activePower = null;
             btn.classList.remove('active');
@@ -299,7 +352,7 @@ const App = {
             const percent = (this.state.timeLeft / this.config.timer) * 100;
             UI.updateTimer(percent);
             
-            if (this.state.timeLeft <= 3) AudioSys.tick(); // صوت تكتكة في النهاية
+            if (this.state.timeLeft <= 3) AudioSys.tick();
 
             if (this.state.timeLeft <= 0) {
                 this.stopTimer();
@@ -322,50 +375,55 @@ const App = {
             this.state.calcBuffer.pop();
         } 
         else if (key === 'ok') {
-            // معالجة خاصة لنمط الثنائيات
             if (this.state.currentQ.isDuality) {
                 this.handleDualitySubmit();
             } else {
                 this.verifyMath();
             }
-            return; // الخروج لمنع التحديث المزدوج
+            return; 
         } 
         else {
             if (this.state.calcBuffer.length < 5) this.state.calcBuffer.push(key);
         }
         
-        // تحديث الشاشة
         this.updateCalcDisplay();
     },
 
     updateCalcDisplay() {
         const currentVal = this.state.calcBuffer.join('') || '_';
         
-        // إذا كنا في الخطوة الثانية من الثنائيات، نعرض الرقم الأول + الحالي
         if (this.state.currentQ.isDuality && this.state.dualityStep === 1) {
-            document.getElementById('calc-inputs').textContent = `${this.state.dualityVal1} + ${currentVal}`;
+            // جلب رمز العملية الفعلي بدلاً من تثبيت علامة الجمع (+)
+            const op = this.state.currentQ.dualityOp || '+';
+            document.getElementById('calc-inputs').textContent = `${this.state.dualityVal1} ${op} ${currentVal}`;
         } else {
             document.getElementById('calc-inputs').textContent = currentVal;
         }
     },
 
-    // منطق خاص لزر "OK" في الثنائيات
+    // منطق خاص لزر "OK" في الثنائيات (يدعم جميع العمليات الآن)
     handleDualitySubmit() {
         const val = parseInt(this.state.calcBuffer.join(''));
-        if (isNaN(val)) return; // منع إدخال فارغ
+        if (isNaN(val)) return; 
 
-        // الخطوة 1: إدخال الرقم الأول
         if (this.state.dualityStep === 0) {
             this.state.dualityVal1 = val;
             this.state.dualityStep = 1;
-            this.state.calcBuffer = []; // تفريغ للكتابة الثانية
-            AudioSys.correct(); // صوت تأكيد بسيط
+            this.state.calcBuffer = []; 
+            AudioSys.correct(); 
             this.updateCalcDisplay();
         } 
-        // الخطوة 2: إدخال الرقم الثاني والتحقق
         else {
-            const sum = this.state.dualityVal1 + val;
-            if (sum === this.state.currentQ.targetSum) {
+            // تنفيذ العملية الحسابية الصحيحة بناءً على ما ولده المحرك
+            const op = this.state.currentQ.dualityOp;
+            let result = 0;
+            
+            if (op === '+') result = this.state.dualityVal1 + val;
+            else if (op === '-') result = this.state.dualityVal1 - val;
+            else if (op === '*') result = this.state.dualityVal1 * val;
+            else if (op === '/') result = val !== 0 ? this.state.dualityVal1 / val : 0; // منع القسمة على صفر
+            
+            if (result === this.state.currentQ.targetSum) {
                 this.onMathSuccess();
             } else {
                 this.onMathFail();
@@ -376,8 +434,6 @@ const App = {
     verifyMath() {
         const input = parseInt(this.state.calcBuffer.join(''));
         
-        // التحقق لباقي الأنماط (المواجهة، الميزان، المجهول)
-        // كلهم يعتمدون على this.state.currentQ.a كإجابة صحيحة
         if (input === this.state.currentQ.a) {
             this.onMathSuccess();
         } else {
@@ -389,7 +445,6 @@ const App = {
         AudioSys.correct();
         document.getElementById('modal-calc').classList.add('hidden');
         
-        // التفريق بين تنفيذ حركة عادية أو قوة بعد الحل الصحيح
         if (this.state.pendingMove.isPowerMove) {
             this.executePower(this.state.pendingMove.powerType, this.state.pendingMove.g, this.state.pendingMove.c);
         } else {
@@ -401,7 +456,7 @@ const App = {
         AudioSys.error();
         this.state.calcBuffer = [];
         document.getElementById('calc-inputs').textContent = 'خطأ ❌';
-        // إعادة تعيين خطوات الثنائيات إذا أخطأ
+        
         if(this.state.currentQ.isDuality) {
             this.state.dualityStep = 0;
             this.state.dualityVal1 = null;
