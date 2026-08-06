@@ -310,3 +310,31 @@ input:checked + .slider:before {
     50% { box-shadow: 0 0 20px rgba(255, 50, 50, 0.8); }
     100% { box-shadow: 0 0 5px rgba(255, 50, 50, 0.2); }
 }
+
+/* =========================================
+   🪶 RISHA BRANDING (الهوية البصرية)
+   ========================================= */
+
+/* الشعار الرئيسي للعبة في شاشة الدخول */
+.main-game-logo {
+    width: 100%;
+    max-width: 320px;
+    height: auto;
+    margin-bottom: 10px;
+    filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.6));
+    animation: float-logo 3s ease-in-out infinite;
+}
+
+/* حركة تمايل بسيطة للشعار */
+@keyframes float-logo {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+    100% { transform: translateY(0px); }
+}
+
+/* تصغير الشعار قليلاً في شاشات الجوال */
+@media (max-width: 768px) {
+    .main-game-logo {
+        max-width: 260px;
+    }
+}
