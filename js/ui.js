@@ -1,6 +1,6 @@
 /**
  * 🎨 UI MANAGER (UPDATED)
- * رسم SVG، الشبكة، والتحديثات
+ * رسم SVG، الشبكة، والتحديثات (محدث لدعم أسماء الأعضاء)
  */
 
 import { GameLogic } from './logic.js';
@@ -118,13 +118,15 @@ export const UI = {
     },
 
     updateHUD(state) {
-        const cur = GameLogic.getCurrentMember();
+        // جلب اسم العضو الحالي الذي عليه الدور بدلاً من اسم الفريق فقط
+        const currentMemberName = GameLogic.getCurrentMemberName();
+        
         this.elements.p1Name.textContent = state.p1.name;
         this.elements.p2Name.textContent = state.p2.name;
         this.elements.p1Score.textContent = state.p1.score;
         this.elements.p2Score.textContent = state.p2.score;
         
-        this.elements.turnText.textContent = `الدور: ${cur.name}`;
+        this.elements.turnText.textContent = `الدور: ${currentMemberName}`;
         this.elements.turnText.style.color = state.turn === 'X' ? 'var(--p1-color)' : 'var(--p2-color)';
 
         // تحديث أزرار القوى
