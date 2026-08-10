@@ -1,6 +1,6 @@
 /**
  * 🚀 MAIN APP CONTROLLER (FINAL LOGIC)
- * إدارة الثنائيات + الربط الكامل + إصلاح نافذة الخروج والتصفير الشامل
+ * إضافة نظام الفرق + حل مشكلة الاحتجاز + إصلاح الحاسبة
  */
 
 import { MathGenerator, HelpData } from './data.js';
@@ -19,12 +19,13 @@ const App = {
         currentQ: null,
         calcBuffer: [],
         activePower: null,
-        // حفظ بيانات اللاعبين لإعادة ضبط اللعبة عند الخروج
         p1: null,
         p2: null,
-        // متغيرات خاصة لطور الثنائيات
         dualityStep: 0, 
-        dualityVal1: null 
+        dualityVal1: null,
+        // حفظ مؤقت لأسماء أعضاء الفرق قبل بدء اللعبة
+        tempRosterP1: [],
+        tempRosterP2: []
     },
 
     async init() {
@@ -56,7 +57,7 @@ const App = {
             }
         });
 
-        // 2. منطق أزرار الاختيار (الأيقونات والمؤقت)
+        // 2. منطق أزرار الاختيار
         const setupSelector = (containerId) => {
             const container = document.getElementById(containerId);
             if(!container) return;
@@ -72,6 +73,7 @@ const App = {
         setupSelector('p2-icon-selector');
         setupSelector('timer-selector');
 
+        // تبديل نمط الفرق
         document.getElementById('team-mode-toggle').addEventListener('change', (e) => {
             document.querySelectorAll('.roster-box').forEach(r => 
                 e.target.checked ? r.classList.remove('hidden') : r.classList.add('hidden')
@@ -79,7 +81,30 @@ const App = {
             AudioSys.click();
         });
 
-        // 3. حفظ الإعدادات وبدء اللعبة
+        // --- منطق إضافة أعضاء الفريقين ---
+        const handleAddMember = (teamId) => {
+            const inputField = document.getElementById(`${teamId}-member`);
+            const name = inputField.value.trim();
+            if(name === '') return;
+            
+            // إضافة الاسم للمصفوفة المؤقتة
+            if(teamId === 'p1') this.state.tempRosterP1.push(name);
+            else this.state.tempRosterP2.push(name);
+
+            // إضافته بصرياً للقائمة
+            const list = document.getElementById(`${teamId}-list`);
+            const li = document.createElement('li');
+            li.textContent = name;
+            list.appendChild(li);
+
+            inputField.value = '';
+            AudioSys.typewriter();
+        };
+
+        document.getElementById('btn-add-p1').addEventListener('click', () => handleAddMember('p1'));
+        document.getElementById('btn-add-p2').addEventListener('click', () => handleAddMember('p2'));
+
+        // 3. حفظ الإعدادات والانتقال
         document.getElementById('btn-save-setup').addEventListener('click', () => {
             AudioSys.correct();
             
@@ -90,16 +115,18 @@ const App = {
             
             this.config.timer = parseInt(getVal('timer-selector')) || 0;
             
+            // تجميع بيانات اللاعبين
             const p1 = {
-                name: document.getElementById('p1-name').value || 'الفريق 1',
-                icon: getVal('p1-icon-selector')
+                name: document.getElementById('p1-name').value || 'الفريق البرتقالي',
+                icon: getVal('p1-icon-selector'),
+                roster: [...this.state.tempRosterP1] // نسخ قائمة الأعضاء
             };
             const p2 = {
-                name: document.getElementById('p2-name').value || 'الفريق 2',
-                icon: getVal('p2-icon-selector')
+                name: document.getElementById('p2-name').value || 'الفريق الأزرق',
+                icon: getVal('p2-icon-selector'),
+                roster: [...this.state.tempRosterP2] // نسخ قائمة الأعضاء
             };
             
-            // حفظ اللاعبين في الذاكرة لتسهيل إعادة الضبط لاحقاً
             this.state.p1 = p1;
             this.state.p2 = p2;
 
@@ -108,7 +135,7 @@ const App = {
             UI.showScreen('screen-menu');
         });
 
-        // 4. اختيار نمط اللعب ونافذة الإعدادات الرياضية
+        // 4. اختيار نمط اللعب
         document.querySelectorAll('.mode-card').forEach(btn => {
             btn.addEventListener('click', () => {
                 this.state.mode = btn.dataset.mode;
@@ -122,7 +149,7 @@ const App = {
             });
         });
 
-        // --- منطق نافذة إعدادات الرياضيات الديناميكية ---
+        // نافذة الرياضيات
         const mathSetupModal = document.getElementById('modal-math-setup');
         if (mathSetupModal) {
             document.getElementById('btn-close-math-setup').addEventListener('click', () => {
@@ -145,23 +172,18 @@ const App = {
             document.getElementById('btn-confirm-math-setup').addEventListener('click', () => {
                 let min = parseInt(document.getElementById('math-range-min').value) || 1;
                 let max = parseInt(document.getElementById('math-range-max').value) || 12;
-                
                 let selectedOps = [];
-                document.querySelectorAll('.op-btn.selected').forEach(btn => {
-                    selectedOps.push(btn.dataset.op);
-                });
-
+                document.querySelectorAll('.op-btn.selected').forEach(btn => selectedOps.push(btn.dataset.op));
                 if (selectedOps.length === 0) selectedOps = ['+'];
 
                 this.state.mathConfig = { min, max, ops: selectedOps };
-                
                 mathSetupModal.classList.add('hidden');
                 AudioSys.correct();
                 this.startGame();
             });
         }
 
-        // 5. التحكم داخل اللعبة (نافذة الخروج المخصصة والتصفير الشامل)
+        // 5. التحكم داخل اللعبة (الانسحاب النظيف)
         const modalExit = document.getElementById('modal-exit');
         
         document.getElementById('btn-back').addEventListener('click', () => {
@@ -183,35 +205,20 @@ const App = {
             modalExit.classList.add('hidden');
             this.stopTimer();
             AudioSys.click();
-            
-            // تصفير اللوحة بالكامل باستخدام بيانات اللاعبين المحفوظة
-            if (this.state.p1 && this.state.p2) {
-                GameLogic.init(this.state.p1, this.state.p2);
-            }
-            
-            // إلغاء أي قوى معلقة
-            this.state.activePower = null;
-            document.querySelectorAll('.power-btn').forEach(b => b.classList.remove('active'));
-            
-            // تحديث الواجهة والعودة للقائمة
-            UI.updateGrid(GameLogic.state);
-            UI.updateHUD(GameLogic.state);
-            UI.showScreen('screen-menu');
+            this.fullReset(); // استدعاء بروتوكول التصفير وإرجاعهم لصفحة الإعدادات
         });
 
-        // تفعيل القوى
         document.querySelectorAll('.power-btn').forEach(btn => {
             btn.addEventListener('click', () => this.activatePower(btn));
         });
 
-        // 6. النوافذ المنبثقة (التعليمات)
+        // النوافذ المنبثقة
         document.getElementById('global-help-btn').addEventListener('click', () => {
             document.getElementById('modal-instructions').classList.remove('hidden');
         });
         document.querySelectorAll('.close-modal-btn').forEach(btn => {
             btn.addEventListener('click', () => btn.closest('.modal-overlay').classList.add('hidden'));
         });
-        
         document.querySelectorAll('.tab-btn').forEach(tab => {
             tab.addEventListener('click', (e) => {
                 document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
@@ -220,13 +227,27 @@ const App = {
             });
         });
 
-        // 7. لوحة أرقام الحاسبة
+        // 7. الحاسبة
         const numpad = document.querySelector('.numpad-grid');
         if(numpad) {
             numpad.addEventListener('click', (e) => {
                 if(e.target.tagName === 'BUTTON') this.handleCalcInput(e.target.dataset.key);
             });
         }
+    },
+
+    // بروتوكول التصفير الشامل والعودة للإعدادات (يحل مشكلة الاحتجاز)
+    fullReset() {
+        if (this.state.p1 && this.state.p2) {
+            GameLogic.init(this.state.p1, this.state.p2);
+        }
+        this.state.activePower = null;
+        document.querySelectorAll('.power-btn').forEach(b => b.classList.remove('active'));
+        UI.updateGrid(GameLogic.state);
+        UI.updateHUD(GameLogic.state);
+        
+        // العودة لصفحة الإعدادات بدلاً من قائمة الأنماط
+        UI.showScreen('screen-setup');
     },
 
     startGame() {
@@ -246,7 +267,6 @@ const App = {
         if (this.state.activePower) {
             isPowerMove = true;
             powerType = this.state.activePower;
-            
             const state = GameLogic.state;
             let validTarget = false;
             
@@ -280,7 +300,6 @@ const App = {
             this.state.pendingMove = { g, c, isPowerMove, powerType };
             this.state.currentQ = MathGenerator.getQuestion(this.state.mode, this.state.mathConfig);
             this.state.calcBuffer = [];
-            
             this.state.dualityStep = 0;
             this.state.dualityVal1 = null;
 
@@ -298,9 +317,10 @@ const App = {
         if (result === 'GAME_OVER') {
             AudioSys.win();
             this.stopTimer();
+            // استبدال النافذة الافتراضية مؤقتاً بتصفير نظيف حتى نركب نافذة الفوز الجديدة في الـ HTML
             setTimeout(() => {
                 alert(`مبروك! الفائز هو ${GameLogic.state.winner}`);
-                UI.showScreen('screen-menu');
+                this.fullReset(); // تصفير وإرجاع للإعدادات
             }, 500);
         } else {
             this.endTurn();
@@ -311,9 +331,7 @@ const App = {
         if (GameLogic.usePower(type, g, c)) {
             AudioSys.glitch();
             UI.log(`تم تفعيل: ${type.toUpperCase()}`);
-            
             UI.updateGrid(GameLogic.state);
-
             this.state.activePower = null;
             document.querySelectorAll('.power-btn').forEach(b => b.classList.remove('active'));
             this.endTurn();
@@ -338,7 +356,6 @@ const App = {
             UI.log('ليس دورك!');
             return;
         }
-
         if (this.state.activePower === type) {
             this.state.activePower = null;
             btn.classList.remove('active');
@@ -386,11 +403,13 @@ const App = {
             this.state.calcBuffer.pop();
         } 
         else if (key === 'ok') {
-            if (this.state.currentQ.isDuality) {
-                this.handleDualitySubmit();
-            } else {
-                this.verifyMath();
+            // منع التأكيد إذا كان الحقل فارغاً لتجنب الأخطاء
+            if (this.state.calcBuffer.length === 0) {
+                AudioSys.error();
+                return;
             }
+            if (this.state.currentQ.isDuality) this.handleDualitySubmit();
+            else this.verifyMath();
             return; 
         } 
         else {
@@ -402,7 +421,6 @@ const App = {
 
     updateCalcDisplay() {
         const currentVal = this.state.calcBuffer.join('') || '_';
-        
         if (this.state.currentQ.isDuality && this.state.dualityStep === 1) {
             const op = this.state.currentQ.dualityOp || '+';
             document.getElementById('calc-inputs').textContent = `${this.state.dualityVal1} ${op} ${currentVal}`;
@@ -425,34 +443,25 @@ const App = {
         else {
             const op = this.state.currentQ.dualityOp;
             let result = 0;
-            
             if (op === '+') result = this.state.dualityVal1 + val;
             else if (op === '-') result = this.state.dualityVal1 - val;
             else if (op === '*') result = this.state.dualityVal1 * val;
             else if (op === '/') result = val !== 0 ? this.state.dualityVal1 / val : 0;
             
-            if (result === this.state.currentQ.targetSum) {
-                this.onMathSuccess();
-            } else {
-                this.onMathFail();
-            }
+            if (result === this.state.currentQ.targetSum) this.onMathSuccess();
+            else this.onMathFail();
         }
     },
 
     verifyMath() {
         const input = parseInt(this.state.calcBuffer.join(''));
-        
-        if (input === this.state.currentQ.a) {
-            this.onMathSuccess();
-        } else {
-            this.onMathFail();
-        }
+        if (input === this.state.currentQ.a) this.onMathSuccess();
+        else this.onMathFail();
     },
 
     onMathSuccess() {
         AudioSys.correct();
         document.getElementById('modal-calc').classList.add('hidden');
-        
         if (this.state.pendingMove.isPowerMove) {
             this.executePower(this.state.pendingMove.powerType, this.state.pendingMove.g, this.state.pendingMove.c);
         } else {
