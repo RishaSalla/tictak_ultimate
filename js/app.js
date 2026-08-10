@@ -1,6 +1,6 @@
 /**
  * 🚀 MAIN APP CONTROLLER (FINAL LOGIC)
- * إضافة نظام الفرق + حل مشكلة الاحتجاز + إصلاح الحاسبة
+ * إضافة نظام الفرق + حل مشكلة الاحتجاز + ربط نافذة الفوز الأنيقة
  */
 
 import { MathGenerator, HelpData } from './data.js';
@@ -115,16 +115,18 @@ const App = {
             
             this.config.timer = parseInt(getVal('timer-selector')) || 0;
             
-            // تجميع بيانات اللاعبين
+            // تجميع بيانات اللاعبين وتصفير السجل السابق إذا كانوا قد لعبوا من قبل
             const p1 = {
                 name: document.getElementById('p1-name').value || 'الفريق البرتقالي',
                 icon: getVal('p1-icon-selector'),
-                roster: [...this.state.tempRosterP1] // نسخ قائمة الأعضاء
+                roster: [...this.state.tempRosterP1], 
+                score: 0 
             };
             const p2 = {
                 name: document.getElementById('p2-name').value || 'الفريق الأزرق',
                 icon: getVal('p2-icon-selector'),
-                roster: [...this.state.tempRosterP2] // نسخ قائمة الأعضاء
+                roster: [...this.state.tempRosterP2],
+                score: 0 
             };
             
             this.state.p1 = p1;
@@ -208,11 +210,30 @@ const App = {
             this.fullReset(); // استدعاء بروتوكول التصفير وإرجاعهم لصفحة الإعدادات
         });
 
+        // --- أزرار نافذة الفوز الجديدة ---
+        document.getElementById('btn-victory-menu').addEventListener('click', () => {
+            document.getElementById('modal-victory').classList.add('hidden');
+            AudioSys.click();
+            this.fullReset();
+        });
+
+        document.getElementById('btn-rematch').addEventListener('click', () => {
+            document.getElementById('modal-victory').classList.add('hidden');
+            AudioSys.click();
+            
+            // تصفير الرقعة فقط دون تصفير النقاط أو الأسماء لبدء جولة جديدة
+            GameLogic.init(GameLogic.state.p1, GameLogic.state.p2);
+            this.state.activePower = null;
+            document.querySelectorAll('.power-btn').forEach(b => b.classList.remove('active'));
+            
+            this.startGame(); // إعادة تشغيل اللعبة فوراً
+        });
+
         document.querySelectorAll('.power-btn').forEach(btn => {
             btn.addEventListener('click', () => this.activatePower(btn));
         });
 
-        // النوافذ المنبثقة
+        // النوافذ المنبثقة للتعليمات
         document.getElementById('global-help-btn').addEventListener('click', () => {
             document.getElementById('modal-instructions').classList.remove('hidden');
         });
@@ -238,15 +259,23 @@ const App = {
 
     // بروتوكول التصفير الشامل والعودة للإعدادات (يحل مشكلة الاحتجاز)
     fullReset() {
-        if (this.state.p1 && this.state.p2) {
-            GameLogic.init(this.state.p1, this.state.p2);
-        }
+        // تصفير كامل لكل شيء استعداداً لتحدي جديد
+        this.state.p1 = null;
+        this.state.p2 = null;
+        this.state.tempRosterP1 = [];
+        this.state.tempRosterP2 = [];
+        document.getElementById('p1-list').innerHTML = '';
+        document.getElementById('p2-list').innerHTML = '';
+        document.getElementById('p1-name').value = '';
+        document.getElementById('p2-name').value = '';
+        
+        GameLogic.init(null, null);
+        
         this.state.activePower = null;
         document.querySelectorAll('.power-btn').forEach(b => b.classList.remove('active'));
         UI.updateGrid(GameLogic.state);
         UI.updateHUD(GameLogic.state);
         
-        // العودة لصفحة الإعدادات بدلاً من قائمة الأنماط
         UI.showScreen('screen-setup');
     },
 
@@ -317,10 +346,9 @@ const App = {
         if (result === 'GAME_OVER') {
             AudioSys.win();
             this.stopTimer();
-            // استبدال النافذة الافتراضية مؤقتاً بتصفير نظيف حتى نركب نافذة الفوز الجديدة في الـ HTML
+            // استدعاء نافذة الفوز الجديدة بدلاً من الـ alert
             setTimeout(() => {
-                alert(`مبروك! الفائز هو ${GameLogic.state.winner}`);
-                this.fullReset(); // تصفير وإرجاع للإعدادات
+                UI.showVictory(GameLogic.state);
             }, 500);
         } else {
             this.endTurn();
@@ -403,7 +431,6 @@ const App = {
             this.state.calcBuffer.pop();
         } 
         else if (key === 'ok') {
-            // منع التأكيد إذا كان الحقل فارغاً لتجنب الأخطاء
             if (this.state.calcBuffer.length === 0) {
                 AudioSys.error();
                 return;
