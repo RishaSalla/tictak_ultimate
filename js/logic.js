@@ -1,6 +1,6 @@
 /**
- * 🧠 GAME LOGIC ENGINE
- * محرك القوانين والقوى والتحقق من الفوز
+ * 🧠 GAME LOGIC ENGINE (TEAM ROSTER UPGRADE)
+ * محرك القوانين والقوى والتحقق من الفوز، مع دعم نظام المداورة للفرق
  */
 
 export const GameLogic = {
@@ -10,8 +10,8 @@ export const GameLogic = {
         turn: 'X',      // X or O
         nextGrid: null, // Constraint (0-8 or null for free move)
         winner: null,
-        p1: { name: 'P1', score: 0, icon: 'X', powers: { nuke: true, freeze: true, hack: true } },
-        p2: { name: 'P2', score: 0, icon: 'O', powers: { nuke: true, freeze: true, hack: true } },
+        p1: { name: 'P1', score: 0, icon: 'X', powers: { nuke: true, freeze: true, hack: true }, roster: [], rosterIndex: 0 },
+        p2: { name: 'P2', score: 0, icon: 'O', powers: { nuke: true, freeze: true, hack: true }, roster: [], rosterIndex: 0 },
         frozenGrid: null // For Freeze power
     },
 
@@ -24,15 +24,34 @@ export const GameLogic = {
         this.state.winner = null;
         this.state.frozenGrid = null;
 
-        // تحديث بيانات اللاعبين إذا وجدت
+        // تحديث بيانات اللاعبين ودعم قائمة الأعضاء (Roster)
         if (p1Data) {
-            this.state.p1 = { ...this.state.p1, ...p1Data, powers: { nuke: true, freeze: true, hack: true } };
-            this.state.p2 = { ...this.state.p2, ...p2Data, powers: { nuke: true, freeze: true, hack: true } };
+            this.state.p1 = { 
+                ...this.state.p1, 
+                ...p1Data, 
+                powers: { nuke: true, freeze: true, hack: true },
+                roster: p1Data.roster && p1Data.roster.length > 0 ? p1Data.roster : [p1Data.name],
+                rosterIndex: 0
+            };
+            this.state.p2 = { 
+                ...this.state.p2, 
+                ...p2Data, 
+                powers: { nuke: true, freeze: true, hack: true },
+                roster: p2Data.roster && p2Data.roster.length > 0 ? p2Data.roster : [p2Data.name],
+                rosterIndex: 0
+            };
         }
     },
 
-    getCurrentMember() {
+    // جلب بيانات الفريق الحالي
+    getCurrentTeam() {
         return this.state.turn === 'X' ? this.state.p1 : this.state.p2;
+    },
+
+    // جلب اسم اللاعب (العضو) الذي عليه الدور حالياً
+    getCurrentMemberName() {
+        const team = this.getCurrentTeam();
+        return team.roster[team.rosterIndex];
     },
 
     isValidMove(g, c) {
@@ -57,19 +76,19 @@ export const GameLogic = {
     },
 
     makeMove(g, c) {
-        const player = this.getCurrentMember();
+        const team = this.getCurrentTeam();
         this.state.grid[g][c] = this.state.turn;
 
         // التحقق من فوز المربع الصغير
         if (this.checkWin(this.state.grid[g])) {
             this.state.metaGrid[g] = this.state.turn;
-            player.score += 100;
+            team.score += 100;
         }
 
         // التحقق من فوز اللعبة بالكامل
         if (this.checkWin(this.state.metaGrid)) {
             this.state.winner = this.state.turn;
-            player.score += 1000;
+            team.score += 1000;
             return 'GAME_OVER';
         }
 
@@ -77,7 +96,6 @@ export const GameLogic = {
         if (this.state.frozenGrid !== null) this.state.frozenGrid = null;
 
         // تحديد المربع التالي
-        // إذا كان المربع التالي (c) محجوزاً أو ممتلئاً، يصبح اللعب حراً
         if (this.state.metaGrid[c] !== null || this.isGridFull(this.state.grid[c])) {
             this.state.nextGrid = null;
         } else {
@@ -89,10 +107,10 @@ export const GameLogic = {
     },
 
     usePower(type, g, c) {
-        const player = this.getCurrentMember();
+        const team = this.getCurrentTeam();
         
         // التحقق من توفر القوة
-        if (!player.powers[type]) return false;
+        if (!team.powers[type]) return false;
 
         switch (type) {
             case 'nuke': // تدمير مربع كامل
@@ -111,13 +129,18 @@ export const GameLogic = {
                 break;
         }
 
-        player.powers[type] = false; // استهلاك القوة
-        player.score -= 50; // تكلفة استخدام القوة
+        team.powers[type] = false; // استهلاك القوة
+        team.score -= 50; // تكلفة استخدام القوة
         this.switchTurn(); // القوة تستهلك الدور
         return true;
     },
 
     switchTurn() {
+        // قبل نقل الدور للفريق الآخر، نقوم بتحريك مؤشر العضو في الفريق الحالي للمداورة
+        const currentTeam = this.getCurrentTeam();
+        currentTeam.rosterIndex = (currentTeam.rosterIndex + 1) % currentTeam.roster.length;
+
+        // نقل الدور للفريق الخصم
         this.state.turn = this.state.turn === 'X' ? 'O' : 'X';
     },
 
