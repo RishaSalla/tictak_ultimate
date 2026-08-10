@@ -243,6 +243,26 @@
         </div>
     </div>
 
+    <!-- النافذة المنبثقة: إعلان الفائز (الجديدة) -->
+    <div id="modal-victory" class="modal-overlay hidden">
+        <div class="mech-modal" id="victory-modal-content" style="width: 350px; text-align: center; border-width: 3px; transition: all 0.3s ease;">
+            <header class="modal-header" style="justify-content: center; background: rgba(0,0,0,0.5);">
+                <h3 style="color: var(--accent-gold); font-size: 1.5rem; letter-spacing: 2px;">نهاية اللعبة</h3>
+            </header>
+            <div class="modal-body">
+                <div style="margin-bottom: 25px;">
+                    <img id="victory-winner-icon" src="" style="width: 80px; height: 80px; margin-bottom: 15px; filter: drop-shadow(0 0 15px currentColor);">
+                    <h2 id="victory-winner-name" style="color: #fff; margin: 0; font-size: 2rem;">الفريق الفائز</h2>
+                    <p style="color: var(--text-muted); margin-top: 5px; font-size: 1.1rem;">انتصار مستحق!</p>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <button id="btn-rematch" class="mech-btn primary" style="width: 100%; font-size: 1.1rem; padding: 15px;">إعادة المواجهة (جولة جديدة)</button>
+                    <button id="btn-victory-menu" class="mech-btn" style="width: 100%;">العودة للقائمة الرئيسية</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- النافذة المنبثقة: التعليمات -->
     <div id="modal-instructions" class="modal-overlay hidden">
         <div class="mech-modal wide">
