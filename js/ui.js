@@ -1,6 +1,6 @@
 /**
  * 🎨 UI MANAGER (UPDATED)
- * رسم SVG، الشبكة، والتحديثات (محدث لدعم أسماء الأعضاء)
+ * رسم SVG، الشبكة، التحديثات، وإدارة نافذة الفوز الجديدة
  */
 
 import { GameLogic } from './logic.js';
@@ -161,5 +161,34 @@ export const UI = {
     
     log(msg) {
         if(this.elements.logText) this.elements.logText.textContent = msg;
+    },
+
+    // عرض نافذة الفوز الجديدة
+    showVictory(state) {
+        const modal = document.getElementById('modal-victory');
+        const contentBox = document.getElementById('victory-modal-content');
+        const winnerNameEl = document.getElementById('victory-winner-name');
+        const winnerIconEl = document.getElementById('victory-winner-icon');
+
+        // تحديد الفائز
+        const winningTeam = state.winner === 'X' ? state.p1 : state.p2;
+        const color = state.winner === 'X' ? 'var(--p1-color)' : 'var(--p2-color)';
+        
+        // جلب مسار الأيقونة (إذا كان X/O نضع أيقونة code.svg كبديل مؤقت، وإلا نجلب الـ SVG المخصص)
+        const getSrc = (i) => ['X', 'O'].includes(i) ? 'assets/icons/code.svg' : `assets/icons/${i}.svg`;
+        
+        // تعبئة البيانات
+        winnerNameEl.textContent = winningTeam.name;
+        winnerNameEl.style.color = color;
+        winnerIconEl.src = getSrc(winningTeam.icon);
+        winnerIconEl.style.color = color;
+
+        // تلوين إطار النافذة بلون الفائز + تفعيل الوميض (الذي أضفناه في الـ CSS)
+        contentBox.style.borderColor = color;
+        contentBox.style.color = color; // لتلوين الـ Drop-shadow
+        contentBox.classList.add('victory-pulse');
+
+        // إظهار النافذة
+        modal.classList.remove('hidden');
     }
 };
