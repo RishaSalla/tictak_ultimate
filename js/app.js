@@ -1,6 +1,6 @@
 /**
  * 🚀 MAIN APP CONTROLLER (FINAL LOGIC)
- * إضافة نظام الفرق + حل مشكلة الاحتجاز + ربط نافذة الفوز الأنيقة
+ * تفعيل قوانين القوى الاستراتيجية وعقاب الرياضيات
  */
 
 import { MathGenerator, HelpData } from './data.js';
@@ -23,7 +23,6 @@ const App = {
         p2: null,
         dualityStep: 0, 
         dualityVal1: null,
-        // حفظ مؤقت لأسماء أعضاء الفرق قبل بدء اللعبة
         tempRosterP1: [],
         tempRosterP2: []
     },
@@ -45,7 +44,6 @@ const App = {
     },
 
     bindEvents() {
-        // 1. زر الدخول
         document.getElementById('btn-login').addEventListener('click', () => {
             const input = document.getElementById('pin-input').value;
             if (input === this.config.pin) {
@@ -57,7 +55,6 @@ const App = {
             }
         });
 
-        // 2. منطق أزرار الاختيار
         const setupSelector = (containerId) => {
             const container = document.getElementById(containerId);
             if(!container) return;
@@ -73,7 +70,6 @@ const App = {
         setupSelector('p2-icon-selector');
         setupSelector('timer-selector');
 
-        // تبديل نمط الفرق
         document.getElementById('team-mode-toggle').addEventListener('change', (e) => {
             document.querySelectorAll('.roster-box').forEach(r => 
                 e.target.checked ? r.classList.remove('hidden') : r.classList.add('hidden')
@@ -81,17 +77,14 @@ const App = {
             AudioSys.click();
         });
 
-        // --- منطق إضافة أعضاء الفريقين ---
         const handleAddMember = (teamId) => {
             const inputField = document.getElementById(`${teamId}-member`);
             const name = inputField.value.trim();
             if(name === '') return;
             
-            // إضافة الاسم للمصفوفة المؤقتة
             if(teamId === 'p1') this.state.tempRosterP1.push(name);
             else this.state.tempRosterP2.push(name);
 
-            // إضافته بصرياً للقائمة
             const list = document.getElementById(`${teamId}-list`);
             const li = document.createElement('li');
             li.textContent = name;
@@ -104,7 +97,6 @@ const App = {
         document.getElementById('btn-add-p1').addEventListener('click', () => handleAddMember('p1'));
         document.getElementById('btn-add-p2').addEventListener('click', () => handleAddMember('p2'));
 
-        // 3. حفظ الإعدادات والانتقال
         document.getElementById('btn-save-setup').addEventListener('click', () => {
             AudioSys.correct();
             
@@ -115,7 +107,6 @@ const App = {
             
             this.config.timer = parseInt(getVal('timer-selector')) || 0;
             
-            // تجميع بيانات اللاعبين وتصفير السجل السابق إذا كانوا قد لعبوا من قبل
             const p1 = {
                 name: document.getElementById('p1-name').value || 'الفريق البرتقالي',
                 icon: getVal('p1-icon-selector'),
@@ -137,7 +128,6 @@ const App = {
             UI.showScreen('screen-menu');
         });
 
-        // 4. اختيار نمط اللعب
         document.querySelectorAll('.mode-card').forEach(btn => {
             btn.addEventListener('click', () => {
                 this.state.mode = btn.dataset.mode;
@@ -151,7 +141,6 @@ const App = {
             });
         });
 
-        // نافذة الرياضيات
         const mathSetupModal = document.getElementById('modal-math-setup');
         if (mathSetupModal) {
             document.getElementById('btn-close-math-setup').addEventListener('click', () => {
@@ -185,7 +174,6 @@ const App = {
             });
         }
 
-        // 5. التحكم داخل اللعبة (الانسحاب النظيف)
         const modalExit = document.getElementById('modal-exit');
         
         document.getElementById('btn-back').addEventListener('click', () => {
@@ -207,10 +195,9 @@ const App = {
             modalExit.classList.add('hidden');
             this.stopTimer();
             AudioSys.click();
-            this.fullReset(); // استدعاء بروتوكول التصفير وإرجاعهم لصفحة الإعدادات
+            this.fullReset(); 
         });
 
-        // --- أزرار نافذة الفوز الجديدة ---
         document.getElementById('btn-victory-menu').addEventListener('click', () => {
             document.getElementById('modal-victory').classList.add('hidden');
             AudioSys.click();
@@ -221,19 +208,17 @@ const App = {
             document.getElementById('modal-victory').classList.add('hidden');
             AudioSys.click();
             
-            // تصفير الرقعة فقط دون تصفير النقاط أو الأسماء لبدء جولة جديدة
             GameLogic.init(GameLogic.state.p1, GameLogic.state.p2);
             this.state.activePower = null;
             document.querySelectorAll('.power-btn').forEach(b => b.classList.remove('active'));
             
-            this.startGame(); // إعادة تشغيل اللعبة فوراً
+            this.startGame(); 
         });
 
         document.querySelectorAll('.power-btn').forEach(btn => {
             btn.addEventListener('click', () => this.activatePower(btn));
         });
 
-        // النوافذ المنبثقة للتعليمات
         document.getElementById('global-help-btn').addEventListener('click', () => {
             document.getElementById('modal-instructions').classList.remove('hidden');
         });
@@ -248,7 +233,6 @@ const App = {
             });
         });
 
-        // 7. الحاسبة
         const numpad = document.querySelector('.numpad-grid');
         if(numpad) {
             numpad.addEventListener('click', (e) => {
@@ -257,9 +241,7 @@ const App = {
         }
     },
 
-    // بروتوكول التصفير الشامل والعودة للإعدادات (يحل مشكلة الاحتجاز)
     fullReset() {
-        // تصفير كامل لكل شيء استعداداً لتحدي جديد
         this.state.p1 = null;
         this.state.p2 = null;
         this.state.tempRosterP1 = [];
@@ -346,23 +328,38 @@ const App = {
         if (result === 'GAME_OVER') {
             AudioSys.win();
             this.stopTimer();
-            // استدعاء نافذة الفوز الجديدة بدلاً من الـ alert
             setTimeout(() => {
                 UI.showVictory(GameLogic.state);
             }, 500);
+        } else if (result === 'TRAP_TRIGGERED') {
+            // تفعيل رسالة فخ التجميد وانتقال الدور
+            AudioSys.error(); 
+            UI.log('فخ التجميد ❄️! الخصم يفقد دوره.');
+            this.endTurn(); 
         } else {
             this.endTurn();
         }
     },
 
     executePower(type, g, c) {
-        if (GameLogic.usePower(type, g, c)) {
+        const result = GameLogic.usePower(type, g, c);
+        if (result) {
             AudioSys.glitch();
             UI.log(`تم تفعيل: ${type.toUpperCase()}`);
             UI.updateGrid(GameLogic.state);
             this.state.activePower = null;
             document.querySelectorAll('.power-btn').forEach(b => b.classList.remove('active'));
-            this.endTurn();
+            
+            // الهاك قد يتسبب في إنهاء المباراة بالكامل
+            if (result === 'GAME_OVER') {
+                AudioSys.win();
+                this.stopTimer();
+                setTimeout(() => {
+                    UI.showVictory(GameLogic.state);
+                }, 500);
+            } else {
+                this.endTurn();
+            }
         } else {
             AudioSys.error();
             UI.log('فشل تفعيل القوة!');
@@ -496,16 +493,23 @@ const App = {
         }
     },
 
+    // عقاب الخطأ في الرياضيات (تعديل جديد)
     onMathFail() {
         AudioSys.error();
         this.state.calcBuffer = [];
         document.getElementById('calc-inputs').textContent = 'خطأ ❌';
         
-        if(this.state.currentQ.isDuality) {
-            this.state.dualityStep = 0;
-            this.state.dualityVal1 = null;
-            setTimeout(() => { document.getElementById('calc-inputs').textContent = '_'; }, 1000);
-        }
+        // إغلاق النافذة وانتقال الدور فوراً للخصم بعد ثانية
+        setTimeout(() => {
+            document.getElementById('modal-calc').classList.add('hidden');
+            UI.log('إجابة خاطئة! انتقل الدور للخصم.');
+            
+            this.state.activePower = null;
+            document.querySelectorAll('.power-btn').forEach(b => b.classList.remove('active'));
+
+            GameLogic.skipTurn(); // إجبار انتقال الدور
+            this.endTurn();
+        }, 1000);
     }
 };
 
