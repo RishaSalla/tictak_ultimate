@@ -1,6 +1,6 @@
 /**
  * 🎨 UI MANAGER (UPDATED)
- * رسم SVG، الشبكة، التحديثات، وإدارة نافذة الفوز الجديدة
+ * رسم SVG، الشبكة، التحديثات، التوهج الديناميكي وإدارة الفوز
  */
 
 import { GameLogic } from './logic.js';
@@ -57,6 +57,10 @@ export const UI = {
             const sub = document.getElementById(`sub-${g}`);
             sub.className = 'sub-grid';
             
+            // تصفير الألوان المضافة برمجياً قبل إعادة الرسم
+            sub.style.borderColor = '';
+            sub.style.boxShadow = '';
+
             // إزالة أي طبقة فوز سابقة
             const oldOverlay = sub.querySelector('.win-overlay');
             if (oldOverlay) oldOverlay.remove();
@@ -88,12 +92,24 @@ export const UI = {
                 }
                 sub.appendChild(overlay);
             } 
-            // 2. المنطقة النشطة
+            // 2. المنطقة النشطة (التوهج بلون الفريق صاحب الدور)
             else if (!winner && (nextGrid === null || nextGrid === g)) {
                 sub.classList.add('active-zone');
+                
+                // تحديد لون التوهج بناءً على دور الفريق
+                const glow = state.turn === 'X' ? 'var(--p1-color)' : 'var(--p2-color)';
+                const shadowGlow = state.turn === 'X' ? 'rgba(255, 158, 100, 0.4)' : 'rgba(100, 200, 255, 0.4)';
+                
+                sub.style.borderColor = glow;
+                sub.style.boxShadow = `0 0 15px ${shadowGlow}, inset 0 0 20px rgba(0,0,0,0.5)`;
             }
 
-            if (frozenGrid === g) sub.classList.add('frozen');
+            // 3. فخ التجميد (لون ثلجي تحذيري)
+            if (frozenGrid === g) {
+                sub.classList.add('frozen');
+                sub.style.borderColor = '#00d0ff';
+                sub.style.boxShadow = '0 0 20px rgba(0, 208, 255, 0.6), inset 0 0 20px rgba(0, 208, 255, 0.3)';
+            }
 
             // تحديث الخلايا
             Array.from(sub.children).forEach((cell, c) => {
@@ -118,7 +134,6 @@ export const UI = {
     },
 
     updateHUD(state) {
-        // جلب اسم العضو الحالي الذي عليه الدور بدلاً من اسم الفريق فقط
         const currentMemberName = GameLogic.getCurrentMemberName();
         
         this.elements.p1Name.textContent = state.p1.name;
@@ -129,7 +144,6 @@ export const UI = {
         this.elements.turnText.textContent = `الدور: ${currentMemberName}`;
         this.elements.turnText.style.color = state.turn === 'X' ? 'var(--p1-color)' : 'var(--p2-color)';
 
-        // تحديث أزرار القوى
         ['p1', 'p2'].forEach(pid => {
             const powers = state[pid].powers;
             document.querySelectorAll(`.power-btn.${pid}`).forEach(btn => {
@@ -163,32 +177,26 @@ export const UI = {
         if(this.elements.logText) this.elements.logText.textContent = msg;
     },
 
-    // عرض نافذة الفوز الجديدة
     showVictory(state) {
         const modal = document.getElementById('modal-victory');
         const contentBox = document.getElementById('victory-modal-content');
         const winnerNameEl = document.getElementById('victory-winner-name');
         const winnerIconEl = document.getElementById('victory-winner-icon');
 
-        // تحديد الفائز
         const winningTeam = state.winner === 'X' ? state.p1 : state.p2;
         const color = state.winner === 'X' ? 'var(--p1-color)' : 'var(--p2-color)';
         
-        // جلب مسار الأيقونة (إذا كان X/O نضع أيقونة code.svg كبديل مؤقت، وإلا نجلب الـ SVG المخصص)
         const getSrc = (i) => ['X', 'O'].includes(i) ? 'assets/icons/code.svg' : `assets/icons/${i}.svg`;
         
-        // تعبئة البيانات
         winnerNameEl.textContent = winningTeam.name;
         winnerNameEl.style.color = color;
         winnerIconEl.src = getSrc(winningTeam.icon);
         winnerIconEl.style.color = color;
 
-        // تلوين إطار النافذة بلون الفائز + تفعيل الوميض (الذي أضفناه في الـ CSS)
         contentBox.style.borderColor = color;
-        contentBox.style.color = color; // لتلوين الـ Drop-shadow
+        contentBox.style.color = color; 
         contentBox.classList.add('victory-pulse');
 
-        // إظهار النافذة
         modal.classList.remove('hidden');
     }
 };
