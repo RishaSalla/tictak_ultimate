@@ -3,6 +3,11 @@
    الأزرار، البطاقات، القوائم، والنوافذ
    ========================================= */
 
+/* منع التكبير المزعج (Zoom) عند النقر المزدوج السريع في الجوال */
+button, input, .mode-card, .cell {
+    touch-action: manipulation;
+}
+
 /* --- 1. خانات الإدخال الميكانيكية --- */
 .clay-input {
     background: #000000;
@@ -256,6 +261,7 @@ input::placeholder {
 }
 .numpad-grid {
     display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+    direction: ltr; /* التعديل هنا: إجبار الأرقام لتُقرأ من اليسار لليمين */
 }
 .numpad-grid button {
     background: #2a2a30; border: 1px solid #444;
