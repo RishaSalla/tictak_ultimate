@@ -1,97 +1,115 @@
 /**
  * 💾 DATA MODULE (DYNAMIC MATH ENGINE & GAME MANUAL)
- * محرك توليد الأسئلة + الدليل الشامل والحديث لقوانين اللعبة
+ * محرك التوليد بنظام "الكوتشينة" (Deck) لمنع التكرار + الدليل الشامل
  */
 
 export const MathGenerator = {
     rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; },
+    
+    // ذاكرة الأسئلة (حزمة الكوتشينة)
+    deck: [],
 
-    // المحرك الآن يستقبل config (يحتوي على min, max ومصفوفة العمليات)
-    getQuestion(mode, config = null) {
-        // إعدادات افتراضية كحماية (Fallback) في حال تأخر تحميل الإعدادات
-        if (!config) {
-            config = { min: 1, max: 12, ops: ['+'] };
-        }
-
+    // بناء حزمة الأسئلة وخلطها بناءً على النطاق والعمليات المحددة
+    buildDeck(config) {
+        this.deck = [];
         let min = parseInt(config.min) || 1;
         let max = parseInt(config.max) || 12;
-        
-        // تصحيح النطاق آلياً إذا أدخل اللاعب الحد الأدنى أكبر من الأقصى بالخطأ
         if (min > max) [min, max] = [max, min]; 
 
-        // اختيار عملية عشوائية من العمليات التي حددها اللاعب
-        let op = '+';
-        if (config.ops && config.ops.length > 0) {
-            op = config.ops[Math.floor(Math.random() * config.ops.length)];
+        let ops = (config.ops && config.ops.length > 0) ? config.ops : ['+'];
+
+        // توليد كل الاحتمالات الممكنة وإضافتها للحزمة
+        for (let op of ops) {
+            for (let n1 = min; n1 <= max; n1++) {
+                for (let n2 = min; n2 <= max; n2++) {
+                    let res = 0;
+                    let opStr = '';
+                    let finalN1 = n1;
+                    let finalN2 = n2;
+
+                    switch(op) {
+                        case '+':
+                            res = finalN1 + finalN2; 
+                            opStr = '+'; 
+                            break;
+                        case '-':
+                            if (finalN2 > finalN1) [finalN1, finalN2] = [finalN2, finalN1];
+                            res = finalN1 - finalN2; 
+                            opStr = '-'; 
+                            break;
+                        case '*':
+                            res = finalN1 * finalN2; 
+                            opStr = '×'; 
+                            break;
+                        case '/':
+                            res = finalN1; 
+                            finalN1 = res * finalN2; 
+                            opStr = '÷'; 
+                            break;
+                    }
+
+                    // للتأكد من عدم تكرار (6+10) و (10+6) في نفس الحزمة في حالتي الجمع والضرب
+                    let isDuplicate = false;
+                    if (op === '+' || op === '*') {
+                        isDuplicate = this.deck.some(card => 
+                            card.op === op && card.n1 === finalN2 && card.n2 === finalN1
+                        );
+                    }
+
+                    if (!isDuplicate) {
+                        this.deck.push({ n1: finalN1, n2: finalN2, res, opStr, operation: op });
+                    }
+                }
+            }
         }
 
-        // دالة داخلية لتوليد معادلة نظيفة ومفلترة (بدون سوالب وبدون كسور)
-        const genEquation = (operation, minVal, maxVal) => {
-            let n1 = this.rand(minVal, maxVal);
-            let n2 = this.rand(minVal, maxVal);
-            let res = 0;
-            let opStr = '';
+        // خلط الحزمة (Fisher-Yates Shuffle)
+        for (let i = this.deck.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [this.deck[i], this.deck[j]] = [this.deck[j], this.deck[i]];
+        }
+        
+        console.log(`[Math Engine] تم بناء وخلط حزمة من ${this.deck.length} سؤال.`);
+    },
 
-            switch(operation) {
-                case '+':
-                    res = n1 + n2; 
-                    opStr = '+'; 
-                    break;
-                case '-':
-                    // فلتر الطرح: ضمان أن الرقم الأول هو الأكبر لمنع الناتج السالب
-                    if (n2 > n1) [n1, n2] = [n2, n1];
-                    res = n1 - n2; 
-                    opStr = '-'; 
-                    break;
-                case '*':
-                    res = n1 * n2; 
-                    opStr = '×'; 
-                    break;
-                case '/':
-                    // فلتر القسمة (الضرب العكسي): ضمان ناتج بدون كسور
-                    res = n1; // نعتبر n1 هو الناتج النظيف المرغوب
-                    n1 = res * n2; // نضرب لإنتاج الرقم الكبير الذي سيتم قسمته
-                    opStr = '÷'; 
-                    break;
-            }
-            return { n1, n2, res, opStr, operation };
-        };
+    getQuestion(mode, config = null) {
+        if (!config) config = { min: 1, max: 12, ops: ['+'] };
 
-        let eq = genEquation(op, min, max);
+        // إذا كانت الحزمة فارغة، قم ببنائها وخلطها
+        if (this.deck.length === 0) {
+            this.buildDeck(config);
+        }
+
+        // سحب كرت من الحزمة (وحذفه منها لضمان عدم التكرار)
+        let eq = this.deck.pop();
         let q = {};
 
         switch (mode) {
-            case 'clash': // المواجهة: معادلة مباشرة
+            case 'clash':
                 q = { q: `${eq.n1} ${eq.opStr} ${eq.n2} = ?`, a: eq.res };
                 break;
 
-            case 'void': // المجهول: إيجاد الطرف الناقص
+            case 'void':
                 q = { q: `${eq.n1} ${eq.opStr} ? = ${eq.res}`, a: eq.n2 };
                 break;
 
-            case 'balance': // الميزان: موازنة كفتين
-                // الكفة اليسرى هي ناتج المعادلة الأساسية الديناميكية
+            case 'balance':
                 let leftRes = eq.res;
-                
-                // الكفة اليمنى تعتمد دائماً على الجمع (لضمان إمكانية الحل الذهني وعدم التعقيد)
-                // نختار رقم (C) يكون أصغر من أو يساوي ناتج الكفة اليسرى
                 let c = this.rand(0, leftRes);
                 let missing = leftRes - c;
-                
                 q = { q: `${eq.n1} ${eq.opStr} ${eq.n2} = ${c} + ?`, a: missing };
                 break;
 
-            case 'duality': // الثنائيات: أدخل رقمين يحققان الهدف
+            case 'duality':
                 q = { 
                     q: `x ${eq.opStr} y = ${eq.res}`, 
                     targetSum: eq.res, 
                     isDuality: true,
-                    dualityOp: eq.operation // نرسل نوع العملية الفعلي لـ app.js ليتحقق منها
+                    dualityOp: eq.operation
                 };
                 break;
                 
-            default:
-                return null;
+            default: return null;
         }
         return q;
     }
