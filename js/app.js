@@ -1,6 +1,6 @@
 /**
  * 🚀 MAIN APP CONTROLLER (FINAL LOGIC)
- * تفعيل قوانين القوى الاستراتيجية وعقاب الرياضيات
+ * تفعيل المعلق الآلي + استشعار نهايات اللعبة الجديدة (النقاط والتعادل)
  */
 
 import { MathGenerator, HelpData } from './data.js';
@@ -266,7 +266,7 @@ const App = {
         UI.updateGrid(GameLogic.state);
         UI.updateHUD(GameLogic.state);
         UI.showScreen('screen-game');
-        UI.log('اللعبة بدأت! استعد.');
+        UI.log('اللعبة بدأت! التحدي ينطلق الآن 🚀');
         AudioSys.win(); 
         this.startTurnTimer();
     },
@@ -322,40 +322,52 @@ const App = {
     },
 
     executeMove(g, c) {
+        const currentPlayer = GameLogic.getCurrentMemberName();
+        const prevMeta = [...GameLogic.state.metaGrid]; // لحفظ حالة الساحة قبل النقلة
+        
         const result = GameLogic.makeMove(g, c);
         UI.updateGrid(GameLogic.state);
         
-        if (result === 'GAME_OVER') {
+        // التحقق من كافة نهايات اللعبة الممكنة
+        if (result === 'GAME_OVER' || result === 'GAME_OVER_POINTS' || result === 'GAME_OVER_TIE') {
             AudioSys.win();
             this.stopTimer();
             setTimeout(() => {
-                UI.showVictory(GameLogic.state);
+                UI.showVictory(GameLogic.state, result); // نرسل نوع النتيجة للواجهة
             }, 500);
         } else if (result === 'TRAP_TRIGGERED') {
-            // تفعيل رسالة فخ التجميد وانتقال الدور
             AudioSys.error(); 
-            UI.log('فخ التجميد ❄️! الخصم يفقد دوره.');
+            UI.log('فخ التجميد ❄️! خصمك يقع في الفخ ويفقد دوره.');
             this.endTurn(); 
         } else {
+            // المعلق الآلي يقرأ الحدث
+            if (GameLogic.state.metaGrid[g] !== prevMeta[g]) {
+                UI.log(`اللاعب (${currentPlayer}) يسيطر على مربع بالكامل! 🔥`);
+            } else {
+                UI.log(`اللاعب (${currentPlayer}) يثبت رمزه بنجاح.`);
+            }
             this.endTurn();
         }
     },
 
     executePower(type, g, c) {
+        const currentPlayer = GameLogic.getCurrentMemberName();
         const result = GameLogic.usePower(type, g, c);
+        
         if (result) {
             AudioSys.glitch();
-            UI.log(`تم تفعيل: ${type.toUpperCase()}`);
+            let powerName = type === 'nuke' ? 'النووي ☢️' : type === 'freeze' ? 'التجميد ❄️' : 'الهاك 👾';
+            UI.log(`اللاعب (${currentPlayer}) فعّل قوة ${powerName}!`);
+            
             UI.updateGrid(GameLogic.state);
             this.state.activePower = null;
             document.querySelectorAll('.power-btn').forEach(b => b.classList.remove('active'));
             
-            // الهاك قد يتسبب في إنهاء المباراة بالكامل
-            if (result === 'GAME_OVER') {
+            if (result === 'GAME_OVER' || result === 'GAME_OVER_POINTS' || result === 'GAME_OVER_TIE') {
                 AudioSys.win();
                 this.stopTimer();
                 setTimeout(() => {
-                    UI.showVictory(GameLogic.state);
+                    UI.showVictory(GameLogic.state, result);
                 }, 500);
             } else {
                 this.endTurn();
@@ -411,7 +423,9 @@ const App = {
             if (this.state.timeLeft <= 0) {
                 this.stopTimer();
                 AudioSys.error();
-                UI.log('انتهى الوقت!');
+                const currentPlayer = GameLogic.getCurrentMemberName();
+                UI.log(`انتهى الوقت! اللاعب (${currentPlayer}) يفقد دوره ⏱️.`);
+                
                 GameLogic.switchTurn();
                 this.endTurn();
             }
@@ -493,21 +507,20 @@ const App = {
         }
     },
 
-    // عقاب الخطأ في الرياضيات (تعديل جديد)
     onMathFail() {
         AudioSys.error();
+        const currentPlayer = GameLogic.getCurrentMemberName();
         this.state.calcBuffer = [];
         document.getElementById('calc-inputs').textContent = 'خطأ ❌';
         
-        // إغلاق النافذة وانتقال الدور فوراً للخصم بعد ثانية
         setTimeout(() => {
             document.getElementById('modal-calc').classList.add('hidden');
-            UI.log('إجابة خاطئة! انتقل الدور للخصم.');
+            UI.log(`إجابة خاطئة! اللاعب (${currentPlayer}) يخسر النقلة ❌.`);
             
             this.state.activePower = null;
             document.querySelectorAll('.power-btn').forEach(b => b.classList.remove('active'));
 
-            GameLogic.skipTurn(); // إجبار انتقال الدور
+            GameLogic.skipTurn(); 
             this.endTurn();
         }, 1000);
     }
