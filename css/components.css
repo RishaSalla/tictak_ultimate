@@ -294,6 +294,14 @@ input:checked + .slider:before {
     box-shadow: 0 0 10px var(--p1-color);
 }
 
+/* --- 7. إصلاحات التمرير (Scroll Fixes) --- */
+#screen-setup {
+    justify-content: flex-start !important; /* إلغاء التوسيط العمودي لتبدأ العناصر من الأعلى */
+    overflow-y: auto !important; /* تفعيل التمرير العمودي */
+    padding: 30px 20px 80px 20px; /* مساحات تنفس من الأعلى والأسفل لتجنب اختفاء العناصر */
+    -webkit-overflow-scrolling: touch; /* تمرير ناعم ومريح في الجوالات */
+}
+
 /* =========================================
    📱 RESPONSIVE Adjustments
    تحسينات الأزرار على الجوال
