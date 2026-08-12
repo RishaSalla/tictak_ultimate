@@ -21,7 +21,7 @@ export const UI = {
         timerBar: document.getElementById('timer-bar')
     },
     
-    logTimer: null, // مؤقت ذكي لمسح رسائل المعلق الآلي
+    logTimer: null,
 
     showScreen(id) {
         this.elements.screens.forEach(s => {
@@ -59,15 +59,12 @@ export const UI = {
             const sub = document.getElementById(`sub-${g}`);
             sub.className = 'sub-grid';
             
-            // تصفير الألوان المضافة برمجياً قبل إعادة الرسم
             sub.style.borderColor = '';
             sub.style.boxShadow = '';
 
-            // إزالة أي طبقة فوز سابقة
             const oldOverlay = sub.querySelector('.win-overlay');
             if (oldOverlay) oldOverlay.remove();
 
-            // 1. حالة الفوز بالمربع (رسم SVG)
             if (metaGrid[g] !== null) {
                 sub.classList.add('won');
                 const winIcon = metaGrid[g] === 'X' ? p1.icon : p2.icon;
@@ -94,11 +91,9 @@ export const UI = {
                 }
                 sub.appendChild(overlay);
             } 
-            // 2. المنطقة النشطة (التوهج بلون الفريق صاحب الدور)
             else if (!winner && (nextGrid === null || nextGrid === g)) {
                 sub.classList.add('active-zone');
                 
-                // تحديد لون التوهج بناءً على دور الفريق
                 const glow = state.turn === 'X' ? 'var(--p1-color)' : 'var(--p2-color)';
                 const shadowGlow = state.turn === 'X' ? 'rgba(255, 158, 100, 0.4)' : 'rgba(100, 200, 255, 0.4)';
                 
@@ -106,14 +101,12 @@ export const UI = {
                 sub.style.boxShadow = `0 0 15px ${shadowGlow}, inset 0 0 20px rgba(0,0,0,0.5)`;
             }
 
-            // 3. فخ التجميد (لون ثلجي تحذيري)
             if (frozenGrid === g) {
                 sub.classList.add('frozen');
                 sub.style.borderColor = '#00d0ff';
                 sub.style.boxShadow = '0 0 20px rgba(0, 208, 255, 0.6), inset 0 0 20px rgba(0, 208, 255, 0.3)';
             }
 
-            // تحديث الخلايا
             Array.from(sub.children).forEach((cell, c) => {
                 if(cell.classList.contains('win-overlay')) return;
                 const val = grid[g][c];
@@ -169,13 +162,17 @@ export const UI = {
         }
     },
 
+    // توليد SVG حقيقي للأيقونات بدلاً من البحث عن ملف خارجي
     setAvatars(p1Icon, p2Icon) {
-        const getSrc = (i) => ['X', 'O'].includes(i) ? 'assets/icons/code.svg' : `assets/icons/${i}.svg`;
+        const getSrc = (i) => {
+            if (i === 'X') return "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><line x1='18' y1='6' x2='6' y2='18'></line><line x1='6' y1='6' x2='18' y2='18'></line></svg>";
+            if (i === 'O') return "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='9'></circle></svg>";
+            return `assets/icons/${i}.svg`;
+        };
         this.elements.p1Avatar.src = getSrc(p1Icon);
         this.elements.p2Avatar.src = getSrc(p2Icon);
     },
     
-    // المعلق الآلي الذكي (يمسح النص تلقائياً بعد 4 ثوانٍ)
     log(msg) {
         if(this.elements.logText) {
             this.elements.logText.textContent = msg;
@@ -187,7 +184,6 @@ export const UI = {
         }
     },
 
-    // عرض نافذة الفوز الشاملة (تستقبل نوع النهاية)
     showVictory(state, resultType) {
         const modal = document.getElementById('modal-victory');
         const contentBox = document.getElementById('victory-modal-content');
@@ -197,13 +193,15 @@ export const UI = {
         const subtitleEl = document.getElementById('victory-subtitle');
         const rosterEl = document.getElementById('victory-roster');
 
-        const getSrc = (i) => ['X', 'O'].includes(i) ? 'assets/icons/code.svg' : `assets/icons/${i}.svg`;
+        const getSrc = (i) => {
+            if (i === 'X') return "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><line x1='18' y1='6' x2='6' y2='18'></line><line x1='6' y1='6' x2='18' y2='18'></line></svg>";
+            if (i === 'O') return "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='9'></circle></svg>";
+            return `assets/icons/${i}.svg`;
+        };
         
-        // تصفير القوائم السابقة
         rosterEl.innerHTML = '';
-        contentBox.className = 'mech-modal'; // إزالة التأثيرات القديمة
+        contentBox.className = 'mech-modal';
 
-        // 1. حالة التعادل التام
         if (resultType === 'GAME_OVER_TIE') {
             titleEl.textContent = 'نهاية اللعبة';
             titleEl.style.color = '#fff';
@@ -211,13 +209,12 @@ export const UI = {
             
             winnerNameEl.textContent = 'تعادل استراتيجي';
             winnerNameEl.style.color = '#aaa';
-            winnerIconEl.src = 'assets/icons/balance.svg'; // استخدام أيقونة الميزان للتعادل
+            winnerIconEl.src = 'assets/icons/balance.svg'; 
             winnerIconEl.style.color = '#aaa';
             
             contentBox.style.borderColor = '#555';
             contentBox.style.color = '#555';
         } 
-        // 2. حالة فوز أحد الفرق (بالنقاط أو بالضربة القاضية)
         else {
             const winningTeam = state.winner === 'X' ? state.p1 : state.p2;
             const color = state.winner === 'X' ? 'var(--p1-color)' : 'var(--p2-color)';
@@ -225,7 +222,6 @@ export const UI = {
             titleEl.textContent = 'نهاية اللعبة';
             titleEl.style.color = 'var(--accent-gold)';
             
-            // تخصيص النص الفرعي بناءً على نوع الفوز
             if (resultType === 'GAME_OVER_POINTS') {
                 subtitleEl.textContent = 'تعادل في الساحة.. وتقدم بالنقاط!';
             } else {
@@ -239,9 +235,8 @@ export const UI = {
 
             contentBox.style.borderColor = color;
             contentBox.style.color = color; 
-            contentBox.classList.add('victory-pulse'); // تفعيل الوميض للفائز
+            contentBox.classList.add('victory-pulse');
 
-            // عرض أسماء الأبطال (أعضاء الفريق) كأوسمة تحت اسم الفريق
             if (winningTeam.roster && winningTeam.roster.length > 0) {
                 winningTeam.roster.forEach(member => {
                     const badge = document.createElement('span');
