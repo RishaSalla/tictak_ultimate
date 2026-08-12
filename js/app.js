@@ -1,6 +1,6 @@
 /**
  * 🚀 MAIN APP CONTROLLER (FINAL LOGIC)
- * تفعيل المعلق الآلي + استشعار نهايات اللعبة الجديدة (النقاط والتعادل)
+ * تفعيل المعلق الآلي + استشعار نهايات اللعبة الجديدة + إدارة حذف اللاعبين
  */
 
 import { MathGenerator, HelpData } from './data.js';
@@ -77,17 +77,49 @@ const App = {
             AudioSys.click();
         });
 
+        // تم التعديل هنا: إضافة زر الحذف التفاعلي مع كل اسم
         const handleAddMember = (teamId) => {
             const inputField = document.getElementById(`${teamId}-member`);
             const name = inputField.value.trim();
             if(name === '') return;
             
-            if(teamId === 'p1') this.state.tempRosterP1.push(name);
-            else this.state.tempRosterP2.push(name);
+            const rosterArray = teamId === 'p1' ? this.state.tempRosterP1 : this.state.tempRosterP2;
+            rosterArray.push(name);
 
             const list = document.getElementById(`${teamId}-list`);
             const li = document.createElement('li');
-            li.textContent = name;
+            
+            // تنسيق السطر ليحتوي الاسم وزر الحذف
+            li.style.display = 'flex';
+            li.style.justifyContent = 'space-between';
+            li.style.alignItems = 'center';
+            li.style.marginBottom = '5px';
+            li.style.background = 'rgba(255,255,255,0.05)';
+            li.style.padding = '5px 10px';
+            li.style.borderRadius = '6px';
+
+            const nameSpan = document.createElement('span');
+            nameSpan.textContent = name;
+
+            // إنشاء زر الحذف بنفس ستايل زر الإضافة
+            const delBtn = document.createElement('button');
+            delBtn.textContent = '✖';
+            delBtn.className = 'mech-btn small';
+            delBtn.style.padding = '2px 8px';
+            delBtn.style.fontSize = '0.7rem';
+
+            // برمجة عملية الحذف
+            delBtn.addEventListener('click', () => {
+                const index = rosterArray.indexOf(name);
+                if (index > -1) {
+                    rosterArray.splice(index, 1); // حذف الاسم من الذاكرة
+                }
+                li.remove(); // حذف العنصر من الشاشة
+                AudioSys.click();
+            });
+
+            li.appendChild(nameSpan);
+            li.appendChild(delBtn);
             list.appendChild(li);
 
             inputField.value = '';
