@@ -1,6 +1,6 @@
 /**
- * 🎨 UI MANAGER (UPDATED)
- * رسم SVG، الشبكة، التحديثات، التوهج الديناميكي وإدارة الفوز
+ * 🎨 UI MANAGER (FINAL)
+ * رسم SVG، التوهج الديناميكي، المعلق الآلي، ونافذة الفوز الشاملة
  */
 
 import { GameLogic } from './logic.js';
@@ -20,6 +20,8 @@ export const UI = {
         p2Name: document.getElementById('p2-display-name'),
         timerBar: document.getElementById('timer-bar')
     },
+    
+    logTimer: null, // مؤقت ذكي لمسح رسائل المعلق الآلي
 
     showScreen(id) {
         this.elements.screens.forEach(s => {
@@ -173,29 +175,88 @@ export const UI = {
         this.elements.p2Avatar.src = getSrc(p2Icon);
     },
     
+    // المعلق الآلي الذكي (يمسح النص تلقائياً بعد 4 ثوانٍ)
     log(msg) {
-        if(this.elements.logText) this.elements.logText.textContent = msg;
+        if(this.elements.logText) {
+            this.elements.logText.textContent = msg;
+            
+            if(this.logTimer) clearTimeout(this.logTimer);
+            this.logTimer = setTimeout(() => {
+                this.elements.logText.textContent = '...';
+            }, 4000);
+        }
     },
 
-    showVictory(state) {
+    // عرض نافذة الفوز الشاملة (تستقبل نوع النهاية)
+    showVictory(state, resultType) {
         const modal = document.getElementById('modal-victory');
         const contentBox = document.getElementById('victory-modal-content');
         const winnerNameEl = document.getElementById('victory-winner-name');
         const winnerIconEl = document.getElementById('victory-winner-icon');
+        const titleEl = document.getElementById('victory-title');
+        const subtitleEl = document.getElementById('victory-subtitle');
+        const rosterEl = document.getElementById('victory-roster');
 
-        const winningTeam = state.winner === 'X' ? state.p1 : state.p2;
-        const color = state.winner === 'X' ? 'var(--p1-color)' : 'var(--p2-color)';
-        
         const getSrc = (i) => ['X', 'O'].includes(i) ? 'assets/icons/code.svg' : `assets/icons/${i}.svg`;
         
-        winnerNameEl.textContent = winningTeam.name;
-        winnerNameEl.style.color = color;
-        winnerIconEl.src = getSrc(winningTeam.icon);
-        winnerIconEl.style.color = color;
+        // تصفير القوائم السابقة
+        rosterEl.innerHTML = '';
+        contentBox.className = 'mech-modal'; // إزالة التأثيرات القديمة
 
-        contentBox.style.borderColor = color;
-        contentBox.style.color = color; 
-        contentBox.classList.add('victory-pulse');
+        // 1. حالة التعادل التام
+        if (resultType === 'GAME_OVER_TIE') {
+            titleEl.textContent = 'نهاية اللعبة';
+            titleEl.style.color = '#fff';
+            subtitleEl.textContent = 'تعادل تام! لا غالب ولا مغلوب';
+            
+            winnerNameEl.textContent = 'تعادل استراتيجي';
+            winnerNameEl.style.color = '#aaa';
+            winnerIconEl.src = 'assets/icons/balance.svg'; // استخدام أيقونة الميزان للتعادل
+            winnerIconEl.style.color = '#aaa';
+            
+            contentBox.style.borderColor = '#555';
+            contentBox.style.color = '#555';
+        } 
+        // 2. حالة فوز أحد الفرق (بالنقاط أو بالضربة القاضية)
+        else {
+            const winningTeam = state.winner === 'X' ? state.p1 : state.p2;
+            const color = state.winner === 'X' ? 'var(--p1-color)' : 'var(--p2-color)';
+            
+            titleEl.textContent = 'نهاية اللعبة';
+            titleEl.style.color = 'var(--accent-gold)';
+            
+            // تخصيص النص الفرعي بناءً على نوع الفوز
+            if (resultType === 'GAME_OVER_POINTS') {
+                subtitleEl.textContent = 'تعادل في الساحة.. وتقدم بالنقاط!';
+            } else {
+                subtitleEl.textContent = 'انتصار مستحق!';
+            }
+            
+            winnerNameEl.textContent = winningTeam.name;
+            winnerNameEl.style.color = color;
+            winnerIconEl.src = getSrc(winningTeam.icon);
+            winnerIconEl.style.color = color;
+
+            contentBox.style.borderColor = color;
+            contentBox.style.color = color; 
+            contentBox.classList.add('victory-pulse'); // تفعيل الوميض للفائز
+
+            // عرض أسماء الأبطال (أعضاء الفريق) كأوسمة تحت اسم الفريق
+            if (winningTeam.roster && winningTeam.roster.length > 0) {
+                winningTeam.roster.forEach(member => {
+                    const badge = document.createElement('span');
+                    badge.textContent = member;
+                    badge.style.background = 'rgba(255,255,255,0.1)';
+                    badge.style.border = `1px solid ${color}`;
+                    badge.style.color = '#fff';
+                    badge.style.padding = '5px 12px';
+                    badge.style.borderRadius = '20px';
+                    badge.style.fontSize = '0.9rem';
+                    badge.style.fontWeight = 'bold';
+                    rosterEl.appendChild(badge);
+                });
+            }
+        }
 
         modal.classList.remove('hidden');
     }
