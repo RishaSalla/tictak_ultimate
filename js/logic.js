@@ -1,6 +1,6 @@
 /**
- * 🧠 GAME LOGIC ENGINE (STRATEGIC POWERS UPGRADE)
- * محرك القوانين والقوى والتحقق من الفوز، معدل للخطط الاستراتيجية (النووي، الهاك، التجميد)
+ * 🧠 GAME LOGIC ENGINE (STRATEGIC POWERS & POINTS WIN)
+ * محرك القوانين والقوى، مزود بنظام حسم النقاط عند امتلاء اللوحة
  */
 
 export const GameLogic = {
@@ -74,11 +74,17 @@ export const GameLogic = {
             team.score += 100;
         }
 
-        // التحقق من فوز اللعبة
+        // 1. التحقق من فوز اللعبة (الضربة القاضية)
         if (this.checkWin(this.state.metaGrid)) {
             this.state.winner = this.state.turn;
             team.score += 1000;
             return 'GAME_OVER';
+        }
+
+        // 2. التحقق من فوز اللعبة (الاحتكام للنقاط عند امتلاء اللوحة)
+        const gameEndStatus = this.checkGameEnd();
+        if (gameEndStatus) {
+            return gameEndStatus; // 'GAME_OVER_POINTS' أو 'GAME_OVER_TIE'
         }
 
         // تحديد المربع التالي الإلزامي
@@ -88,13 +94,12 @@ export const GameLogic = {
             this.state.nextGrid = c;
         }
 
-        // ❄️ نظام فخ التجميد (Freeze Trap Logic)
-        // إذا كان المربع الإلزامي الذي أُجبر عليه الخصم هو نفس المربع المجمد!
+        // ❄️ نظام فخ التجميد
         if (this.state.nextGrid !== null && this.state.nextGrid === this.state.frozenGrid) {
-            this.state.frozenGrid = null; // ينكسر الجليد
-            this.switchTurn(); // نمرر الدور للخصم (الضحية)
-            this.switchTurn(); // نمرر الدور مرة أخرى ليعود للمهاجم! (يفقد الخصم النقلة)
-            return 'TRAP_TRIGGERED'; // إرسال إشارة لـ app.js لعرض رسالة الفخ
+            this.state.frozenGrid = null; 
+            this.switchTurn(); 
+            this.switchTurn(); 
+            return 'TRAP_TRIGGERED'; 
         }
 
         this.switchTurn();
@@ -107,23 +112,21 @@ export const GameLogic = {
         if (!team.powers[type]) return false;
 
         switch (type) {
-            case 'nuke': // تدمير وإجبار
+            case 'nuke': 
                 if (this.state.metaGrid[g] !== null) return false; 
                 this.state.grid[g] = Array(9).fill(null);
-                this.state.nextGrid = g; // ☢️ إجبار الخصم على اللعب في المنطقة المدمرة
-                if (this.state.frozenGrid === g) this.state.frozenGrid = null; // النووي يذيب الجليد
+                this.state.nextGrid = g; 
+                if (this.state.frozenGrid === g) this.state.frozenGrid = null; 
                 break;
 
-            case 'freeze': // وضع فخ التجميد
+            case 'freeze': 
                 this.state.frozenGrid = g;
-                // تمت إزالة خاصية الفك التلقائي ليبقى الفخ نشطاً
                 break;
 
-            case 'hack': // السرقة التكتيكية
+            case 'hack': 
                 if (this.state.grid[g][c] === null || this.state.grid[g][c] === this.state.turn) return false;
                 this.state.grid[g][c] = this.state.turn; 
                 
-                // 👾 التحقق الذكي: هل تسببت السرقة في إكمال خط والفوز بالمربع؟
                 if (this.checkWin(this.state.grid[g])) {
                     this.state.metaGrid[g] = this.state.turn;
                     team.score += 100;
@@ -139,11 +142,9 @@ export const GameLogic = {
         team.score -= 50; 
         this.switchTurn(); 
         
-        // إذا تسبب الهاك في فوز مباشر، نخبر النظام بذلك
         return this.state.winner ? 'GAME_OVER' : true;
     },
 
-    // 🛑 دالة جديدة لمعاقبة المخطئ في الرياضيات (خسارة الدور)
     skipTurn() {
         this.switchTurn();
     },
@@ -169,5 +170,33 @@ export const GameLogic = {
 
     isGridFull(subGrid) {
         return subGrid.every(cell => cell !== null);
+    },
+
+    // 🛑 دالة جديدة للتحقق من انسداد اللوحة وحساب النقاط
+    checkGameEnd() {
+        // التحقق مما إذا كانت جميع المربعات الـ 81 ممتلئة أو محسومة
+        let isBoardFull = true;
+        for (let g = 0; g < 9; g++) {
+            if (this.state.metaGrid[g] === null && !this.isGridFull(this.state.grid[g])) {
+                isBoardFull = false;
+                break;
+            }
+        }
+
+        if (isBoardFull) {
+            // اللوحة امتلأت، نحتكم للنقاط
+            if (this.state.p1.score > this.state.p2.score) {
+                this.state.winner = 'X';
+                return 'GAME_OVER_POINTS';
+            } else if (this.state.p2.score > this.state.p1.score) {
+                this.state.winner = 'O';
+                return 'GAME_OVER_POINTS';
+            } else {
+                this.state.winner = 'TIE';
+                return 'GAME_OVER_TIE';
+            }
+        }
+        
+        return null; // اللعبة مستمرة
     }
 };
